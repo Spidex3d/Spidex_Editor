@@ -40,15 +40,18 @@ void App::RunApp()
 		MainScreen::Instance()->ClearScreen(); // glClear - glClearColor
 		processInput(windowManager.GetWindow()); // Keybord and mouse control
 		
-		// ########## ToDo ImGui ###########
+		// ########## ImGui ###########
 		MainScreen::Instance()->NewImguiFrame(windowManager.GetWindow()); // New ImGui Frame 
 		ImGui::NewFrame();
 		// ########### GUI Here ##################
+		MainScreen::Instance()->MainWindowMenu(windowManager.GetWindow()); // Main Menu
+		bool p_open = true; 
+		MainScreen::Instance()->MainDockSpace(&p_open); // The Doc Space
 		ImGui::Begin("Test Window");
 
 		ImGui::End();
 		// ##########  End GUI ###################
-		MainScreen::Instance()->RenderImGui(windowManager.GetWindow());
+		MainScreen::Instance()->RenderImGui(windowManager.GetWindow()); // render the imgui windows
 		glfwSwapBuffers(windowManager.GetWindow()); // the last 2 lines of code
 		glfwPollEvents();
 	}
