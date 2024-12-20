@@ -59,8 +59,9 @@ void MainScreen::NewImguiFrame(GLFWwindow* window)
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
 }
-bool DocOnOff = true; // make this a menu item or settings
 // Docking Space
+bool DocOnOff = true; // make this a menu item or settings
+
 void MainScreen::MainDockSpace(bool* p_open)
 {
     if (DocOnOff) { // Docking on or off
@@ -89,7 +90,7 @@ void MainScreen::MainDockSpace(bool* p_open)
             window_flags |= ImGuiWindowFlags_NoBackground;
 
         if (!opt_padding)
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+           ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f)); // you can add a bit of padding  
         ImGui::Begin("DockSpace Demo", p_open, window_flags);
         if (!opt_padding)
             ImGui::PopStyleVar();
@@ -97,7 +98,7 @@ void MainScreen::MainDockSpace(bool* p_open)
         if (opt_fullscreen)
             ImGui::PopStyleVar(2);
 
-        // Submit the DockSpace
+        // Submit the DockSpace to the ini file
         ImGuiIO& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
@@ -196,7 +197,8 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
     {
         if (ImGui::MenuItem("Open Settings"))
         {
-            // this will open a new panel to select a new sky Texture
+            //bool DocOnOff = true; // make this a menu item or settings
+
         }
 
         ImGui::EndMenu();
@@ -232,7 +234,7 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
     {
         if (ImGui::MenuItem("About Screen"))
         {
-            //show_about_window = true;
+            show_about_window = true; // show About Window
         }
 
         if (ImGui::MenuItem("Help"))
@@ -242,7 +244,7 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
         ImGui::Separator();
         if (ImGui::MenuItem("Window Opacity on"))
         {
-            glfwSetWindowOpacity(window, 0.5f);
+            glfwSetWindowOpacity(window, 0.6f);
         }
         if (ImGui::MenuItem("Window Opacity off"))
         {
@@ -258,6 +260,31 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
 
     ImGui::EndMainMenuBar();
 
+}
+
+
+void MainScreen::AboutWindow(GLFWwindow* window)
+{
+    if (show_about_window)
+    {
+        ImGui::Begin("About the Spidex 3d editor");
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Spidex Engine");
+        ImGui::SeparatorText(" Info ");
+        ImGui::TextWrapped("Hi I'm The Dyslexic Programmer.I'm not really a programmer, I'm a retired horticulturist."
+            "iv only played with C++ and found it very interesting,"
+            "so now I have lots of time to try and learn this stuff."
+            "my aim is to go from all but zero to making a 3d Model Editor using Opengl."
+        );
+        ImGui::SeparatorText(" GitHub ");
+        ImGui::Text("https://github.com/Spidex3d/Spidex_Editor");
+
+        ImGui::Separator();
+        if (ImGui::Button("Close"))
+        {
+            show_about_window = false;
+        }
+        ImGui::End();
+    }
 }
 
 // Rener the Imgui windows in the main window
@@ -283,15 +310,8 @@ void MainScreen::ClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // main window background colour
+   
 }
 
-void MainScreen::SwapBuffers()
-{
-    glfwSwapBuffers(window);
-}
 
-void MainScreen::PollEvents()
-{
-    glfwPollEvents();
-}
 

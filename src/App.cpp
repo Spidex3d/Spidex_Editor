@@ -20,7 +20,7 @@ void App::Initialize(GLFWwindow* window)
 void App::RunApp()
 {
 
-	WindowManager windowManager(SCR_WIDTH, SCR_HEIGHT, "Spidex 3D Editor");
+	WindowManager windowManager(SCR_WIDTH, SCR_HEIGHT, "Spidex 3D Model Editor");
 	if (!windowManager.GLFWInitialize()) {
 		return;
 	}
@@ -45,6 +45,7 @@ void App::RunApp()
 		ImGui::NewFrame();
 		// ########### GUI Here ##################
 		MainScreen::Instance()->MainWindowMenu(windowManager.GetWindow()); // Main Menu
+		MainScreen::Instance()->AboutWindow(windowManager.GetWindow());
 		bool p_open = true; 
 		MainScreen::Instance()->MainDockSpace(&p_open); // The Doc Space
 		ImGui::Begin("Test Window");

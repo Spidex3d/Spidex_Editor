@@ -44,7 +44,7 @@ bool WindowManager::GLFWInitialize()
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        //std::cout << "Failed to loade glad" << std::endl;
+        LogInternals::Instance()->Error("Glad Failed!");
     }
     else {
         LogInternals::Instance()->Info("Glad Loaded Correctly");
