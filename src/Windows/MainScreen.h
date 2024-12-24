@@ -6,6 +6,7 @@
 #include <imgui\imgui_impl_glfw.h>
 #include <imgui\imgui_impl_opengl3.h>
 
+
 class MainScreen
 {
 public:
@@ -31,6 +32,7 @@ private:
 	GLFWwindow* window;
 
 	bool show_about_window = false;
+	
 	
 };
 

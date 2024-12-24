@@ -1,5 +1,7 @@
 #include "Headers\App.h"
 #include "Headers/EditorInput.h"
+#include "Editor_Gui/MainGui.h"
+#include "Ecs\EntityComponents.h"
 
 
 App::App()
@@ -32,6 +34,15 @@ void App::RunApp()
 		MainScreen::Instance()->SetUpImGui(windowManager.GetWindow());
 	}
 
+ 
+    EntityComponents entityComponents;
+	entityComponents.Initialize();
+		
+	int currentIndex = -1;
+	//int indexCube = 0, indexPlane = 0, indexSphere = 0, indexLight = 0, indexTypeID = 0;
+	int index = 0, objectIndex = 0, indexTypeID = 0;
+	
+	// 29 lines
 	while (AppIsRunning)	
 	{
 		// close it all down if you click the cross or press Esc button
@@ -48,11 +59,26 @@ void App::RunApp()
 		MainScreen::Instance()->AboutWindow(windowManager.GetWindow());
 		bool p_open = true; 
 		MainScreen::Instance()->MainDockSpace(&p_open); // The Doc Space
-		ImGui::Begin("Test Window");
 
-		ImGui::End();
+		MainScreen::Instance()->MainSceanWindow(windowManager.GetWindow());	// Mani Scene Window for drawing to
+
+		EntityNode::Instance()->EntityManagmentSystem(entityComponents.GetModels(), currentIndex, index, objectIndex, indexTypeID);
+			
+		for (const auto& model : entityComponents.GetModels()) {
+			if (auto* triangel = dynamic_cast<TriangelModel*>(model.get())) {
+				triangel->DrawTriangel();
+			}
+		}
+
+		
+		//indexPlane, indexSphere,  indexLight, 
+		EntityNode::Instance()->EntityProperties();
 		// ##########  End GUI ###################
 		MainScreen::Instance()->RenderImGui(windowManager.GetWindow()); // render the imgui windows
+
+		
+
+
 		glfwSwapBuffers(windowManager.GetWindow()); // the last 2 lines of code
 		glfwPollEvents();
 	}

@@ -97,6 +97,7 @@ void MainScreen::MainDockSpace(bool* p_open)
 
         if (opt_fullscreen)
             ImGui::PopStyleVar(2);
+           
 
         // Submit the DockSpace to the ini file
         ImGuiIO& io = ImGui::GetIO();
@@ -112,6 +113,21 @@ void MainScreen::MainDockSpace(bool* p_open)
 // main scean window to draw objects to
 void MainScreen::MainSceanWindow(GLFWwindow* window)
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::Begin("Main Scean");
+    const float window_width = ImGui::GetContentRegionAvail().x;
+    const float window_height = ImGui::GetContentRegionAvail().y;
+
+   //// Rescale_frambuffer(window_width, window_height);
+    glViewport(0, 0, window_width, window_height);
+
+   // ImVec2 pos = ImGui::GetCursorScreenPos();
+
+   //// ImGui::GetWindowDrawList()->AddImage((void*)scean_texture_id, ImVec2(pos.x, pos.y),
+   //     //ImVec2(pos.x + window_width, pos.y + window_height), ImVec2(0, 1), ImVec2(1, 0));
+
+    ImGui::End();
+    ImGui::PopStyleVar();
 }
 
 void MainScreen::MainWindowMenu(GLFWwindow* window)
@@ -197,8 +213,16 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
     {
         if (ImGui::MenuItem("Open Settings"))
         {
-            //bool DocOnOff = true; // make this a menu item or settings
+                     
 
+        }
+        if (ImGui::MenuItem("Docking On"))
+        {
+           
+        }
+        if (ImGui::MenuItem("Docking Off"))
+        {
+            
         }
 
         ImGui::EndMenu();
@@ -207,7 +231,7 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
     {
         if (ImGui::MenuItem("Open Tool Box"))
         {
-            // this will open a new panel to select a new Texture
+            
         }
 
         ImGui::EndMenu();

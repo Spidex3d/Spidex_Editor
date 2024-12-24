@@ -2,21 +2,30 @@
 #include <imgui\ImGuiAF.h>
 #include <imgui\imgui.h>
 #include <imgui\imgui_internal.h>
-
+#include <glad\glad.h>
 
 #include "../SpdLog/LogInternals.h"
-
 
 #include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION
 
-const int SCR_WIDTH = 1920;
-const int SCR_HEIGHT = 1080;
-
 #ifndef SPIDEX_INLINE
 #define SPIDEX_INLINE 
 #endif // !SPIDEX_INLINE
+
+const int SCR_WIDTH = 1920;
+const int SCR_HEIGHT = 1080;
+
+static GLuint VAO;
+static GLuint VBO;
+static GLuint FBO;
+static GLuint RBO;
+
+const int OBJ_CUBE = 4;
+const int OBJ_SPHERE = 7;
+const int OBJ_TRIANGEL = 8;
+
 
 enum FontIndex : int {
 	REG_FONT_INDEX = 0,

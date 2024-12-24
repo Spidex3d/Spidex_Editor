@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ecs\EntityComponents.cpp" />
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\Windows\MainScreen.cpp" />
     <ClCompile Include="SpdLog\LogInternals.cpp" />
@@ -157,8 +158,13 @@
     <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ecs\ObjectManager.h" />
+    <ClInclude Include="src\Ecs\BaseModel.h" />
+    <ClInclude Include="src\Ecs\EntityComponents.h" />
+    <ClInclude Include="src\Editor_Gui\MainGui.h" />
     <ClInclude Include="src\Headers\App.h" />
     <ClInclude Include="src\Headers\EditorInput.h" />
+    <ClInclude Include="src\Ecs\SelectedDataManager.h" />
     <ClInclude Include="src\Windows\MainScreen.h" />
     <ClInclude Include="SpdLog\LogInternals.h" />
     <ClInclude Include="src\Headers\Config.h" />
