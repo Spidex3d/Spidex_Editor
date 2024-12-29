@@ -22,14 +22,25 @@ public:
 
 	void AboutWindow(GLFWwindow* window); //About Window from the main menu
 
+	//  ############## ImGui Main scene #######################
+	void Creat_FrameBuffer();
+	unsigned int LoadTextureFiles(const char* filename, GLuint* out_texture, int out_width, int out_height);
+
+	void Bind_Framebuffer();
+	void Unbinde_Frambuffer();
+	void Rescale_frambuffer(float width, float height);
+
+	//void SetViewPort(GLint x, GLint y, GLsizei width, GLsizei height);
 
 	void RenderImGui(GLFWwindow* window); // Render the ImGui windows
-
-	void ClearScreen();
 	
+	void ClearScreen();
 
 private:
 	GLFWwindow* window;
+	GLuint FBO;
+	GLuint RBO;
+	GLuint main_scene_texture_id; 
 
 	bool show_about_window = false;
 	

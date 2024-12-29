@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="src\Ecs\EntityComponents.cpp" />
     <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\Shader\ShaderManager.cpp" />
     <ClCompile Include="src\Windows\MainScreen.cpp" />
     <ClCompile Include="SpdLog\LogInternals.cpp" />
     <ClCompile Include="src\glad.c" />
@@ -165,6 +166,8 @@
     <ClInclude Include="src\Headers\App.h" />
     <ClInclude Include="src\Headers\EditorInput.h" />
     <ClInclude Include="src\Ecs\SelectedDataManager.h" />
+    <ClInclude Include="src\Shader\Shader.h" />
+    <ClInclude Include="src\Shader\ShaderManager.h" />
     <ClInclude Include="src\Windows\MainScreen.h" />
     <ClInclude Include="SpdLog\LogInternals.h" />
     <ClInclude Include="src\Headers\Config.h" />

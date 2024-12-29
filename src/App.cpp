@@ -2,7 +2,7 @@
 #include "Headers/EditorInput.h"
 #include "Editor_Gui/MainGui.h"
 #include "Ecs\EntityComponents.h"
-
+#include "Ecs\ObjectManager.h"
 
 App::App()
 {
@@ -32,9 +32,12 @@ void App::RunApp()
 		MainScreen::Instance()->Initialize(windowManager.GetWindow());
 		// set up ImGui
 		MainScreen::Instance()->SetUpImGui(windowManager.GetWindow());
+
 	}
 
- 
+		MainScreen::Instance()->Creat_FrameBuffer(); // my frame buffer to fill main scene window
+		ShaderManager::SetupShaders;
+
     EntityComponents entityComponents;
 	entityComponents.Initialize();
 		
@@ -60,17 +63,20 @@ void App::RunApp()
 		bool p_open = true; 
 		MainScreen::Instance()->MainDockSpace(&p_open); // The Doc Space
 
-		MainScreen::Instance()->MainSceanWindow(windowManager.GetWindow());	// Mani Scene Window for drawing to
+		MainScreen::Instance()->MainSceanWindow(windowManager.GetWindow());	// Main Scene Window for drawing to
 
 		EntityNode::Instance()->EntityManagmentSystem(entityComponents.GetModels(), currentIndex, index, objectIndex, indexTypeID);
 			
-		for (const auto& model : entityComponents.GetModels()) {
-			if (auto* triangel = dynamic_cast<TriangelModel*>(model.get())) {
-				triangel->DrawTriangel();
-			}
-		}
-
-		
+		// ############################################# Drawing Object !!! ################################
+				
+		// Render the triangles
+		/*for (const auto& model : entityComponents.GetModels()) {
+			if (auto* triangle = dynamic_cast<TriangleModel*>(model.get())) {
+				triangle->DrawTriangle(); }
+		}*/
+				
+		// ############################################# End Drawing Object !!! ################################
+				
 		//indexPlane, indexSphere,  indexLight, 
 		EntityNode::Instance()->EntityProperties();
 		// ##########  End GUI ###################

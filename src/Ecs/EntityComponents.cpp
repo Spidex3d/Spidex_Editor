@@ -23,7 +23,7 @@ void EntityComponents::Initialize() {
     MainVector.push_back(std::make_unique<SphereModel>(currentIndex++, "DefaultSphere", 1.0f));
     MainVector.push_back(std::make_unique<SphereModel>(currentIndex++, "DefaultSphere", 1.0f));
     MainVector.push_back(std::make_unique<SphereModel>(currentIndex++, "DefaultSphere", 1.0f));
-    MainVector.push_back(std::make_unique<TriangelModel>(currentIndex++, "DefaultTriangel"));
+    MainVector.push_back(std::make_unique<TriangleModel>(currentIndex++, "DefaultTriangel"));
 }
 
  std::vector<std::unique_ptr<BaseModel>>& EntityComponents::GetModels() {

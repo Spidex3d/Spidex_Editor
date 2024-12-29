@@ -36,8 +36,8 @@ bool WindowManager::GLFWInitialize()
 
     int bufferWidth, bufferHeight;
     glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
-
     glfwMakeContextCurrent(window);
+    
     glfwSwapInterval(1); // Enable vsync
 
     
