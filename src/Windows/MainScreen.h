@@ -19,8 +19,11 @@ public:
 	void MainDockSpace(bool* p_open); // docking space
 	void MainSceanWindow(GLFWwindow* window); // Drawing to an ImGui main Scean Window
 	void MainWindowMenu(GLFWwindow* window); // main menu
-
+	// menu items
+	void SettingsWindow(GLFWwindow* window);
 	void AboutWindow(GLFWwindow* window); //About Window from the main menu
+
+	void WinInit(GLFWwindow* window);
 
 	//  ############## ImGui Main scene #######################
 	void Creat_FrameBuffer();
@@ -35,13 +38,21 @@ public:
 	void RenderImGui(GLFWwindow* window); // Render the ImGui windows
 	
 	void ClearScreen();
+	
+	void BgColour(float BgCol[4]); // main screen background colour
 
 private:
 	GLFWwindow* window;
 	GLuint FBO;
 	GLuint RBO;
-	GLuint main_scene_texture_id; 
+	GLuint main_scene_texture_id; // main imgui main scene texture_id
 
+	// used for the main screen background colour
+	float BgCol[4] = {
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	bool show_settings_window = false;
 	bool show_about_window = false;
 	
 	

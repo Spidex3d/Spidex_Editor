@@ -59,8 +59,8 @@ public:
 
         float vertices[] = {
             -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            0.0f,  1.0f, 0.0f
+             1.0f, -1.0f, 0.0f,
+             0.0f,  1.0f, 0.0f
         };
 
         glGenVertexArrays(1, &VAO);
@@ -88,7 +88,6 @@ public:
 
    // void DrawTriangle(GLuint shaderProgramID) {
     void DrawTriangle() {
-        //glUseProgram();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);

@@ -21,6 +21,7 @@ void MainScreen::Initialize(GLFWwindow* window)
     images[0].pixels = stbi_load("Textures/Icon.png", &images[0].width, &images[0].height, 0, 4); // rgba = png
     glfwSetWindowIcon(window, 1, images);
     stbi_image_free(images[0].pixels);
+
 }
 
 void MainScreen::SetUpImGui(GLFWwindow* window)
@@ -211,9 +212,9 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
     }
     if (ImGui::BeginMenu("Settings"))
     {
-        if (ImGui::MenuItem("Open Settings"))
+        if (ImGui::MenuItem(ICON_FA_COGS" Open Settings"))
         {
-                     
+            show_settings_window = true; // show settings window
 
         }
         if (ImGui::MenuItem("Docking On"))
@@ -287,6 +288,25 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
 }
 
 
+void MainScreen::SettingsWindow(GLFWwindow* window)
+{
+    // at some point we will need to wight this info to an ini file
+    if (show_settings_window) {
+        ImGui::Begin(ICON_FA_COGS" Spidex 3d editor Settings");
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Spidex Engine");
+        ImGui::SeparatorText(" Screen Settings ");
+        ImGui::ColorEdit4("Screen Colour", BgCol);
+
+        ImGui::Separator();
+        if (ImGui::Button("Close"))
+        {
+            show_settings_window = false;
+        }
+
+        ImGui::End();
+    }
+}
+
 void MainScreen::AboutWindow(GLFWwindow* window)
 {
     if (show_about_window)
@@ -309,6 +329,24 @@ void MainScreen::AboutWindow(GLFWwindow* window)
         }
         ImGui::End();
     }
+}
+
+void MainScreen::WinInit(GLFWwindow* window)
+{
+    MainScreen::NewImguiFrame(window); // new frame
+    ImGui::NewFrame();
+    MainScreen::MainWindowMenu(window); // Main Menu
+    MainScreen::AboutWindow(window);  // set the about window
+    MainScreen::SettingsWindow(window); // set the Settings window
+
+    bool p_open = true;
+    MainScreen::MainDockSpace(&p_open); // The Doc Space
+
+    MainScreen::MainSceanWindow(window); // Main Scene Window for drawing objects to
+
+    MainScreen::BgColour(BgCol);
+   // MainScreen::BgColour(BgColR, BgColG, BgColB);
+    //MainScreen::BgColour(float BgCol[4]);
 }
 
 void MainScreen::Creat_FrameBuffer()
@@ -387,9 +425,17 @@ void MainScreen::RenderImGui(GLFWwindow* window)
 void MainScreen::ClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // main window background colour
    
 }
+
+void MainScreen::BgColour(float BgCol[4])
+{
+    glClearColor(BgCol[0], BgCol[1], BgCol[2], BgCol[3]); // main window background colour
+}
+
+
+
+
 
 
 

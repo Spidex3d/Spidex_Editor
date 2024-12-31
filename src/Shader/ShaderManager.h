@@ -4,9 +4,6 @@
 #include <cmath>
 #include "Shader.h"
 
-
-
-
 class ShaderManager {
 public:
     static void SetupShaders();

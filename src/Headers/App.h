@@ -25,6 +25,10 @@ public:
     
     void RunApp();
 
+    void MainCamera();
+
+    void Timer();
+
     void AppShutdown();
 
 private:
