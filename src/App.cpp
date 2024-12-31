@@ -99,7 +99,7 @@ void App::RunApp()
 		MainScreen::Instance()->ClearScreen(); // glClear - glClearColor
 		
 		// ############################################# Drawing Object !!! ################################
-		// eventunatly this will need to be the Render
+		// eventually this will need to be a renderer !!
 
 		ShaderManager::defaultGridShader->Use();
 		ShaderManager::defaultGridShader->setMat4("projection", projection);
