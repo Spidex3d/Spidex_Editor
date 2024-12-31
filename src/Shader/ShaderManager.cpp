@@ -18,9 +18,13 @@ extern float angel;
 
 void ShaderManager::SetupShaders() {
     // Initialize the shader
-    defaultGridShader = new Shader("Shader/shaderFile/default_Grid.vert", "Shader/shaderFile/default_Grid.frag");
+    defaultGridShader = new Shader("src/Shader/ShaderFile/default_Grid.vert", "src/Shader/ShaderFile/default_Grid.frag");
+    
+    //defaultGridShader = new Shader("Shader/ShaderFile/test.vert", "Shader/ShaderFile/test.frag");
+    //defaultGridShader = new Shader("C:/Users/marty/Desktop/SpidexEditor/Spidex_Editor/src/Shader/ShaderFile/test.vert",
+      //  "C:/Users/marty/Desktop/SpidexEditor/Spidex_Editor/src/Shader/ShaderFile/test.frag");
   
-    LightBulbShader = new Shader("Shader/shaderFile/bulb.vert", "Shader/shaderFile/bulb.frag");
+    /*LightBulbShader = new Shader("Shader/shaderFile/bulb.vert", "Shader/shaderFile/bulb.frag");
   
     LightCubeShader = new Shader("Shader/shaderFile/light_2.vert", "Shader/shaderFile/light_2.frag");
 
@@ -28,17 +32,7 @@ void ShaderManager::SetupShaders() {
 
     skyShader = new Shader("Shader/shaderFile/sky.vert", "Shader/shaderFile/sky.frag");
 
-    SimpelColor = new Shader("Shader/shaderFile/test.vert", "Shader/shaderFile/test.frag");
+    SimpelColor = new Shader("Shader/shaderFile/test.vert", "Shader/shaderFile/test.frag");*/
 }
 
-void ShaderManager::SetUpLightShader()
-{
-   
 
-    
-
-    //glm::vec3 lightPos(0.0f, 1.0f, 6.0f);
-    ////  glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-    //glm::vec3 lightColor(amb_light[0], amb_light[1], amb_light[2]);
-
-}

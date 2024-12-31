@@ -1,6 +1,7 @@
 #pragma once
 #include <glad\glad.h>
 #include <glm\glm.hpp>
+//#include "../Headers/Config.h" // only here for LogInternals
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -53,6 +54,7 @@ public:
         catch (std::ifstream::failure& e)
         {
             std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+            //LogInternals::Instance()->Critical("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ:" );
         }
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();

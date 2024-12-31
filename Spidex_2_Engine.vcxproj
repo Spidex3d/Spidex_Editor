@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Editor_Gui\Grid.cpp" />
     <ClCompile Include="src\Ecs\EntityComponents.cpp" />
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\Shader\ShaderManager.cpp" />
@@ -159,6 +160,8 @@
     <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Camera\Camera.h" />
+    <ClInclude Include="src\Editor_Gui\Grid.h" />
     <ClInclude Include="src\Ecs\ObjectManager.h" />
     <ClInclude Include="src\Ecs\BaseModel.h" />
     <ClInclude Include="src\Ecs\EntityComponents.h" />
@@ -186,6 +189,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Shader\ShaderFile\default_Grid.frag" />
+    <None Include="src\Shader\ShaderFile\default_Grid.vert" />
+    <None Include="src\Shader\ShaderFile\test.frag" />
+    <None Include="src\Shader\ShaderFile\test.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

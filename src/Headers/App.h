@@ -8,7 +8,8 @@
 #include "Config.h"
 #include "Windows/WindowsManager.h"
 #include "Windows/MainScreen.h"
-#include "../Shader/ShaderManager.h"
+#include "Shader/ShaderManager.h"
+
 
 
 

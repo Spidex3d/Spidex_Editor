@@ -54,6 +54,8 @@ bool WindowManager::GLFWInitialize()
 
     glViewport(0, 0, bufferWidth, bufferHeight);
 
+    glEnable(GL_DEPTH_TEST);
+
     return true;
 }
 

@@ -60,6 +60,9 @@
     <ClCompile Include="src\Shader\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Editor_Gui\Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Headers\Config.h">
@@ -134,10 +137,22 @@
     <ClInclude Include="src\Shader\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Editor_Gui\Grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Icon.png">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Shader\ShaderFile\default_Grid.frag" />
+    <None Include="src\Shader\ShaderFile\default_Grid.vert" />
+    <None Include="src\Shader\ShaderFile\test.vert" />
+    <None Include="src\Shader\ShaderFile\test.frag" />
   </ItemGroup>
 </Project>

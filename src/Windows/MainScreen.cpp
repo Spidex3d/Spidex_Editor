@@ -114,7 +114,7 @@ void MainScreen::MainDockSpace(bool* p_open)
 void MainScreen::MainSceanWindow(GLFWwindow* window)
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    ImGui::Begin("Main Scean");
+    ImGui::Begin("Main scene");
     const float window_width = ImGui::GetContentRegionAvail().x;
     const float window_height = ImGui::GetContentRegionAvail().y;
 
@@ -136,20 +136,20 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
     ImGui::BeginMainMenuBar();
     if (ImGui::BeginMenu("File"))
     {
-        if (ImGui::MenuItem("New Scean"))
+        if (ImGui::MenuItem("New scene"))
         {
 
         }
-        if (ImGui::MenuItem("Open Scean"))
+        if (ImGui::MenuItem("Open scene"))
         {
 
         }
         ImGui::Separator();
-        if (ImGui::MenuItem(ICON_FA_SAVE" Save Scean"))
+        if (ImGui::MenuItem(ICON_FA_SAVE" Save scene"))
         {
 
         }
-        if (ImGui::MenuItem("Save As Scean"))
+        if (ImGui::MenuItem("Save As scene"))
         {
 
         }
@@ -365,7 +365,7 @@ void MainScreen::Rescale_frambuffer(float width, float height)
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 }
 
-// Rener the Imgui windows in the main window
+// Render the Imgui windows in the main window
 void MainScreen::RenderImGui(GLFWwindow* window)
 {
     ImGui::Render();
