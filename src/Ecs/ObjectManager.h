@@ -2,7 +2,13 @@
 #include "BaseModel.h"
 #include "../Shader/Shader.h"
 
+struct Object {
 
+    int index = 0;              // list index
+    std::string objectName; // objects name
+    int objectIndex;        // objects index ie: cube index of type cube
+    int objectTypeID;       // cube, light, camera, sphere, plane, obj model
+};
 
 
 class CubeModel : public BaseModel {
@@ -48,6 +54,7 @@ public:
 };
 
 class TriangleModel : public BaseModel {
+
 public:
     GLuint VAO, VBO;
 
@@ -93,6 +100,11 @@ public:
         glBindVertexArray(0);
         glUseProgram(0);
     }
+private:
+    //int index;              // list index
+    //std::string objectName; // objects name
+    //int objectIndex;        // objects index ie: cube index of type cube
+    //int objectTypeID;       // cube, light, camera, sphere, plane, obj model
 };
 
 

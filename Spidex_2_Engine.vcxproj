@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Windows\Settings.cpp" />
     <ClCompile Include="src\Editor_Gui\Grid.cpp" />
     <ClCompile Include="src\Ecs\EntityComponents.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Windows\Settings.h" />
     <ClInclude Include="src\Camera\Camera.h" />
     <ClInclude Include="src\Editor_Gui\Grid.h" />
     <ClInclude Include="src\Ecs\ObjectManager.h" />

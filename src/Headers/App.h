@@ -9,8 +9,7 @@
 #include "Windows/WindowsManager.h"
 #include "Windows/MainScreen.h"
 #include "Shader/ShaderManager.h"
-
-
+#include "Windows/Settings.h"
 
 
 class App
@@ -23,9 +22,7 @@ public:
 
     void Initialize(GLFWwindow* window);
     
-    void RunApp();
-
-    void MainCamera();
+    void RunApp();     
 
     void Timer();
 
@@ -35,5 +32,7 @@ private:
     GLFWwindow* window;
 
     bool AppIsRunning = true;
+
+   
 
 };

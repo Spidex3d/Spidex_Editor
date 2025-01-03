@@ -42,6 +42,8 @@ constexpr const char* ROBOTO_REG_PATH = "Assets/Fonts/Roboto-Regular.ttf";
 constexpr const char* FA_REG_PATH = "Assets/Fonts/FA-Regular-400.otf";
 constexpr const char* FA_SOLID_PATH = "Assets/Fonts/FA-Solid-900.otf";
 
+
+
 // Colors
 const ImVec4 COLOR_LIGHTBLUE(0.43f, 0.7f, 0.89f, 1.0f);
 const ImVec4 COLOR_LIGHTGREEN(0.0f, 0.9f, 0.0f, 1.0f);

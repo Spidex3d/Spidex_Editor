@@ -6,7 +6,7 @@
 #include <imgui\ImGuiAF.h>
 
 #include <stdio.h>
-
+#include "../Windows/Settings.h"
 
 MainScreen* MainScreen::Instance()
 {
@@ -288,23 +288,28 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
 }
 
 
-void MainScreen::SettingsWindow(GLFWwindow* window)
+void MainScreen::SettingsWindow(GLFWwindow* window)   
 {
-    // at some point we will need to wight this info to an ini file
-    if (show_settings_window) {
-        ImGui::Begin(ICON_FA_COGS" Spidex 3d editor Settings");
-        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Spidex Engine");
-        ImGui::SeparatorText(" Screen Settings ");
-        ImGui::ColorEdit4("Screen Colour", BgCol);
+     
+    //// at some point we will need to wight this info to an ini file
+    //if (show_settings_window) {
+    //    ImGui::Begin(ICON_FA_COGS" Spidex 3d editor Settings");
+    //    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Spidex Engine");
+    //    ImGui::SeparatorText(" Screen Settings ");
+    //    ImGui::ColorEdit4("Screen Colour", BgCol);
+    //    if (ImGui::CollapsingHeader(ICON_FA_BARS" Grid", ImGuiTreeNodeFlags_DefaultOpen))
+    //    {
+    //       // ImGui::Checkbox("Hide Grid", &gridNogrid); // make the grid hide
+    //    }
 
-        ImGui::Separator();
-        if (ImGui::Button("Close"))
-        {
-            show_settings_window = false;
-        }
+    //    ImGui::Separator();
+    //    if (ImGui::Button("Close"))
+    //    {
+    //        show_settings_window = false;
+    //    }
 
-        ImGui::End();
-    }
+    //    ImGui::End();
+    //}
 }
 
 void MainScreen::AboutWindow(GLFWwindow* window)
@@ -337,16 +342,15 @@ void MainScreen::WinInit(GLFWwindow* window)
     ImGui::NewFrame();
     MainScreen::MainWindowMenu(window); // Main Menu
     MainScreen::AboutWindow(window);  // set the about window
-    MainScreen::SettingsWindow(window); // set the Settings window
-
+    //MainScreen::SettingsWindow(window);  // set the Settings window
+    
     bool p_open = true;
     MainScreen::MainDockSpace(&p_open); // The Doc Space
 
     MainScreen::MainSceanWindow(window); // Main Scene Window for drawing objects to
 
-    MainScreen::BgColour(BgCol);
-   // MainScreen::BgColour(BgColR, BgColG, BgColB);
-    //MainScreen::BgColour(float BgCol[4]);
+    //MainScreen::BgColour(BgCol);
+   
 }
 
 void MainScreen::Creat_FrameBuffer()

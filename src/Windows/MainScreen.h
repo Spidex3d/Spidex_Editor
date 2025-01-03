@@ -6,7 +6,6 @@
 #include <imgui\imgui_impl_glfw.h>
 #include <imgui\imgui_impl_opengl3.h>
 
-
 class MainScreen
 {
 public:
@@ -21,6 +20,7 @@ public:
 	void MainWindowMenu(GLFWwindow* window); // main menu
 	// menu items
 	void SettingsWindow(GLFWwindow* window);
+	
 	void AboutWindow(GLFWwindow* window); //About Window from the main menu
 
 	void WinInit(GLFWwindow* window);
@@ -48,11 +48,12 @@ private:
 	GLuint main_scene_texture_id; // main imgui main scene texture_id
 
 	// used for the main screen background colour
-	float BgCol[4] = {
+	/*float BgCol[4] = {
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
 
-	bool show_settings_window = false;
+	bool show_settings_window = false;*/
+	
 	bool show_about_window = false;
 	
 	
