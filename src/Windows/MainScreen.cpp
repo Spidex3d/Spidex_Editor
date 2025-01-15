@@ -52,6 +52,9 @@ void MainScreen::SetUpImGui(GLFWwindow* window)
     io.Fonts->AddFontFromFileTTF(FONT_PATH_MAIN, FONT_SIZE); // comic sans font type
     io.Fonts->AddFontFromFileTTF(FA_SOLID_PATH, FONT_SIZE, &fontconfig, ranges);
 
+    //io.WantCaptureMouse = false;
+
+
 }
 
 void MainScreen::NewImguiFrame(GLFWwindow* window)
@@ -217,15 +220,7 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
             show_settings_window = true; // show settings window
 
         }
-        if (ImGui::MenuItem("Docking On"))
-        {
-           
-        }
-        if (ImGui::MenuItem("Docking Off"))
-        {
-            
-        }
-
+        
         ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Tools"))

@@ -1,13 +1,19 @@
 #include "Headers\App.h"
-#include "Headers/EditorInput.h" // keybord input
-#include "Editor_Gui/MainGui.h"
-#include "Ecs\EntityComponents.h"
+#include "Ecs/EntityNodes.h"
 #include "Shader\Shader.h"
 
 #include "Ecs\ObjectManager.h"
-#include "Ecs\DefaultModels.h"
+
 #include "Editor_Gui\Grid.h"
 #include "Camera/Camera.h"
+
+//#include "Ecs\Picking.h"
+//#include "Ecs\Intersection.h"
+
+#include "Headers\Render.h"
+
+#include "Headers/EditorInput.h" // keybord & mouse input
+
 
 App::App()
 {
@@ -21,11 +27,10 @@ App* App::Instance()
 
 void App::Initialize(GLFWwindow* window)
 {
-		
 }
 
 void App::RunApp()
-{
+{	
 
 	WindowManager windowManager(SCR_WIDTH, SCR_HEIGHT, "Spidex 3D Model Editor");
 		if (!windowManager.GLFWInitialize()) {
@@ -35,18 +40,13 @@ void App::RunApp()
 		{
 			// Load an icon to the main form
 			MainScreen::Instance()->Initialize(windowManager.GetWindow());
-			// set up ImGui
-
-			//MainScreen::Instance()->Creat_FrameBuffer(); // my frame buffer to fill main scene window
-
-			glfwSetCursorPosCallback(windowManager.GetWindow(), mouse_callback); // not sure this is the best place
+									
+			glfwSetCursorPosCallback(windowManager.GetWindow(), mouse_callback); // this is the best place
 			glfwSetScrollCallback(windowManager.GetWindow(), scroll_callback);  // set camera pos zoom
-			
+
 			MainScreen::Instance()->SetUpImGui(windowManager.GetWindow()); // must be set after mouse callback
 		}	
-
-		
-		   // Show the grid or hide it
+				
 		// ############################################# Drawing Object !!! ################################
 		Grid::Instance()->gridSetUp(); // Grid
 		
@@ -54,7 +54,8 @@ void App::RunApp()
 			
 		MainScreen::Instance()->Creat_FrameBuffer(); // my frame buffer to fill main scene window
 
-        EntityComponents entityComponents; // this fills the object list
+        //EntityComponents entityComponents; // this fills the object list
+		EntityNodes entityComponents;
 	    entityComponents.Initialize();
 	    	
 	    int currentIndex = -1;
@@ -65,66 +66,52 @@ void App::RunApp()
 
 		Settings settings;
 		settings.LoadSettings("settings.txt"); // Loading ths saved settings
+		
+		
+		Render renderer;		
+		
 	// 29 lines
-	while (AppIsRunning)	
-	{
-		App::Instance()->Timer();
-			
-		// close it all down if you click the cross or press Esc button
-		if (glfwWindowShouldClose(windowManager.GetWindow())) { AppIsRunning = false; }
-				
-		processInput(windowManager.GetWindow()); // Keybord and mouse control
-		// ############################################ GUI from Here ####################################
-		// NewImguiFrame, MainWindowMenu, AboutWindow, MainDockSpace, MainSceanWindow
-		MainScreen::Instance()->WinInit(windowManager.GetWindow()); // Initialize all the above
+		while (AppIsRunning)
+		{
+			App::Instance()->Timer();
 
-		settings.SettingsWindow(window);  // Initialize the Settings Window
+			// close it all down if you click the cross or press Esc button
+			if (glfwWindowShouldClose(windowManager.GetWindow())) { AppIsRunning = false; }
+						
+			processInput(windowManager.GetWindow()); // Keybord and mouse control
+
+			// ############################################ GUI from Here ####################################
+			// NewImguiFrame, MainWindowMenu, AboutWindow, MainDockSpace, MainSceanWindow
+			MainScreen::Instance()->WinInit(windowManager.GetWindow()); // Initialize all the above
+
+			settings.SettingsWindow(window);  // Initialize the Settings Window
+
+			EntityNodes::Instance()->EntityManagmentSystem(entityComponents.GetModels(), currentIndex,
+				index, objectIndex, indexTypeID); // Entity Management System Scene list
+
+			EntityNodes::Instance()->EntityProperties(); // Property window
+
+			// #############################################  End GUI ##########################################
+
+			MainScreen::Instance()->Bind_Framebuffer(); // for the main screen
+
+			// ############################################# Camera Object !!! ################################
+
+			MainScreen::Instance()->BgColour(BgCol);
+			MainScreen::Instance()->ClearScreen(); // glClear ready for the next frame
+
+			App::MainCamera(); // ########## This is the main Camera ##########
+						
+			// Render the grid and objects
+			if (!gridNogrid) {   // Show the grid or hide it
+				renderer.RenderGrid(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT));
+		    }
+			// Render the Scene and objects
+			renderer.RenderObjects(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
+			renderer.RenderPlane(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
+			renderer.RenderCube(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
+
 		
-		EntityNode::Instance()->EntityManagmentSystem(entityComponents.GetModels(), currentIndex, index, objectIndex, indexTypeID);
-
-		EntityNode::Instance()->EntityProperties();
-		// #############################################  End GUI ##########################################
-		
-		MainScreen::Instance()->Bind_Framebuffer(); // for the main screen
-
-		// ############################################# Camera Object !!! ################################
-		//App::Instance()->MainCamera();
-		glm::mat4 model(1.0), view(1.0), projection(1.0);
-		view = camera.GetViewMatrix();
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.2f, 200.0f); //0.2
-		
-		MainScreen::Instance()->BgColour(BgCol);
-		MainScreen::Instance()->ClearScreen(); // glClear
-		// ############################################# Drawing Object !!! ################################
-
-		if (!gridNogrid) {   // Show the grid or hide it
-			ShaderManager::defaultGridShader->Use();
-			ShaderManager::defaultGridShader->setMat4("projection", projection);
-			ShaderManager::defaultGridShader->setMat4("view", view);
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f)); // this is better
-			model = glm::scale(model, glm::vec3(20.0f, 0.0f, 20.0f));
-			ShaderManager::defaultGridShader->setMat4("model", model);
-
-			Grid::Instance()->gridRender(); // Render the Grid
-		}			
-		
-		// ############################################# Drawing Object !!! ################################
-		// eventually this will need to be a renderer !!
-		ShaderManager::defaultGridShader->Use();
-		ShaderManager::defaultGridShader->setMat4("projection", projection);
-		ShaderManager::defaultGridShader->setMat4("view", view);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // this is better
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-		ShaderManager::defaultGridShader->setMat4("model", model);
-		
-		//DefaultModels::Instance()->DrawTriangle(); // render a triangle
-
-		for (const auto& model : entityComponents.GetModels()) {
-			if (auto* triangle = dynamic_cast<TriangleModel*>(model.get())) {
-				triangle->DrawTriangle(); }
-		}
 				
 		MainScreen::Instance()->Unbinde_Frambuffer();
 				
@@ -136,6 +123,22 @@ void App::RunApp()
 		glfwPollEvents();
 	}
 	App::AppShutdown(); // clean-up
+}
+
+void App::MainCamera()
+{
+	viewMatrix = camera.GetViewMatrix();
+	projectionMatrix = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.3f, 200.0f);
+}
+
+glm::mat4 App::GetViewMatrix()
+{
+	return viewMatrix;
+}
+
+glm::mat4 App::GetProjectionMatrix(float aspectRatio)
+{
+	return projectionMatrix;
 }
 
 void App::Timer()
@@ -188,3 +191,38 @@ App::~App()
 		//model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f)); // this is better
 		//model = glm::scale(model, glm::vec3(20.0f, 0.0f, 20.0f));
 		//ShaderManager::defaultGridShader->setMat4("model", model);
+
+//glm::mat4 model(1.0), view(1.0), projection(1.0);
+		//view = camera.GetViewMatrix();
+		//projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.2f, 200.0f); //0.2
+
+// ############################################# Drawing Object !!! ################################
+
+		//if (!gridNogrid) {   // Show the grid or hide it
+		//	ShaderManager::defaultGridShader->Use();
+		//	ShaderManager::defaultGridShader->setMat4("projection", projection);
+		//	ShaderManager::defaultGridShader->setMat4("view", view);
+		//	model = glm::mat4(1.0f);
+		//	model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f)); // this is better
+		//	model = glm::scale(model, glm::vec3(20.0f, 0.0f, 20.0f));
+		//	ShaderManager::defaultGridShader->setMat4("model", model);
+
+		//	Grid::Instance()->gridRender(); // Render the Grid
+		//}			
+		//
+		// //############################################# Drawing Object !!! ################################
+		// //eventually this will need to be a renderer !!
+		//ShaderManager::defaultGridShader->Use();
+		//ShaderManager::defaultGridShader->setMat4("projection", projection);
+		//ShaderManager::defaultGridShader->setMat4("view", view);
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // this is better
+		//model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		//ShaderManager::defaultGridShader->setMat4("model", model);
+		//
+		////DefaultModels::Instance()->DrawTriangle(); // render a triangle
+
+		//for (const auto& model : entityComponents.GetModels()) {
+		//	if (auto* triangle = dynamic_cast<TriangleModel*>(model.get())) {
+		//		triangle->DrawTriangle(); }
+		//}

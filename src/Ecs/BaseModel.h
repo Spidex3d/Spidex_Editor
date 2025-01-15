@@ -13,3 +13,15 @@ public:
     virtual void RenderImGui() const = 0; // Pure virtual function for ImGui rendering
 
 };
+
+//class BaseCamera {
+//public:
+//    int index;              // list index
+//    std::string objectName; // objects name
+//    int objectIndex;        // objects index ie: cube index of type cube
+//    //int objectTypeID;       // cube, light, camera, sphere, plane, obj model
+//
+//    virtual ~BaseCamera() = default;
+//   // virtual void RenderImGui() const = 0; // Pure virtual function for ImGui rendering
+//
+//};

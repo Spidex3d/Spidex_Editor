@@ -68,7 +68,8 @@ void Settings::LoadSettings(const std::string & filename)
             while (std::getline(file, line)) { std::istringstream is_line(line);
                     std::string key;
                 if (std::getline(is_line, key, '=')) { std::string value;
-                if (std::getline(is_line, value)) { if (key == "BgCol") { std::istringstream is_value(value);
+                if (std::getline(is_line, value)) { if (key == "BgCol") { 
+                    std::istringstream is_value(value);
                     std::string col; int i = 0;
                     while (std::getline(is_value, col, ',') && i < 4) { 
                         BgCol[i++] = std::stof(col);

@@ -22,8 +22,12 @@ public:
 
     void Initialize(GLFWwindow* window);
     
-    void RunApp();     
+    void RunApp();  
 
+    void MainCamera();
+    glm::mat4 GetViewMatrix();
+    glm::mat4 GetProjectionMatrix(float aspectRatio);
+           
     void Timer();
 
     void AppShutdown();
@@ -32,7 +36,8 @@ private:
     GLFWwindow* window;
 
     bool AppIsRunning = true;
-
+    glm::mat4 viewMatrix;
+    glm::mat4 projectionMatrix;
    
 
 };

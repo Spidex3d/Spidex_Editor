@@ -10,6 +10,8 @@
 
 int main() {
 
+
+
 	LogInternals::Instance()->Initialize();	// Logging
 	
 	App::Instance()->RunApp(); // Editor loop
