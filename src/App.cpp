@@ -14,6 +14,7 @@
 
 #include "Headers/EditorInput.h" // keybord & mouse input
 
+bool showObjectEditor = false;
 
 App::App()
 {
@@ -90,7 +91,7 @@ void App::RunApp()
 				index, objectIndex, indexTypeID); // Entity Management System Scene list
 
 			EntityNodes::Instance()->EntityProperties(); // Property window
-
+			
 			// #############################################  End GUI ##########################################
 
 			MainScreen::Instance()->Bind_Framebuffer(); // for the main screen
@@ -111,7 +112,7 @@ void App::RunApp()
 			renderer.RenderPlane(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
 			renderer.RenderCube(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
 
-		
+			EntityNodes::Instance()->ObjectEditor(entityComponents.GetModels());
 				
 		MainScreen::Instance()->Unbinde_Frambuffer();
 				

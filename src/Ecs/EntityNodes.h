@@ -8,13 +8,15 @@
 #include "SelectedDataManager.h"
 
 
+
 class EntityNodes
 {
 public:
-
+	
 	static EntityNodes* Instance();
 
 	void Initialize();
+
 
 	std::vector<std::unique_ptr<BaseModel>>& GetModels();
 
@@ -23,7 +25,14 @@ public:
 
 	void EntityProperties();
 
+	void ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
+	//void ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData, bool& showObjectEditor);
+
 private:
+	// Object Mesh Editor
+	bool showObjectEditor = false;
+	char nameBuffer[128] = "";
+	// End Object Mesh Editor
 	std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
 	//std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
 	//std::vector<std::unique_ptr<BaseModel>> SceneVector; // the vector for all Sky, water, 
@@ -36,26 +45,16 @@ private:
 	int Triangleobjidx;
 	int Planeobjidx;
 
-
-	
-
-
 	void onRightClick(int objectId) {
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
 			ImGui::OpenPopup(("NodePopup" + std::to_string(objectId)).c_str());
 		}
+	
 	}
 	
 	float cam_pos_val[3] = { 0.0f, 0.0f, 0.0f };
 	float cam_rot_val[3] = { 0.0f, 0.0f, 0.0f }; 
 	float cam_scale_val[3] = { 0.0f, 0.0f, 0.0f }; 
 	
-
-
-	/*void onRightClick() {
-		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
-			ImGui::OpenPopup("NodePopup");
-		}
-	}*/
 };
 

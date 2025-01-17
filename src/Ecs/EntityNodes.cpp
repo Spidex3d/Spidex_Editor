@@ -2,7 +2,6 @@
 
 
 
-
 EntityNodes* EntityNodes::Instance() {
     static EntityNodes component;
     return &component;
@@ -23,6 +22,31 @@ void EntityNodes::Initialize()
     ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++));
     ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++));
     ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++));
+}
+
+void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData)
+{
+    if (showObjectEditor) { // if this is true open the editor window
+        ImGui::Begin("Mesh Object Editor", &showObjectEditor);
+        ImGui::InputText("Object Name", nameBuffer, IM_ARRAYSIZE(nameBuffer));
+        ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " Mesh Editor");
+        ImGui::SeparatorText("Object Editor");
+
+        
+        if (ImGui::Button("Update")) { // Update the object's name 
+
+            // Check if nameBuffer is not empty
+            if (strlen(nameBuffer) > 0) {
+                if (SelectedDataManager::Instance().GetSelectedData() != nullptr) {
+                    SelectedDataManager::Instance().GetSelectedData()->objectName = std::string(nameBuffer);
+
+                }
+            }
+                showObjectEditor = false;
+        }
+
+        ImGui::End();
+    }
 }
 
 std::vector<std::unique_ptr<BaseModel>>& EntityNodes::GetModels()
@@ -72,7 +96,52 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                             ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " ENTITY");
                             ImGui::Separator(); // Draw a line
                             if (ImGui::Selectable(ICON_FA_PEN_ALT " Edit")) {
+                                SelectedDataManager::Instance().SetSelectedData(data.get());
+
+                                // Copy the current name to the buffer
+                                 strncpy_s(nameBuffer, data->objectName.c_str(), sizeof(nameBuffer));
+                                 nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+                                
+                               
                                 std::cout << "Object Selected To Edit " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
+                                
+                                switch (data.get()->objectTypeID) {
+                                case 0:
+                                    break;
+                                case 1:
+                                    break;
+                                case 2:
+                                    break;
+                                case 3:
+                                    break;
+                                case 4: // cube
+                                    showObjectEditor = true;                                   
+                                    std::cout << "Data Selected  is a Cube " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
+                                    break;
+                                case 5:
+                                    break;
+                                case 6:
+                                    break;
+                                case 7:
+                                    break;
+                                case 8:
+                                    showObjectEditor = true;
+                                    break;
+                                case 9:
+                                    showObjectEditor = true;
+                                    break;
+
+
+                                default:
+                                    std::cout << "Data Selected Something Else " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
+                                    break;
+
+                                }
+
+                            
+                            
+                            
+                            
                             }
                             if (ImGui::Selectable(ICON_FA_PLUS " New")) {
                                 // open a window or popup to select the object
@@ -91,10 +160,13 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                         }
 
                         ImGui::TreePop();
+                                                
                     }
+                    
                 }
                 ImGui::TreePop();
-            }
+                                
+            }      
 
             ImGui::EndTabItem();
 
@@ -215,13 +287,15 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
         ImGui::EndTabItem();
     }
     
-
     ImGui::End();
 }
 
-void EntityNodes::EntityProperties() {
-
+void EntityNodes::EntityProperties()
+{
+   
 }
+
+
 
 
 
