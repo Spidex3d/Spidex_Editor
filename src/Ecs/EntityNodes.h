@@ -4,8 +4,14 @@
 #include <memory>
 #include <string>
 
+#include <glm/glm.hpp>
+
+#include "../Shader/ShaderManager.h"
+#include "../Editor_Gui/Grid.h"
+
 #include "ObjectManager.h"
 #include "SelectedDataManager.h"
+
 
 
 
@@ -17,6 +23,7 @@ public:
 
 	void Initialize();
 
+	void ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
 
 	std::vector<std::unique_ptr<BaseModel>>& GetModels();
 
@@ -25,13 +32,27 @@ public:
 
 	void EntityProperties();
 
-	void ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
-	//void ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData, bool& showObjectEditor);
+	void RenderScene(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models);
+
+	void RenderGrid(const glm::mat4& view, const glm::mat4& projection);
+	void RenderCube(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models);
+	void RenderTriangle(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models);
+	void RenderPlane(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models);
+
+
+
+
 
 private:
 	// Object Mesh Editor
+	int objectUpdateIndex = -1; // this needs moving at some point
 	bool showObjectEditor = false;
 	char nameBuffer[128] = "";
+	
+	 //bool ShouldAddCube = false;
+	glm::mat4 modelMatrix;
+
+		
 	// End Object Mesh Editor
 	std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
 	//std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 

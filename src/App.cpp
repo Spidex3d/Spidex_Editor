@@ -3,18 +3,14 @@
 #include "Shader\Shader.h"
 
 #include "Ecs\ObjectManager.h"
-
 #include "Editor_Gui\Grid.h"
 #include "Camera/Camera.h"
+#include "Headers\GlobalVars.h"
 
 //#include "Ecs\Picking.h"
 //#include "Ecs\Intersection.h"
 
-#include "Headers\Render.h"
-
 #include "Headers/EditorInput.h" // keybord & mouse input
-
-bool showObjectEditor = false;
 
 App::App()
 {
@@ -28,6 +24,7 @@ App* App::Instance()
 
 void App::Initialize(GLFWwindow* window)
 {
+	
 }
 
 void App::RunApp()
@@ -68,9 +65,6 @@ void App::RunApp()
 		Settings settings;
 		settings.LoadSettings("settings.txt"); // Loading ths saved settings
 		
-		
-		Render renderer;		
-		
 	// 29 lines
 		while (AppIsRunning)
 		{
@@ -84,6 +78,8 @@ void App::RunApp()
 			// ############################################ GUI from Here ####################################
 			// NewImguiFrame, MainWindowMenu, AboutWindow, MainDockSpace, MainSceanWindow
 			MainScreen::Instance()->WinInit(windowManager.GetWindow()); // Initialize all the above
+
+			MainScreen::Instance()->MainSceneWindow(windowManager.GetWindow()); // main drawing window
 
 			settings.SettingsWindow(window);  // Initialize the Settings Window
 
@@ -105,12 +101,11 @@ void App::RunApp()
 						
 			// Render the grid and objects
 			if (!gridNogrid) {   // Show the grid or hide it
-				renderer.RenderGrid(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT));
+				EntityNodes::Instance()->RenderGrid(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT));
 		    }
 			// Render the Scene and objects
-			renderer.RenderObjects(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
-			renderer.RenderPlane(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
-			renderer.RenderCube(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
+			EntityNodes::Instance()->RenderScene(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT), entityComponents.GetModels());
+			
 
 			EntityNodes::Instance()->ObjectEditor(entityComponents.GetModels());
 				

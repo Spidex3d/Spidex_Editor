@@ -1,12 +1,15 @@
 #include "MainScreen.h"
 #include "../Headers/Config.h"
 
+#include "../Headers/GlobalVars.h"
+
 #include <stb\stb_image.h>
 
 #include <imgui\ImGuiAF.h>
 
 #include <stdio.h>
 #include "../Windows/Settings.h"
+
 
 MainScreen* MainScreen::Instance()
 {
@@ -114,11 +117,15 @@ void MainScreen::MainDockSpace(bool* p_open)
         ImGui::End();
     }
 }
-// main scean window to draw objects to
-void MainScreen::MainSceanWindow(GLFWwindow* window)
+
+
+void MainScreen::MainSceneWindow(GLFWwindow* window)
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12));
     ImGui::Begin("Main scene");
+       
+    // ##
     const float window_width = ImGui::GetContentRegionAvail().x;
     const float window_height = ImGui::GetContentRegionAvail().y;
 
@@ -129,7 +136,45 @@ void MainScreen::MainSceanWindow(GLFWwindow* window)
 
     ImGui::GetWindowDrawList()->AddImage((void*)main_scene_texture_id, ImVec2(pos.x, pos.y),
         ImVec2(pos.x + window_width, pos.y + window_height), ImVec2(0, 1), ImVec2(1, 0));
+//##
+    // Detect right-click for popup menu 
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+    {
+        ImGui::OpenPopup("RightClickMenu");
+    }
+    // Create the right-click popup menu 
+    if (ImGui::BeginPopup("RightClickMenu"))
+    {
+        
+        if (ImGui::BeginMenu("New Mesh", &ShouldAddCube)) {
+             if (ImGui::MenuItem("Cube")) {
+             // set some bool to true ie; addNewCube
+               ShouldAddCube = true;
+               std::cout << "ADD A CUBE " << ShouldAddCube << std::endl;
+               
+             }
+             if (ImGui::MenuItem("Plane")) {}
+             if (ImGui::MenuItem("Circle")) {}
+             if (ImGui::MenuItem("Sphere")) {}
+             if (ImGui::MenuItem("Cylinder")) {}
+             if (ImGui::MenuItem("Torus")) {}
+             if (ImGui::MenuItem("Grid")) {}
+             if (ImGui::MenuItem("Cone")) {}
+             if (ImGui::MenuItem("Pyramid")) {}
+            
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("New Light")) {       
+            if (ImGui::MenuItem("Sun Light")) {}
+            if (ImGui::MenuItem("Point Light")) {}
+            if (ImGui::MenuItem("Spot Light")) {}
+            if (ImGui::MenuItem("Area Light")) {}
 
+           ImGui::EndMenu();
+        }
+           ImGui::EndPopup();
+    }
+    ImGui::Text("Right-click for popup Menu.");
     ImGui::End();
     ImGui::PopStyleVar();
 }
@@ -190,29 +235,7 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
         }
         ImGui::EndMenu();
     }
-    if (ImGui::BeginMenu("Objects"))
-    {
-        if (ImGui::MenuItem("Ground Plane"))
-        {
-
-        }
-
-        if (ImGui::MenuItem("Water Plane"))
-        {
-
-        }
-
-        if (ImGui::MenuItem("Cube"))
-        {
-
-        }
-        ;
-        if (ImGui::MenuItem("Plane"))
-        {
-
-        }
-        ImGui::EndMenu();
-    }
+    
     if (ImGui::BeginMenu("Settings"))
     {
         if (ImGui::MenuItem(ICON_FA_COGS" Open Settings"))
@@ -277,34 +300,32 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
         }
         ImGui::EndMenu();
     }
+    if (ImGui::BeginMenu("Objects"))
+    {
+        if (ImGui::MenuItem("Ground Plane"))
+        {
+
+        }
+
+        if (ImGui::MenuItem("Water Plane"))
+        {
+
+        }
+
+        if (ImGui::MenuItem("Cube"))
+        {
+            ShouldAddCube = true;
+        }
+        ;
+        if (ImGui::MenuItem("Plane"))
+        {
+
+        }
+        ImGui::EndMenu();
+    }
 
     ImGui::EndMainMenuBar();
 
-}
-
-
-void MainScreen::SettingsWindow(GLFWwindow* window)   
-{
-     
-    //// at some point we will need to wight this info to an ini file
-    //if (show_settings_window) {
-    //    ImGui::Begin(ICON_FA_COGS" Spidex 3d editor Settings");
-    //    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Spidex Engine");
-    //    ImGui::SeparatorText(" Screen Settings ");
-    //    ImGui::ColorEdit4("Screen Colour", BgCol);
-    //    if (ImGui::CollapsingHeader(ICON_FA_BARS" Grid", ImGuiTreeNodeFlags_DefaultOpen))
-    //    {
-    //       // ImGui::Checkbox("Hide Grid", &gridNogrid); // make the grid hide
-    //    }
-
-    //    ImGui::Separator();
-    //    if (ImGui::Button("Close"))
-    //    {
-    //        show_settings_window = false;
-    //    }
-
-    //    ImGui::End();
-    //}
 }
 
 void MainScreen::AboutWindow(GLFWwindow* window)
@@ -337,14 +358,9 @@ void MainScreen::WinInit(GLFWwindow* window)
     ImGui::NewFrame();
     MainScreen::MainWindowMenu(window); // Main Menu
     MainScreen::AboutWindow(window);  // set the about window
-    //MainScreen::SettingsWindow(window);  // set the Settings window
-    
+       
     bool p_open = true;
     MainScreen::MainDockSpace(&p_open); // The Doc Space
-
-    MainScreen::MainSceanWindow(window); // Main Scene Window for drawing objects to
-
-    //MainScreen::BgColour(BgCol);
    
 }
 

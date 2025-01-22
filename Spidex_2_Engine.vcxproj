@@ -142,11 +142,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Windows\spx_FileDialog.cpp" />
     <ClCompile Include="src\Ecs\ObjectEditor.cpp" />
     <ClCompile Include="src\Ecs\EntityNodes.cpp" />
     <ClCompile Include="src\Camera\Camera.cpp" />
     <ClCompile Include="src\EditorInput.cpp" />
-    <ClCompile Include="src\Render.cpp" />
     <ClCompile Include="src\Windows\Settings.cpp" />
     <ClCompile Include="src\Editor_Gui\Grid.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -165,9 +165,11 @@
     <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Headers\GlobalVars.h" />
+    <ClInclude Include="src\Headers\Textures.h" />
+    <ClInclude Include="src\Windows\spx_FileDialog.h" />
     <ClInclude Include="src\Ecs\ObjectEditor.h" />
     <ClInclude Include="src\Ecs\EntityNodes.h" />
-    <ClInclude Include="src\Headers\Render.h" />
     <ClInclude Include="src\Windows\Settings.h" />
     <ClInclude Include="src\Camera\Camera.h" />
     <ClInclude Include="src\Editor_Gui\Grid.h" />

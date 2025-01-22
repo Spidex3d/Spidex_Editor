@@ -17,6 +17,8 @@
 const int SCR_WIDTH = 1920;
 const int SCR_HEIGHT = 1080;
 
+
+
 static GLuint VAO;
 static GLuint VBO;
 static GLuint FBO;
