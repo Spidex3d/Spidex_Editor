@@ -1,29 +1,34 @@
 #include "EntityNodes.h"
 #include "../Windows/spx_FileDialog.h"
 
-bool ShouldAddCube = false;
+// bool ShouldAddCube = false;
 int cubeIndex = -1;
 
 EntityNodes* EntityNodes::Instance() {
     static EntityNodes component;
     return &component;
 }
+// TO DO ADD THIS TO SETTINGS
+float test1 = 2.0f;
+int test2 = 40;
 
 void EntityNodes::Initialize()
 {
-    
     BaseModel* selectedData = nullptr;  // Define the external variable
-    
-    // this will change in the future
-    ObjectVector.push_back(std::make_unique<CubeModel>(currentIndex++, "DefaultCube", Cubeobjidx++, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 4.0f));
-    ObjectVector.push_back(std::make_unique<CubeModel>(currentIndex++, "DefaultCube", Cubeobjidx++, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 4.0f));
+        
+    // Add The Default Cube
+   // ObjectVector.push_back(std::make_unique<MainGrid>(0, "Main Grid", 1.0f, 20));
+    ObjectVector.push_back(std::make_unique<MainGrid>(0, "Main Grid", test1, test2));
+    ObjectVector.push_back(std::make_unique<CubeModel>(currentIndex++, "DefaultCube", Cubeobjidx++));
+
+    /*ObjectVector.push_back(std::make_unique<CubeModel>(currentIndex++, "DefaultCube", Cubeobjidx++));
     ObjectVector.push_back(std::make_unique<TriangleModel>(currentIndex++, "DefaultTriangel", Triangleobjidx++));
     ObjectVector.push_back(std::make_unique<TriangleModel>(currentIndex++, "DefaultTriangel", Triangleobjidx++)); 
     ObjectVector.push_back(std::make_unique<TriangleModel>(currentIndex++, "DefaultTriangel", Triangleobjidx++)); 
     ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++));
     ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++));
     ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++));
-    ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++));
+    ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++));*/
    
 }
 
@@ -34,6 +39,43 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
         ImGui::InputText("Object Name", nameBuffer, IM_ARRAYSIZE(nameBuffer));
         ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " Mesh Editor");
         ImGui::SeparatorText("Object Editor");
+
+        //##
+
+        ImGui::BeginTable("Edit Table", 1, ImGuiTableFlags_Reorderable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders);
+
+        ImGui::TableNextColumn();
+        
+        ImGui::DragFloat3("##pos", objPostion, 0.0f, 0.0f, 0.0f);
+        ImGui::SameLine();
+        if (ImGui::Button("Reset_Position")) {
+            objPostion[0] = 0.0f, objPostion[1] = 0.0f, objPostion[2] = 0.0f;
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+
+        ImGui::DragFloat3("##Scale", objScale, 1.0f, 1.0f, 1.0f);
+        ImGui::SameLine();
+        if (ImGui::Button("Reset Scale")) {
+            objScale[0] = 1.0f, objScale[1] = 1.0f, objScale[2] = 1.0f;
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        
+        ImGui::DragFloat3("##Rot", objRotation, 0.0f, 0.0f, 0.0f);
+        ImGui::SameLine();
+        if (ImGui::Button("Resetr Rotation")) {
+            objRotation[0] = 0.0f, objRotation[1] = 0.0f, objRotation[2] = 0.0f;
+        }
+
+        ImGui::EndTable();
+        //##
+
+        ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Texture Editor");
+        ImGui::SeparatorText(" Texture Editor");
+       
 
         spx_FileDialog openDialog;
         if (ImGui::Button("Set New Texture")) {
@@ -63,6 +105,13 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                 if (SelectedDataManager::Instance().GetSelectedData() != nullptr) {
                     SelectedDataManager::Instance().GetSelectedData()->objectName = std::string(nameBuffer);
 
+                    shouldUpdateObject = true;
+                    objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex; // Ensure this is set correctly
+                    
+                    std::cout << "Object update index set to: " << objectUpdateIndex << std::endl;
+                    
+                    std::cout << "Selected " << SelectedDataManager::Instance().GetSelectedData()->objectName << " Index " <<
+                        SelectedDataManager::Instance().GetSelectedData()->objectIndex << std::endl;
                 }
             }
                 showObjectEditor = false;
@@ -71,7 +120,6 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
         ImGui::End();
     }
 }
-
 
 std::vector<std::unique_ptr<BaseModel>>& EntityNodes::GetModels()
 {
@@ -96,10 +144,14 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                     ImGuiTreeNodeFlags nodeFlags = flags | (SelectedDataManager::Instance().GetSelectedData() == data.get() ? ImGuiTreeNodeFlags_Selected : 0);
 
                     bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)data->objectIndex, nodeFlags,
-                        " %d : %s : %d : Type ID : %d",
+                        "  %s : %d : Type ID : %d",
+                       // %d : %s : %d : Type ID : %d",
                         //"Object: %d : %s : %d : Type ID : %d",
-                        data->index, data->objectName.c_str(), data->objectIndex, data->objectTypeID);
-
+                        data->objectName.c_str(), data->objectIndex, data->objectTypeID);
+                       // data->index, data->objectName.c_str(), data->objectIndex, data->objectTypeID);
+                    // #####
+                   
+                    // #####
                     if (ImGui::IsItemClicked()) {
                         SelectedDataManager::Instance().SetSelectedData(data.get());
                         std::cout << "Data Selected was " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
@@ -107,7 +159,7 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
 
                     if (ImGui::IsItemHovered()) {
                         // Perform actions when the node is hovered
-                        ImGui::SetTooltip("Right click to Edit %s | %d", data->objectName.c_str(), data->objectTypeID);
+                        ImGui::SetTooltip("Right click to Edit %s | %d", data->objectName.c_str(), data->objectIndex);
                         
                     }
 
@@ -129,17 +181,20 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                 std::cout << "Object Selected To Edit " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
                                 
                                 switch (data.get()->objectTypeID) {
-                                case 0:
+                                case 0: // Grid
                                     break;
                                 case 1:
+                                    showObjectEditor = true;
+
+                                    std::cout << "Data Selected  is a Cube " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
+                                    LogInternals::Instance()->Debug("Data Selected  is a Cube");
                                     break;
                                 case 2:
                                     break;
                                 case 3:
                                     break;
                                 case 4: // cube
-                                    showObjectEditor = true;                                   
-                                    std::cout << "Data Selected  is a Cube " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
+                                   
                                     break;
                                 case 5:
                                     break;
@@ -312,62 +367,70 @@ void EntityNodes::EntityProperties()
    
 }
 
-void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models)
+void EntityNodes::RenderGrid(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Gridobjidx)
 {
-    EntityNodes::RenderCube(view, projection, models);
-    EntityNodes::RenderTriangle(view, projection, models);
-    EntityNodes::RenderPlane(view, projection, models);
-    
-}
+    ShaderManager::defaultGridShader->Use();
+    ShaderManager::defaultGridShader->setMat4("projection", projection);
+    ShaderManager::defaultGridShader->setMat4("view", view);
 
-void EntityNodes::RenderGrid(const glm::mat4& view, const glm::mat4& projection) // Grid
-{    
-        ShaderManager::defaultGridShader->Use();
-        ShaderManager::defaultGridShader->setMat4("projection", projection);
-        ShaderManager::defaultGridShader->setMat4("view", view);
-        modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -0.5f, 0.0f));
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(20.0f, 0.0f, 20.0f));
-        ShaderManager::defaultGridShader->setMat4("model", modelMatrix);
+    for (const auto& model : ObjectVector) {  // ObjectVector = 1
+        if (auto* grid = dynamic_cast<MainGrid*>(model.get())) {
 
-        Grid::Instance()->gridRender(); // Render the Grid
- 
-}
+            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -0.5f, 0.0f));
+            modelMatrix = glm::scale(modelMatrix, glm::vec3(20.0f, 0.0f, 20.0f));
+            ShaderManager::defaultGridShader->setMat4("model", modelMatrix);
 
-void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models)
-{
-    
-
-        ShaderManager::defaultGridShader->Use();
-        ShaderManager::defaultGridShader->setMat4("projection", projection);
-        ShaderManager::defaultGridShader->setMat4("view", view);
-
-        if (ShouldAddCube) {
-
-            cubeIndex = 1; // ObjectVector.size();
-
-            switch (cubeIndex) {
-            case 0:
-                break;
-            }
-             // ObjectVector.push_back(std::make_unique<CubeModel>(currentIndex++, "DefaultCube", Cubeobjidx++));
-
-            for (const auto& model : models) {
-                modelMatrix = glm::mat4(1.0f);
-                modelMatrix = glm::translate(modelMatrix, glm::vec3(-3.0f, 0.0f, 0.0f));
-
-                modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
-                ShaderManager::defaultGridShader->setMat4("model", modelMatrix);
-
-                if (auto* cube = dynamic_cast<CubeModel*>(model.get())) {
-                    cube->DrawCube();
-                }
-            }
-            // we need to add the cube to the vector
-
+            grid->DrawGrid();
         }
-    
+    }
 }
+
+// ####
+
+void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection,
+         std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Cubeobjidx)
+{
+  
+    EntityNodes::RenderCube(view, projection, ObjectVector, currentIndex, Cubeobjidx);
+    EntityNodes::RenderTriangle(view, projection, ObjectVector);
+    EntityNodes::RenderPlane(view, projection, ObjectVector);
+}
+
+// ####
+
+
+void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Cubeobjidx) {
+    ShaderManager::defaultGridShader->Use();
+    ShaderManager::defaultGridShader->setMat4("projection", projection);
+    ShaderManager::defaultGridShader->setMat4("view", view);
+
+   
+
+    if (ShouldAddCube) {  
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(2.0f, 1.0f, 1.0f));
+
+        // Add the cube to the vector
+        ObjectVector.push_back(std::make_unique<CubeModel>(currentIndex++, "DefaultCube", Cubeobjidx++));
+        ShouldAddCube = false; // Reset the flag after adding the cube
+    }
+
+    for (const auto& model : ObjectVector) {
+        if (auto* cube = dynamic_cast<CubeModel*>(model.get())) {
+            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
+           // modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
+            ShaderManager::defaultGridShader->setMat4("model", modelMatrix);
+            cube->DrawCube();
+        }
+    }
+}
+
+
+
 
 void EntityNodes::RenderTriangle(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models)
 {

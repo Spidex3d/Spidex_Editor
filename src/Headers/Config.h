@@ -24,11 +24,6 @@ static GLuint VBO;
 static GLuint FBO;
 static GLuint RBO;
 
-const int OBJ_CUBE = 4;
-const int OBJ_SPHERE = 7;
-const int OBJ_TRIANGEL = 8;
-const int OBJ_PLANE = 9;
-
 enum FontIndex : int {
 	REG_FONT_INDEX = 0,
 	SMALL_FONT_INDEX,

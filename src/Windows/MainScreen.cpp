@@ -146,14 +146,17 @@ void MainScreen::MainSceneWindow(GLFWwindow* window)
     if (ImGui::BeginPopup("RightClickMenu"))
     {
         
-        if (ImGui::BeginMenu("New Mesh", &ShouldAddCube)) {
+        //if (ImGui::BeginMenu("New Mesh", &ShouldAddCube)) { // as far as i can tell ShouldAddCube is not nedded
+        if (ImGui::BeginMenu("Add a new mesh")) {
              if (ImGui::MenuItem("Cube")) {
-             // set some bool to true ie; addNewCube
-               ShouldAddCube = true;
-               std::cout << "ADD A CUBE " << ShouldAddCube << std::endl;
+             // set ShouldAddCube to true then add cube to the tree
+                 ShouldAddCube = true;
                
              }
-             if (ImGui::MenuItem("Plane")) {}
+             if (ImGui::MenuItem("Plane")) {
+                 // set ShouldAddPlane to true then add plane to the tree
+                 ShouldAddPlane = true;
+             }
              if (ImGui::MenuItem("Circle")) {}
              if (ImGui::MenuItem("Sphere")) {}
              if (ImGui::MenuItem("Cylinder")) {}
@@ -164,7 +167,7 @@ void MainScreen::MainSceneWindow(GLFWwindow* window)
             
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("New Light")) {       
+        if (ImGui::BeginMenu("Add a new Light")) {       
             if (ImGui::MenuItem("Sun Light")) {}
             if (ImGui::MenuItem("Point Light")) {}
             if (ImGui::MenuItem("Spot Light")) {}
