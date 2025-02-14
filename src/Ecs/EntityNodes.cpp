@@ -59,7 +59,7 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
         ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Texture Editor");
         ImGui::SeparatorText(" Texture Editor");
        
-        //spx_FileDialog object; // cube texture
+        // load the texture
         spx_FileDialog openDialog;
         if (ImGui::Button("Set New Texture")) {
             //std::string myTexturePath = object.openFileDialog();
