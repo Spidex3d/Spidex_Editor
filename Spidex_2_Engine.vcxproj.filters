@@ -164,9 +164,18 @@
     <ClInclude Include="src\Headers\GlobalVars.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Ecs\BaseModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Icon.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\default.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\github.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
@@ -175,5 +184,7 @@
     <None Include="src\Shader\ShaderFile\default_Grid.vert" />
     <None Include="src\Shader\ShaderFile\test.vert" />
     <None Include="src\Shader\ShaderFile\test.frag" />
+    <None Include="src\Shader\ShaderFile\default.frag" />
+    <None Include="src\Shader\ShaderFile\default.vert" />
   </ItemGroup>
 </Project>

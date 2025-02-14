@@ -1,5 +1,10 @@
 #pragma once
+#include <vector>
+#include <memory>
+#include "../Ecs/BaseModel.h"
 
+extern std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
+//extern std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
 
 extern const int MAIN_GRID;
 extern const int OBJ_CUBE;
@@ -12,20 +17,31 @@ extern const int OBJ_TORUS;
 extern const int OBJ_GRID;
 extern const int OBJ_CONE;
 extern const int OBJ_PYRAMID;
-
 extern const int OBJ_TRIANGEL;
 
+// adding Objects
+extern bool ShouldAddCube;		// add a cube
+extern bool ShouldAddPlane;		// add a plane
+extern bool ShouldAddPyramid;
+// updating Objects
+extern bool ShouldUpdateCube;	// update the cube
+extern bool ShouldUpdatePlane;	// update the plane
+extern bool ShouldUpdatePyramid;	// update the plane
 
-extern bool ShouldAddCube; // add a cube
-extern bool ShouldAddPlane;
-extern bool ShouldUpdateCube;
 
-extern bool shouldUpdateObject;
 extern int objectUpdateIndex;
 
-extern float objPostion[3];
-extern float objScale[3];
-extern float objRotation[3];
+//############# objects maps
+extern unsigned int creatMap;	// this only for the image that shows on the edit window
+
+
+//#############
+
+// ###### Textures ##############
+
+
+
+// ###### Textures ##############
 
 extern int currentIndex;
 
@@ -35,5 +51,19 @@ extern int Cubeobjidx; // Declaration of the global variable
 extern int Sphereobjidx;
 extern int Triangleobjidx;
 extern int Planeobjidx;
+extern int Pyramidobjidx;
 
+// Settings Window
+extern float grid_square; // grid square size
+extern int grid_size; // grid size x, z
+extern bool show_settings_window;
 
+// For the Cube
+extern glm::vec3 newCubePosition;
+extern glm::vec3 newCubeScale;
+extern glm::vec3 newCubeRotation;
+
+extern float object_Pos[3];
+extern float object_Scale[3];
+extern float object_Rotation[3];
+// End of Cube

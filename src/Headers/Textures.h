@@ -1,4 +1,5 @@
 #pragma once
+#define STB_IMAGE_IMPLEMENTATION
 #include <glad\glad.h>
 
 #include <iostream>
@@ -6,8 +7,6 @@
 
 unsigned int loadTexture(const std::string& filePath) // use this one
 {
-
-
 
     unsigned int textureID;
 

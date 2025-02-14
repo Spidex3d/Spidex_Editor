@@ -6,9 +6,6 @@
 #include "Camera/Camera.h"
 #include "Headers\GlobalVars.h"
 
-//#include "Ecs\Picking.h"
-//#include "Ecs\Intersection.h"
-
 #include "Headers/EditorInput.h" // keybord & mouse input
 
 App::App()
@@ -23,7 +20,6 @@ App* App::Instance()
 
 void App::Initialize(GLFWwindow* window)
 {
-	
 }
 
 void App::RunApp()
@@ -45,7 +41,6 @@ void App::RunApp()
 		}	
 				
 		// ############################################# Drawing Object !!! ################################
-		//Grid::Instance()->gridSetUp(); // Grid
 		
 		ShaderManager::SetupShaders(); // Initialize the shaders
 			
@@ -54,9 +49,7 @@ void App::RunApp()
         //EntityComponents entityComponents; // this fills the object list
 		EntityNodes entityComponents;
 	    entityComponents.Initialize();
-	    	
-	    //int currentIndex = -1;
-	    //int indexCube = 0, indexPlane = 0, indexSphere = 0, indexLight = 0, indexTypeID = 0;
+
 	    int index = 0, objectIndex = 0, indexTypeID = 0;
 					    
 	    glEnable(GL_DEPTH_TEST);
@@ -64,7 +57,7 @@ void App::RunApp()
 		Settings settings;
 		settings.LoadSettings("settings.txt"); // Loading the saved settings
 		
-	// 29 lines
+	    // 20 lines so far
 		while (AppIsRunning)
 		{
 			App::Instance()->Timer();
@@ -100,19 +93,18 @@ void App::RunApp()
 						
 			// Render the grid and then have a coffee
 			if (!gridNogrid) {   // Show the grid or hide it
-				//EntityNodes::Instance()->RenderGrid(camera.GetViewMatrix(), camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT));
 				EntityNodes::Instance()->RenderGrid(camera.GetViewMatrix(),
 					camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT),
 					entityComponents.GetModels(), currentIndex, Gridobjidx);
 			}
 
+			EntityNodes::Instance()->ObjectEditor(entityComponents.GetModels());
+
 			// Render the Scene
 			EntityNodes::Instance()->RenderScene(camera.GetViewMatrix(),
 				camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT),
-				entityComponents.GetModels(), currentIndex, Cubeobjidx);			
-			
+				entityComponents.GetModels(), currentIndex);	
 
-			EntityNodes::Instance()->ObjectEditor(entityComponents.GetModels());
 				
 		MainScreen::Instance()->Unbinde_Frambuffer();
 				
@@ -165,65 +157,3 @@ App::~App()
 {
 }
 
-// Render the triangles
-		/*for (const auto& model : entityComponents.GetModels()) {
-			if (auto* triangle = dynamic_cast<TriangleModel*>(model.get())) {
-				triangle->DrawTriangle(); }
-		}*/
-
-		//MainScreen::Instance()->NewImguiFrame(windowManager.GetWindow()); // New ImGui Frame 
-		//ImGui::NewFrame();
-
-		//MainScreen::Instance()->MainWindowMenu(windowManager.GetWindow()); // Main Menu
-		//MainScreen::Instance()->AboutWindow(windowManager.GetWindow());
-		//bool p_open = true; 
-		//MainScreen::Instance()->MainDockSpace(&p_open); // The Doc Space
-
-		//MainScreen::Instance()->MainSceanWindow(windowManager.GetWindow());	// Main Scene Window for drawing objects to
-		//
-		// //glm::mat4 model(1.0), view(1.0), projection(1.0);
-		//view = camera.GetViewMatrix();
-		//projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.2f, 200.0f); //0.2
-		// 
-//ShaderManager::defaultGridShader->Use();
-		//ShaderManager::defaultGridShader->setMat4("projection", projection);
-		//ShaderManager::defaultGridShader->setMat4("view", view);
-		//model = glm::mat4(1.0f);
-		//model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f)); // this is better
-		//model = glm::scale(model, glm::vec3(20.0f, 0.0f, 20.0f));
-		//ShaderManager::defaultGridShader->setMat4("model", model);
-
-//glm::mat4 model(1.0), view(1.0), projection(1.0);
-		//view = camera.GetViewMatrix();
-		//projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.2f, 200.0f); //0.2
-
-// ############################################# Drawing Object !!! ################################
-
-		//if (!gridNogrid) {   // Show the grid or hide it
-		//	ShaderManager::defaultGridShader->Use();
-		//	ShaderManager::defaultGridShader->setMat4("projection", projection);
-		//	ShaderManager::defaultGridShader->setMat4("view", view);
-		//	model = glm::mat4(1.0f);
-		//	model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f)); // this is better
-		//	model = glm::scale(model, glm::vec3(20.0f, 0.0f, 20.0f));
-		//	ShaderManager::defaultGridShader->setMat4("model", model);
-
-		//	Grid::Instance()->gridRender(); // Render the Grid
-		//}			
-		//
-		// //############################################# Drawing Object !!! ################################
-		// //eventually this will need to be a renderer !!
-		//ShaderManager::defaultGridShader->Use();
-		//ShaderManager::defaultGridShader->setMat4("projection", projection);
-		//ShaderManager::defaultGridShader->setMat4("view", view);
-		//model = glm::mat4(1.0f);
-		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // this is better
-		//model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-		//ShaderManager::defaultGridShader->setMat4("model", model);
-		//
-		////DefaultModels::Instance()->DrawTriangle(); // render a triangle
-
-		//for (const auto& model : entityComponents.GetModels()) {
-		//	if (auto* triangle = dynamic_cast<TriangleModel*>(model.get())) {
-		//		triangle->DrawTriangle(); }
-		//}

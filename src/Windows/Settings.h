@@ -8,7 +8,7 @@
 #include <fstream> // Include fstream for file operations
 
 
-extern bool show_settings_window;
+//extern bool show_settings_window;
 extern bool gridNogrid;
 extern float BgCol[4];
 class Settings

@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
 
 #ifndef SPIDEX_INLINE
 #define SPIDEX_INLINE 

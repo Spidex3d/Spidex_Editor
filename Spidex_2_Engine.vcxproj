@@ -165,6 +165,7 @@
     <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ecs\BaseModel.h" />
     <ClInclude Include="src\Headers\GlobalVars.h" />
     <ClInclude Include="src\Headers\Textures.h" />
     <ClInclude Include="src\Windows\spx_FileDialog.h" />
@@ -195,9 +196,13 @@
     <ClInclude Include="vendors\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Textures\default.jpg" />
+    <Image Include="Textures\github.jpg" />
     <Image Include="Textures\Icon.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\Shader\ShaderFile\default.frag" />
+    <None Include="src\Shader\ShaderFile\default.vert" />
     <None Include="src\Shader\ShaderFile\default_Grid.frag" />
     <None Include="src\Shader\ShaderFile\default_Grid.vert" />
     <None Include="src\Shader\ShaderFile\test.frag" />

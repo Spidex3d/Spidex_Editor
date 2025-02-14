@@ -3,8 +3,8 @@
 
 #include "../Headers/GlobalVars.h"
 
-#include <stb\stb_image.h>
-
+//#include <stb\stb_image.h>
+#include "../Headers/Textures.h"
 #include <imgui\ImGuiAF.h>
 
 #include <stdio.h>
@@ -163,7 +163,9 @@ void MainScreen::MainSceneWindow(GLFWwindow* window)
              if (ImGui::MenuItem("Torus")) {}
              if (ImGui::MenuItem("Grid")) {}
              if (ImGui::MenuItem("Cone")) {}
-             if (ImGui::MenuItem("Pyramid")) {}
+             if (ImGui::MenuItem("Pyramid")) {
+                 ShouldAddPyramid = true;
+             }
             
             ImGui::EndMenu();
         }
@@ -175,6 +177,14 @@ void MainScreen::MainSceneWindow(GLFWwindow* window)
 
            ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Add a Terrain")) {
+            if (ImGui::MenuItem("Terrain")) {}
+            if (ImGui::MenuItem("Water")) {}
+            if (ImGui::MenuItem("Floor")) {}
+            
+            ImGui::EndMenu();
+        }
+
            ImGui::EndPopup();
     }
     ImGui::Text("Right-click for popup Menu.");

@@ -1,21 +1,9 @@
 #pragma once
 #include <glm\glm.hpp>
 #include "../Shader/Shader.h"
+#include "BaseModel.h"
 #include "../Headers/GlobalVars.h"
 
-class BaseModel {
-public:
-    int index;              // list index
-    std::string objectName; // objects name
-    int objectIndex;        // objects index ie: cube index of type cube
-    int objectTypeID;       // cube, light, camera, sphere, plane, obj model
-
-    glm::vec3 position;
-
-    virtual ~BaseModel() = default;
-    virtual void RenderImGui() const = 0; // Pure virtual function for ImGui rendering
-    
-};
 
 class MainGrid : public BaseModel {
 
@@ -27,7 +15,7 @@ public:
         index = idx;             // list index
         objectName = name;       // grid name
         objectIndex = idx;       // grid index
-        objectTypeID = MAIN_GRID;        // Example type ID for Grid
+        objectTypeID = MAIN_GRID;        // Example type ID for Grid = 0
 
         gridVertices = createGridVertices(size, divisions);
         SetUp();
@@ -77,32 +65,27 @@ public:
         glBindVertexArray(0);
     }
 
-    void RenderImGui() const override {
-       // ImGui::Text("Grid: %s", objectName.c_str());
-    }
 };
 
 
 class CubeModel : public BaseModel {
 public:
     GLuint VAO, VBO;
-    //float scaleX, scaleY, scaleZ;
-    //float posX, posY, posZ;
-
-   // CubeModel(int idx, const std::string& name, int Cubeobjidx, float w, float h, float d, float x, float y, float z) {
+    
     CubeModel(int idx, const std::string& name, int Cubeobjidx) {
         index = idx;             // list index
         objectName = name;       // cube name
         objectIndex = Cubeobjidx;         // start index for a cube
-        objectTypeID = OBJ_CUBE; // Example type ID for Cube set in config
-       /* scaleX = w;
-        scaleY = h;
-        scaleZ = d;
-        posX = x;
-        posY = y;
-        posZ = z;*/
+        objectTypeID = OBJ_CUBE; // Example type ID for Cube set in config = 1
+       
 
-        GLfloat vertices[] = { //     Normal          Tex cords
+
+        position = glm::vec3(0.0f, 0.0f, 0.0f); // Initial position
+        scale = glm::vec3(1.0f, 1.0f, 1.0f);    // Initial scale
+        modelMatrix = glm::mat4(1.0f);
+
+        
+        GLfloat vertices[] = { //  Normal         Tex cords
        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f,
         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
@@ -151,24 +134,20 @@ public:
         glGenBuffers(1, &VBO);
 
         glBindVertexArray(VAO);
-
+        // vertices
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+        // vertices
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
 
         // Texture location 1
-        //glEnableVertexAttribArray(1);
-        //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)3);
+        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)3);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(1);
-        //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        
         // Normal attribute
-        //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(float)));
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(2);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -179,12 +158,6 @@ public:
     ~CubeModel() {
         glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);
-    }
-
-    void RenderImGui() const override {
-        ImGui::Text("Cube: %s", objectName.c_str());
-        //ImGui::Text("Scale: %.1f x %.1f x %.1f", scaleX, scaleY, scaleZ);
-       // ImGui::Text("Position: %.1f x %.1f x %.1f", posX, posY, posZ);
     }
 
     void DrawCube()  {
@@ -207,10 +180,7 @@ public:
         radius = r;
     }
 
-    void RenderImGui() const override {
-        ImGui::Text("Sphere: %s", objectName.c_str());
-        ImGui::Text("Radius: %.1f", radius);
-    }
+   
 };
 
 class TriangleModel : public BaseModel {
@@ -249,11 +219,6 @@ public:
         glDeleteBuffers(1, &VBO);
     }
 
-    void RenderImGui() const override {
-        ImGui::Text("Triangle: %s", objectName.c_str());
-    }
-
-   // void DrawTriangle(GLuint shaderProgramID) {
     void DrawTriangle() {
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -267,44 +232,29 @@ private:
 class PlaneModel : public BaseModel {
 
 public:
-    GLuint VAO, VBO;
+    GLuint VAO, VBO, EBO;
 
     PlaneModel(int idx, const std::string& name, int Planeobjidx) {
         index = idx;
         objectName = name;
-        //objectIndex = 0;
         objectIndex = Planeobjidx;
         objectTypeID = OBJ_PLANE;
 
+        //position = glm::vec3(0.0f, 0.0f, 0.0f); // Initial position
+        //scale = glm::vec3(1.0f, 1.0f, 1.0f);    // Initial scale
+        //modelMatrix = glm::mat4(1.0f);
+        //textureID = 0;
+
         float vertices[] = {
-           
-            -0.5f, -0.5f, -0.5f, // top triangel
-             0.5f, -0.5f, -0.5f, // top triangel
-             0.5f,  0.5f, -0.5f, // top triangel   front
-             0.5f,  0.5f, -0.5f, // bottom triangel
-            -0.5f,  0.5f, -0.5f, // bottom triangel
-            -0.5f, -0.5f, -0.5f  // bottom triangel
-
-           /*-0.5f,  0.5f,  0.5f,
-           -0.5f,  0.5f, -0.5f,
-           -0.5f, -0.5f, -0.5f, // left right
-           -0.5f, -0.5f, -0.5f,
-           -0.5f, -0.5f,  0.5f,
-           -0.5f,  0.5f,  0.5f*/
-           
-          /*  -0.5f,  0.5f, -0.5f,
-             0.5f,  0.5f, -0.5f,
-             0.5f,  0.5f,  0.5f,
-             0.5f,  0.5f,  0.5f, // top
-            -0.5f,  0.5f,  0.5f,
-            -0.5f,  0.5f, -0.5f,*/
-
-            //- 0.5f, -0.5f, -0.5f,
-            // 0.5f, -0.5f, -0.5f,
-            // 0.5f, -0.5f,  0.5f, // bottom
-            // 0.5f, -0.5f,  0.5f,
-            //-0.5f, -0.5f,  0.5f,
-            //-0.5f, -0.5f, -0.5f
+            //                   Text coords
+             0.5f,  0.5f, 0.0f,  1.0f, 1.0f,
+             0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
+            -0.5f,  0.5f, 0.0f,  0.0f, 1.0f
+        };
+        unsigned int indices[] = {
+            0, 1, 3,
+            1, 2, 3
         };
 
         glGenVertexArrays(1, &VAO);
@@ -314,8 +264,16 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glGenBuffers(1, &EBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+         // Vertex positions
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
+
+        // Texture coordinates
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -326,20 +284,92 @@ public:
         glDeleteBuffers(1, &VBO);
     }
 
-    void RenderImGui() const override {
-        ImGui::Text("Triangle: %s", objectName.c_str());
-    }
-
-    // void DrawTriangle(GLuint shaderProgramID) {
     void DrawPlane() {
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // using indices
+        glBindVertexArray(0);
+        glUseProgram(0);
+    }
+
+private:
+    
+};
+
+
+class PyramidModel : public BaseModel {
+
+public:
+    GLuint VAO, VBO;
+
+    PyramidModel(int idx, const std::string& name, int Pyramidobjidx) {
+        index = idx;
+        objectName = name;
+        objectIndex = Pyramidobjidx;
+        objectTypeID = OBJ_PYRAMID;
+
+        float pyramidvertices[] =
+        {
+            // Bottom face
+             -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+              0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
+              0.5f,  0.5f, -0.5f,    0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
+              0.5f,  0.5f, -0.5f,    0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
+             -0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f,
+             -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+             // Front face
+             -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+              0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
+              0.0f,  0.0f,  0.5f,    0.0f, 0.0f, 1.0f,    0.5f, 1.0f,
+               // Back face
+             -0.5f,  0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+              0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
+              0.0f,  0.0f,  0.5f,    0.0f, 0.0f, 1.0f,    0.5f, 1.0f,
+                 // Left face
+             -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+             -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
+              0.0f,  0.0f,  0.5f,    0.0f, 0.0f, 1.0f,    0.5f, 1.0f,
+                   // Right face
+              0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+              0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
+              0.0f,  0.0f,  0.5f,    0.0f, 0.0f, 1.0f,    0.5f, 1.0f,
+        };
+
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
+
+        glGenBuffers(1, &VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(pyramidvertices), pyramidvertices, GL_STATIC_DRAW);
+
+        // Position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        // Color attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+        // Texture coord attribute
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
+    ~PyramidModel() {
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+    }
+
+    void DrawPyramid() {
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 18);
         glBindVertexArray(0);
         glUseProgram(0);
     }
 private:
-    
+
 };
+
 
 
 

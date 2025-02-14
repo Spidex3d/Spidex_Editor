@@ -19,6 +19,8 @@ extern float angel;
 void ShaderManager::SetupShaders() {
     // Initialize the shader
     defaultGridShader = new Shader("src/Shader/ShaderFile/default_Grid.vert", "src/Shader/ShaderFile/default_Grid.frag");
+
+    defaultShader = new Shader("src/Shader/ShaderFile/default.vert", "src/Shader/ShaderFile/default.frag");
     
     //defaultGridShader = new Shader("Shader/ShaderFile/test.vert", "Shader/ShaderFile/test.frag");
     //defaultGridShader = new Shader("C:/Users/marty/Desktop/SpidexEditor/Spidex_Editor/src/Shader/ShaderFile/test.vert",
@@ -28,7 +30,6 @@ void ShaderManager::SetupShaders() {
   
     LightCubeShader = new Shader("Shader/shaderFile/light_2.vert", "Shader/shaderFile/light_2.frag");
 
-    defaultShader = new Shader("Shader/shaderFile/default.vert", "Shader/shaderFile/default.frag");
 
     skyShader = new Shader("Shader/shaderFile/sky.vert", "Shader/shaderFile/sky.frag");
 

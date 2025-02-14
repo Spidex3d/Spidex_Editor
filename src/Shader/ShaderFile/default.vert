@@ -1,30 +1,19 @@
 #version 460
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
 
-    layout (location = 0) in vec3 aPos;
-    //layout (location = 1) in vec3 aColor;
-    layout (location = 1) in vec2 aTexCoord;
+out vec3 FragPos;
+out vec2 TexCoord;
 
-    in vec3 vertexIn;
-    in vec4 colorIn;
-    out vec4 colorOut;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
-    out vec3 FragPos;
-    out vec3 myColor;
-    out vec2 TexCoord;
+void main()
+{
+    FragPos = vec3(model * vec4(aPos, 1.0f));
+    TexCoord = aTexCoord;
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+}
 
-    uniform mat4 model;
-    uniform mat4 view;
-    uniform mat4 projection;
-
-    void main()
-    {
-       colorOut = colorIn;
-
-       FragPos = vec3(model * vec4(aPos, 1.0f));
-       TexCoord = vec2(aTexCoord.x, aTexCoord.y);
-       gl_Position = projection * view * (vertexIn, 1.0) * vec4(FragPos, 1.0);
-       
-       //gl_Position = projection * view * model * vec4(vertexIn, 1.0);
-
-       //gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-    };
+// Basic vert Shader

@@ -8,16 +8,22 @@
 
 #include "../Shader/ShaderManager.h"
 
+#include <stb\stb_image.h>
+
 #include "ObjectManager.h"
 #include "SelectedDataManager.h"
 
+
 #include "../Headers/GlobalVars.h"
+
+
 
 
 class EntityNodes
 {
 public:
 	
+
 	static EntityNodes* Instance();
 
 	void Initialize();
@@ -29,40 +35,42 @@ public:
 	void EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex,
 		int& index, int& objectIndex, int& indexTypeID);
 
-	void EntityProperties();
+	void EntityProperties(); // not in use yet !!
 	
-	//void RenderGrid(const glm::mat4& view, const glm::mat4& projection);
+	// Render the editor Grid
 	void RenderGrid(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Gridobjidx);
 
-	
 	void RenderScene(const glm::mat4& view, const glm::mat4& projection,
-		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Cubeobjidx);
-
-	//void RenderCube(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models);
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex);
+	// Cube
 	void RenderCube(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Cubeobjidx);
+		// Triangel
 	void RenderTriangle(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models);
-	void RenderPlane(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models);
+	// Plane
+	void RenderPlane(const glm::mat4& view, const glm::mat4& projection,
+		 std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Planeobjidx);
+	// Pyramid
+	void RenderPyramid(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Planeobjidx);
 
-
+	
 private:
 	// Object Mesh Editor
-	int objectUpdateIndex = -1; // this needs moving at some point
+	
 	bool showObjectEditor = false;
 	char nameBuffer[128] = "";
 	
-	 //bool ShouldAddCube = false;
 	glm::mat4 modelMatrix;
 
 		
 	// End Object Mesh Editor
-	std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
+	//std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
 	//std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
 	//std::vector<std::unique_ptr<BaseModel>> SceneVector; // the vector for all Sky, water, 
 
-	//int currentIndex;
-	int objectIndex;
+	int objectIndex; // needed
 	
 	void onRightClick(int objectId) {
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
