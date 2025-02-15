@@ -62,7 +62,6 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
         // load the texture
         spx_FileDialog openDialog;
         if (ImGui::Button("Set New Texture")) {
-            //std::string myTexturePath = object.openFileDialog();
             std::string myTexturePath = openDialog.openFileDialog();
             if (!myTexturePath.empty()) {
                 std::cout << "Texture path selected: " << myTexturePath << std::endl;
@@ -71,11 +70,9 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                     std::cout << "Updating texture for cube index: " << objectUpdateIndex << std::endl;
                      ObjectVector[objectUpdateIndex]->textureID = loadTexture(myTexturePath);
                    
-
-                   //mycubes[objectUpdateIndex].CubeTextureID = loadTexture(myTexturePath);
                     std::cout << "New texture ID: " << ObjectVector[objectUpdateIndex]->textureID << std::endl;
 
-                    creatMap = loadTexture((myTexturePath).c_str());
+                    creatMap = loadTexture((myTexturePath).c_str()); // this is the image on the object edit window
                 }
                 else {
                     std::cout << "objectUpdateIndex is not set correctly." << std::endl;
@@ -88,7 +85,7 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
 
 
         if (creatMap != 0) {
-            ImGui::Text("Your Texture");
+            ImGui::Text("Your selected Texture");
             ImGui::Image((void*)(intptr_t)creatMap, ImVec2(65, 65));
         }
         else {
@@ -151,13 +148,12 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
 
                     std::cout << "Selected " << SelectedDataManager::Instance().GetSelectedData()->objectName << " Index " <<
                         SelectedDataManager::Instance().GetSelectedData()->objectIndex << std::endl;
-
-
-                }
-                    
+                } 
                 
             }
                 showObjectEditor = false;
+                
+                creatMap = 0;
                
         }
        
@@ -175,7 +171,6 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
     int& currentIndex, int& index, int& objectIndex, int& indexTypeID) {
     ImGui::Begin("Entity Management System"); // start of the window
 
-    // TEST
     if (ImGui::BeginTabBar("##Main", ImGuiTabBarFlags_None))
     {
         if (ImGui::BeginTabItem("Scene Lab"))
@@ -443,7 +438,8 @@ void EntityNodes::RenderGrid(const glm::mat4& view, const glm::mat4& projection,
 }
 
 // ####   Render Scene
-void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex)
+void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex)
 {
     ShaderManager::defaultShader->Use();
     ShaderManager::defaultShader->setMat4("projection", projection);
@@ -682,22 +678,24 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
         case 0:
             newPyramid->position = glm::vec3(0.0f, 0.0f, 0.0f);
             newPyramid->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-            
-            modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(1.0f, 0.0f, 0.0f));
+           // newPyramid->modelMatrix = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 0.0f, 0.0f));
 
             break;
         case 1:
-            newPyramid->position = glm::vec3(1.5f, 0.0f, 0.0f);
+            newPyramid->position = glm::vec3(1.0f, 0.0f, 0.0f);
             newPyramid->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+           // newPyramid->modelMatrix = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 0.0f, 0.0f));
             break;
 
         case 2:
             newPyramid->position = glm::vec3(2.0f, 0.0f, 0.0f);
             newPyramid->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            //newPyramid->modelMatrix = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 0.0f, 0.0f));
             break;
         default:
             newPyramid->position = glm::vec3(posx, 2.0f, 0.0f);
             newPyramid->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            //newPyramid->modelMatrix = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 0.0f, 0.0f));
             posx += 1.5;
             break;
         }
@@ -706,6 +704,9 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
         newPyramid->modelMatrix = glm::translate(newPyramid->modelMatrix, newPyramid->position);
         newPyramid->modelMatrix = glm::scale(newPyramid->modelMatrix, newPyramid->scale);
        
+        newPyramid->modelMatrix = glm::rotate(newPyramid->modelMatrix, angle, glm::vec3(1.0f, 0.0f, 0.0f));
+        
+               
         newPyramid->textureID = loadTexture("Textures/default_1.jpg");
 
         ObjectVector.push_back(std::move(newPyramid));
@@ -725,9 +726,19 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
             glm::vec3 newPyramidScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
             ObjectVector[selectedIndex]->scale = newPyramidScale;
 
+            glm::vec3 newPyramidRotation = glm::vec3(object_Rotation[0], object_Rotation[1], object_Rotation[2]); // New rotation angles
+            ObjectVector[selectedIndex]->rotation = newPyramidRotation;
+
             ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
             ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newPyramidPosition);
             ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newPyramidScale);
+
+            ObjectVector[selectedIndex]->modelMatrix = glm::rotate(ObjectVector[selectedIndex]->modelMatrix,
+                glm::radians(newPyramidRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+            ObjectVector[selectedIndex]->modelMatrix = glm::rotate(ObjectVector[selectedIndex]->modelMatrix,
+                glm::radians(newPyramidRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+            ObjectVector[selectedIndex]->modelMatrix = glm::rotate(ObjectVector[selectedIndex]->modelMatrix,
+                glm::radians(newPyramidRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
         }
 
