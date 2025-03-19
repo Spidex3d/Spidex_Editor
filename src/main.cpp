@@ -1,7 +1,8 @@
 #include "Headers/Config.h"
 #include "Headers/App.h"
 
-// This is my second try at a 3d modeler not a games engine start date 17/12/24
+// This is my games engine start date 16/03/2025
+// Spidex World Horizon amde with my Spidex 3d engine
 // I hate Programing
 // I hate Programing
 // I hate Programing

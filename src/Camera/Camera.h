@@ -32,13 +32,11 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
-
-    
-    
+        
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
-    glm::mat4 GetViewMatrix();
-    glm::mat4 GetProjectionMatrix(float aspectRatio);
+    glm::mat4 GetViewMatrix() const;
+    glm::mat4 GetProjectionMatrix(float aspectRatio) const; // changes made here
 
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);

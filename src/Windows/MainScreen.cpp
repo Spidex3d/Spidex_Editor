@@ -119,7 +119,7 @@ void MainScreen::MainDockSpace(bool* p_open)
 }
 
 
-void MainScreen::MainSceneWindow(GLFWwindow* window)
+void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that draws all the object to
 {
     
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12));
@@ -136,7 +136,6 @@ void MainScreen::MainSceneWindow(GLFWwindow* window)
 
     ImGui::GetWindowDrawList()->AddImage((void*)main_scene_texture_id, ImVec2(pos.x, pos.y),
         ImVec2(pos.x + window_width, pos.y + window_height), ImVec2(0, 1), ImVec2(1, 0));
-//##
     // Detect right-click for popup menu 
     if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {
@@ -187,6 +186,26 @@ void MainScreen::MainSceneWindow(GLFWwindow* window)
 
            ImGui::EndPopup();
     }
+
+   /* float relativeX;
+    float relativeY;*/
+
+    // ##### Mouse picking
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    {
+       /* ImVec2 mousePos = ImGui::GetMousePos();
+        ImVec2 windowPos = ImGui::GetWindowPos();
+
+        relativeX = mousePos.x - windowPos.x;
+        relativeY = mousePos.y - windowPos.y;
+
+        std::cout << "The mouse x (relative): " << relativeX << " The mouse y (relative): " << relativeY << std::endl;*/
+
+        // this needs to go off and find the object we just clicked
+        SelectedObject = true;
+    }
+    //#####
+
     ImGui::Text("Right-click for popup Menu.");
     ImGui::End();
     ImGui::PopStyleVar();

@@ -38,8 +38,5 @@ private:
     bool AppIsRunning = true;
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
-   
-    //bool ShouldAddCube = false;
-    bool ShouldAddCube;
 
 };

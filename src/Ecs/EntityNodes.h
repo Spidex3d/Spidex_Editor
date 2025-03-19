@@ -16,6 +16,9 @@
 
 #include "../Headers/GlobalVars.h"
 
+#include "../Object_loader\spxObjectLoader.h"
+
+
 
 
 
@@ -43,6 +46,10 @@ public:
 
 	void RenderScene(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex);
+	// Obj Model files
+	void RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ObjFilesidx);
+
 	// Cube
 	void RenderCube(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Cubeobjidx);
@@ -54,6 +61,12 @@ public:
 	// Pyramid
 	void RenderPyramid(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Planeobjidx);
+
+	
+
+	void DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector);
+	
+
 
 	
 private:

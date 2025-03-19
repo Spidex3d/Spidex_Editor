@@ -4,6 +4,10 @@
 #include <imgui\imgui_internal.h>
 #include <glad\glad.h>
 
+//#include <assimp/Importer.hpp>
+//#include <assimp/scene.h>
+//#include <assimp/postprocess.h>
+
 #include "../SpdLog/LogInternals.h"
 
 #include <iostream>

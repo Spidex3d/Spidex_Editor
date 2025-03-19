@@ -16,6 +16,8 @@ const int OBJ_CONE = 9;
 const int OBJ_PYRAMID = 10;
 const int OBJ_TRIANGEL = 11;
 
+const int OBJ_OBJ_MODEL = 12;
+
 
 bool ShouldAddCube = false;     // add a new cube
 bool ShouldAddPlane = false;    // add a new plane
@@ -29,6 +31,11 @@ bool ShouldUpdatePyramid = false; // update the pyramid
 //int objectUpdateIndex = -1;
 int objectUpdateIndex = 0; 
 // #######
+
+
+// Selecting objects
+ bool SelectedObject = false;
+
 
 
 unsigned int creatMap = 0;      // this only for the image that shows on the edit window for the selected texture
@@ -53,6 +60,8 @@ int Planeobjidx = -1; //0
 int Pyramidobjidx = -1; //0
 int Sphereobjidx = 0;
 int Triangleobjidx = 0;
+
+int ObjFilesidx = 0;
 
 float object_Pos[3] = { 0.0f, 0.0f, 0.0f };
 float object_Scale[3] = { 1.0f, 1.0f, 1.0f };

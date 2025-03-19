@@ -78,6 +78,12 @@
     <ClCompile Include="src\GlobalVars.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Ecs\Picking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Object_loader\spxObjectLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Headers\Config.h">
@@ -167,6 +173,12 @@
     <ClInclude Include="src\Ecs\BaseModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Ecs\Picking.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Object_loader\spxObjectLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Icon.png">
@@ -186,5 +198,8 @@
     <None Include="src\Shader\ShaderFile\test.frag" />
     <None Include="src\Shader\ShaderFile\default.frag" />
     <None Include="src\Shader\ShaderFile\default.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="vendors\assimp\lib\assimp-vc143-mtd.lib" />
   </ItemGroup>
 </Project>

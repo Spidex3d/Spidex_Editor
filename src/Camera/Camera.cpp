@@ -11,11 +11,12 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     updateCameraVectors();
 }
 
-glm::mat4 Camera::GetViewMatrix() {
+//glm::mat4 Camera::GetViewMatrix() {
+glm::mat4 Camera::GetViewMatrix() const {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-glm::mat4 Camera::GetProjectionMatrix(float aspectRatio) {
+glm::mat4 Camera::GetProjectionMatrix(float aspectRatio) const {
     return glm::perspective(glm::radians(Zoom), aspectRatio, 0.1f, 100.0f);
 }
 

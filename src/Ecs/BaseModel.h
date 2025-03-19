@@ -15,13 +15,13 @@ public:
     glm::vec3 rotation;        // Scale of the object
     glm::mat4 modelMatrix;  // Model matrix for transformations
 
+    bool isSelected;    // this for the selection in the scene list box
+
     unsigned int textureID;
 
     unsigned int CubeTextureID;
     unsigned int creatMap = 0;
-    
-   
-   
+     
 
 
     virtual ~BaseModel() = default;

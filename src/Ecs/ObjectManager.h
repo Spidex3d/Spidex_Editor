@@ -240,11 +240,7 @@ public:
         objectIndex = Planeobjidx;
         objectTypeID = OBJ_PLANE;
 
-        //position = glm::vec3(0.0f, 0.0f, 0.0f); // Initial position
-        //scale = glm::vec3(1.0f, 1.0f, 1.0f);    // Initial scale
-        //modelMatrix = glm::mat4(1.0f);
-        //textureID = 0;
-
+        
         float vertices[] = {
             //                   Text coords
              0.5f,  0.5f, 0.0f,  1.0f, 1.0f,

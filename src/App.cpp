@@ -7,6 +7,21 @@
 #include "Headers\GlobalVars.h"
 
 #include "Headers/EditorInput.h" // keybord & mouse input
+#include "Object_loader\spxObjectLoader.h"
+#include "Ecs\Picking.h"
+
+//void LoadFBX(const char* filename) {
+//	Assimp::Importer importer;
+//	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_OptimizeMeshes);
+//
+//	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+//		printf("Failed to load FBX: %s\n", importer.GetErrorString());
+//		return;
+//	}
+//
+//	// Process scene (extract meshes, nodes, etc.)
+//}
+
 
 App::App()
 {
@@ -25,7 +40,7 @@ void App::Initialize(GLFWwindow* window)
 void App::RunApp()
 {	
 
-	WindowManager windowManager(SCR_WIDTH, SCR_HEIGHT, "Spidex 3D Model Editor");
+	WindowManager windowManager(SCR_WIDTH, SCR_HEIGHT, "Spidex World Horizon");
 		if (!windowManager.GLFWInitialize()) {
 			return;
 		}
@@ -105,6 +120,15 @@ void App::RunApp()
 				camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT),
 				entityComponents.GetModels(), currentIndex);	
 
+			
+
+			//EntityNodes::Instance()->DrawSelectionBox(ObjectVector);
+
+			//if (SelectedObject) {
+		 //     std::cout << " Selected left mouse " << SelectedObject << std::endl;
+			//  Picking::Instance()->ObjectPicking(camera, SCR_WIDTH, SCR_HEIGHT); // picking an object with the mouse
+	  //      }
+			//SelectedObject = false; // not in the right place
 				
 		MainScreen::Instance()->Unbinde_Frambuffer();
 				

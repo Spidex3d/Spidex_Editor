@@ -181,7 +181,7 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
             if (ImGui::TreeNodeEx("Editor Scene", flags)) {
 
                 for (const auto& data : ObjectVector) {
-
+                    
                     ImGuiTreeNodeFlags nodeFlags = flags | (SelectedDataManager::Instance().GetSelectedData() == data.get() ? ImGuiTreeNodeFlags_Selected : 0);
 
                     bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)data->objectIndex, nodeFlags,
@@ -195,6 +195,8 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                     // #####
                     if (ImGui::IsItemClicked()) {
                         SelectedDataManager::Instance().SetSelectedData(data.get());
+                        data->isSelected = true;
+                        
                         std::cout << "Data Selected was " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
                     }
 
@@ -288,6 +290,7 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                                 
                     }
                     
+            EntityNodes::Instance()->DrawSelectionBox(ObjectVector);
                 }
                 ImGui::TreePop();
                                 
@@ -450,6 +453,49 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderTriangle(view, projection, ObjectVector);
     EntityNodes::RenderPlane(view, projection, ObjectVector, currentIndex, Planeobjidx);
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
+    EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ObjFilesidx);
+   
+}
+
+void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ObjFilesidx)
+{
+    // ################### Test OBJ Loader ###########################
+    // each time we load an obj  file we will need to add 1 to numModels
+    const int numModels = 1;
+    spxObjectLoader mesh[numModels]{};
+
+    mesh[0].loadOBJ("Assets/Modles/barrel_large_decorated.obj");
+
+    glm::vec3 modPos[] = {
+        glm::vec3(0.0f, 0.5f, 1.0f)
+
+    };
+    glm::vec3 modScale[] = {
+        glm::vec3(1.0f, 1.0f, 1.0f)
+    };
+ 
+   
+    //ObjFilesidx = ObjectVector.size();
+
+    for (const auto& model : ObjectVector) {
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->setMat4("view", view);
+
+       // this bit of code never runs
+        if (auto* barrel = dynamic_cast<spxObjectLoader*>(model.get())) {
+            modelMatrix = glm::mat4(1.0f);
+            modelMatrix = glm::translate(glm::mat4(1.0f), modPos[0]) * glm::scale(glm::mat4(1.0f), modScale[0]);
+            ShaderManager::defaultShader->setMat4("model", barrel->modelMatrix);
+
+            //glActiveTexture(GL_TEXTURE0);
+            //glBindTexture(GL_TEXTURE_2D, cube->textureID);
+            barrel[0].objDraw();
+            //glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
+ 
 }
 
 float posx = 0;
@@ -607,8 +653,7 @@ void EntityNodes::RenderPlane(const glm::mat4& view, const glm::mat4& projection
         newPlane->modelMatrix = glm::mat4(1.0f);
         newPlane->modelMatrix = glm::translate(newPlane->modelMatrix, newPlane->position);
         newPlane->modelMatrix = glm::scale(newPlane->modelMatrix, newPlane->scale);
-        //ObjectVector.push_back(std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx));
-
+        
         newPlane->textureID = loadTexture("Textures/default_1.jpg");
 
         ObjectVector.push_back(std::move(newPlane));
@@ -766,144 +811,31 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
     }
 }
 
+void EntityNodes::DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector)
+{
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
 
+    for (const auto& obj : ObjectVector) {
+        if (obj->isSelected) {
+            ImVec2 min = ImVec2(obj->position.x - obj->scale.x / 2.0f, obj->position.y - obj->scale.y / 2.0f);
+            ImVec2 max = ImVec2(obj->position.x + obj->scale.x / 2.0f, obj->position.y + obj->scale.y / 2.0f);
 
-
-
-
-
-
-
-//#include "EntityNodes.h"
-//
-//EntityNodes* EntityNodes::Instance()
-//{
-//    static EntityNodes component;
-//    return &component;
-//}
-//
-//void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& index, int& objectIndex, int& indexTypeID)
-//{
-//    ImGui::Begin("Entity Management System"); // start of the window
-//    ImGui::SeparatorText("Scene Collection");
-//
-//    auto flags = ImGuiTreeNodeFlags_DefaultOpen;
-//    if (ImGui::TreeNodeEx("Editor Scene", flags))
-//    {
-//
-//        for (const auto& data : ObjectVector) {
-//
-//            ImGuiTreeNodeFlags nodeFlags = flags | (SelectedDataManager::Instance().GetSelectedData() == data.get() ? ImGuiTreeNodeFlags_Selected : 0);
-//
-//            bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)data->objectIndex, nodeFlags,
-//                "Object: %d : %s : %d : Type ID : %d",
-//                data->index, data->objectName.c_str(), data->objectIndex, data->objectTypeID);
-//                        
-//            if (ImGui::IsItemClicked()) {
-//                SelectedDataManager::Instance().SetSelectedData(data.get());
-//                std::cout << "Data Selected was " << data->objectName.c_str() << std::endl;
-//            }
-//
-//            if (ImGui::IsItemHovered()) {
-//                 // Perform actions when the node is hovered
-//                ImGui::SetTooltip("Right click to Edit %s | %d", data->objectName.c_str(), data->objectTypeID);
-//                //ImGui::SetTooltip("Right click to Edit %d", data->objectTypeID);
-//            }
-//
-//            if (nodeOpen) {
-//                this->onRightClick(data->objectIndex); // Pass a unique identifier
-//                //this->onRightClick();
-//
-//
-//                if (ImGui::BeginPopup(("NodePopup" + std::to_string(data->objectIndex)).c_str())) {
-//                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " ENTITY");
-//                    ImGui::Separator(); // Draw a line
-//
-//                    ImGui::EndPopup();
-//
-//                }
-//
-//
-//
-//                //if (ImGui::BeginPopup("NodePopup")) {
-//                //    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " ENTITY");
-//                //    ImGui::Separator(); // Draw a line
-//
-//                //    ImGui::EndPopup();   
-//                //}              
-//
-//                ImGui::TreePop();
-//            }
-//        }
-//        ImGui::TreePop();
-//    }
-//
-//    ImGui::End();
-//}
-//
-//void EntityNodes::EntityProperties()
-//{
-//
-//}
-
-
-/*
-#include "EntityNodes.h"
-
-EntityNodes* EntityNodes::Instance() {
-    static EntityNodes component;
-    return &component;
-}
-
-void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>& ObjectVector,
-                int& currentIndex, int& index, int& objectIndex, int& indexTypeID) {
-
-    ImGui::Begin("Entity Management System"); // start of the window
-    ImGui::SeparatorText("Scene Collection");
-
-    auto flags = ImGuiTreeNodeFlags_DefaultOpen;
-         if (ImGui::TreeNodeEx("Editor Scene", flags)) {
-
-        for (const auto& data : ObjectVector) {
-
-            ImGuiTreeNodeFlags nodeFlags = flags | (SelectedDataManager::Instance().GetSelectedData() == data.get() ? ImGuiTreeNodeFlags_Selected : 0);
-
-            bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)data->objectIndex, nodeFlags,
-                "Object: %d : %s : %d : Type ID : %d",
-                data->index, data->objectName.c_str(), data->objectIndex, data->objectTypeID);
-
-            if (ImGui::IsItemClicked()) {
-                SelectedDataManager::Instance().SetSelectedData(data.get());
-                std::cout << "Data Selected was " << data->objectName.c_str() << std::endl;
-            }
-
-            if (ImGui::IsItemHovered()) {
-                // Perform actions when the node is hovered
-                ImGui::SetTooltip("Right click to Edit %s | %d", data->objectName.c_str(), data->objectTypeID);
-                //ImGui::SetTooltip("Right click to Edit %d", data->objectTypeID);
-            }
-
-            if (nodeOpen) {
-                this->onRightClick(data->objectIndex); // Pass a unique identifier
-
-                if (ImGui::BeginPopup(("NodePopup" + std::to_string(data->objectIndex)).c_str())) {
-                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " ENTITY");
-                    ImGui::Separator(); // Draw a line
-
-                    ImGui::EndPopup();
-                }
-
-                ImGui::TreePop();
-            }
+            // Draw a red box around the object
+            drawList->AddRect(min, max, IM_COL32(255, 0, 0, 255));
         }
-        ImGui::TreePop();
     }
 
-    ImGui::End();
+    
 }
 
-void EntityNodes::EntityProperties() {
 
-}
 
-*/
+
+
+
+
+
+
+
+
+

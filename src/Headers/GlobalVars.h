@@ -19,6 +19,8 @@ extern const int OBJ_CONE;
 extern const int OBJ_PYRAMID;
 extern const int OBJ_TRIANGEL;
 
+extern const int OBJ_OBJ_MODEL;
+
 // adding Objects
 extern bool ShouldAddCube;		// add a cube
 extern bool ShouldAddPlane;		// add a plane
@@ -29,7 +31,10 @@ extern bool ShouldUpdatePlane;	// update the plane
 extern bool ShouldUpdatePyramid;	// update the plane
 
 
-extern int objectUpdateIndex;
+extern int objectUpdateIndex; // this is in use
+
+// Selecting objects
+extern bool SelectedObject;
 
 //############# objects maps
 extern unsigned int creatMap;	// this only for the image that shows on the edit window
@@ -52,6 +57,8 @@ extern int Sphereobjidx;
 extern int Triangleobjidx;
 extern int Planeobjidx;
 extern int Pyramidobjidx;
+
+extern int ObjFilesidx;
 
 // Settings Window
 extern float grid_square; // grid square size
