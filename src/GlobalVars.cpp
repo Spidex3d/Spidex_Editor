@@ -17,7 +17,8 @@ const int OBJ_PYRAMID = 10;
 const int OBJ_TRIANGEL = 11;
 
 const int OBJ_OBJ_MODEL = 12;
-
+bool ShouldAddObjModel = false;
+bool ShouldUpdateObjModel = false;
 
 bool ShouldAddCube = false;     // add a new cube
 bool ShouldAddPlane = false;    // add a new plane
@@ -60,8 +61,10 @@ int Planeobjidx = -1; //0
 int Pyramidobjidx = -1; //0
 int Sphereobjidx = 0;
 int Triangleobjidx = 0;
-
+// obj models
 int ObjFilesidx = 0;
+int ModleObjidx = 0;
+
 
 float object_Pos[3] = { 0.0f, 0.0f, 0.0f };
 float object_Scale[3] = { 1.0f, 1.0f, 1.0f };

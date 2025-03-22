@@ -108,11 +108,11 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                         case 0: // Grid open the settings window
                             //show_settings_window = true;
                             break;
+                        
                         case 1: // Cube                     
                             ShouldUpdateCube = true;
                             std::cout << "Cube Object update index set to: " <<
                                 SelectedDataManager::Instance().GetSelectedData()->objectIndex << " Type " << OBJ_CUBE << std::endl;
-
                             break;
                         case 2: // Plane
                             ShouldUpdatePlane = true;
@@ -123,20 +123,25 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                         case 3: // Circle
                             
                             break;
-                        case 4: // Sphere
+                        case 4: // Line
                             break;
-                        case 5: // Cylinder
+                        case 5: // OBJ_SPHERE
                             break;
-                        case 6: // Torus
+                        case 6: // OBJ_CYLINDER
                             break;
-                        case 7: // Grid not the editor grid !
+                        case 7: // OBJ_TORUS
                             break;
-                        case 8: //  ??
+                        case 8: //  Grid not the editor grid !
                             break;
                         case 9: //  Cone                        
                             break;
                         case 10: // pyramid
                             ShouldUpdatePyramid = true;
+                            break;
+                        case 11: //  Triangel                        
+                            break;
+                        case 12: // Obj Models
+                            ShouldUpdateObjModel = true;
                             break;
                         }
                     }
@@ -453,50 +458,82 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderTriangle(view, projection, ObjectVector);
     EntityNodes::RenderPlane(view, projection, ObjectVector, currentIndex, Planeobjidx);
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
-    EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ObjFilesidx);
+    EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
    
 }
-
 void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
-    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ObjFilesidx)
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx)
 {
-    // ################### Test OBJ Loader ###########################
-    // each time we load an obj  file we will need to add 1 to numModels
     const int numModels = 1;
-    spxObjectLoader mesh[numModels]{};
+    objectModel mesh[numModels];
+    
 
-    mesh[0].loadOBJ("Assets/Modles/barrel_large_decorated.obj");
+    if (ShouldAddObjModel) {
+        ModleObjidx = ObjectVector.size();
+        std::unique_ptr<objectModel> newMesh = std::make_unique<objectModel>(currentIndex++, "Woodcrate", ModleObjidx);
 
-    glm::vec3 modPos[] = {
-        glm::vec3(0.0f, 0.5f, 1.0f)
+        if (mesh[0].loadOBJ("Assets/Modles/woodcrate.obj")) {
+            mesh[0].Models(currentIndex, "Woodcrate", ModleObjidx);
+            mesh[0].Models(currentIndex, "Woodcrate", ModleObjidx);
+        }
 
-    };
-    glm::vec3 modScale[] = {
-        glm::vec3(1.0f, 1.0f, 1.0f)
-    };
- 
-   
-    //ObjFilesidx = ObjectVector.size();
+
+        switch (ModleObjidx) {
+        case 1:
+            newMesh->position = glm::vec3(0.0f, 0.0f, 0.0f);
+            newMesh->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            break;
+
+        default:
+            newMesh->position = glm::vec3(1.0f, 2.0f, 0.0f);
+            newMesh->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            break;
+        }
+
+        newMesh->modelMatrix = glm::mat4(1.0f);
+        newMesh->modelMatrix = glm::translate(newMesh->modelMatrix, newMesh->position);
+        newMesh->modelMatrix = glm::scale(newMesh->modelMatrix, newMesh->scale);
+
+        ObjectVector.push_back(std::move(newMesh));
+
+        ShouldAddObjModel = false; // Reset the flag after adding the Obj Model
+    }
+
+    if (ShouldUpdateObjModel) { // Edit and move obj model
+        int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+
+        if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
+            glm::vec3 newMeshPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]);
+            ObjectVector[selectedIndex]->position = newMeshPosition;
+
+            glm::vec3 newMeshScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]);
+            ObjectVector[selectedIndex]->scale = newMeshScale;
+
+            ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
+            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newMeshPosition);
+            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newMeshScale);
+        }
+
+        ShouldUpdateObjModel = false; // Reset the flag after Editing the Obj Model
+    }
 
     for (const auto& model : ObjectVector) {
         ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
         ShaderManager::defaultShader->setMat4("view", view);
 
-       // this bit of code never runs
-        if (auto* barrel = dynamic_cast<spxObjectLoader*>(model.get())) {
-            modelMatrix = glm::mat4(1.0f);
-            modelMatrix = glm::translate(glm::mat4(1.0f), modPos[0]) * glm::scale(glm::mat4(1.0f), modScale[0]);
-            ShaderManager::defaultShader->setMat4("model", barrel->modelMatrix);
+        if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
+            std::cout << "Dynamic cast succeeded for model at address: " << model.get() << std::endl;
 
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, cube->textureID);
-            barrel[0].objDraw();
-            //glBindTexture(GL_TEXTURE_2D, 0);
+            ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
+            objModel->objDraw();
+        }
+        else {
+            std::cout << "Dynamic cast failed for model at address: " << model.get() << std::endl;
         }
     }
- 
 }
+
 
 float posx = 0;
 // #############   Render a Cube
@@ -560,14 +597,6 @@ void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
             ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
             ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newCubePosition);
             ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newCubeScale);
-
-            //ObjectVector[selectedIndex]->textureID = loadTexture("Textures/default_02.jpg"); // this is correct
-
-            //ObjectVector[index]->modelMatrix = glm::rotate(ObjectVector[index]->modelMatrix, newCubeRotation);
-           
-             //ObjectVector[index]->modelMatrix = glm::rotate(ObjectVector[index]->modelMatrix,
-              //glm::radians(0.5f),glm::vec3(object_Rotation[0], object_Rotation[1], object_Rotation[2])); // just 0.0f
-             //   sort of works
                         
         }
         
@@ -575,6 +604,7 @@ void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
         
     }
 
+    
     for (const auto& model : ObjectVector) {
         ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
@@ -591,13 +621,7 @@ void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
              glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
-
-    
-    
-
 }
-
-
 
 void EntityNodes::RenderTriangle(const glm::mat4& view, const glm::mat4& projection,
     const std::vector<std::unique_ptr<BaseModel>>& models)

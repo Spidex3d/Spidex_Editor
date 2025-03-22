@@ -66,8 +66,8 @@ void App::RunApp()
 	    entityComponents.Initialize();
 
 	    int index = 0, objectIndex = 0, indexTypeID = 0;
-					    
-	    glEnable(GL_DEPTH_TEST);
+
+		
 
 		Settings settings;
 		settings.LoadSettings("settings.txt"); // Loading the saved settings
@@ -99,11 +99,11 @@ void App::RunApp()
 
 			MainScreen::Instance()->Bind_Framebuffer(); // for the main screen
 
-			// ############################################# Camera Object !!! ################################
-
 			MainScreen::Instance()->BgColour(BgCol);
-			MainScreen::Instance()->ClearScreen(); // glClear ready for the next frame
+			// Clear buffers and enable depth testing
+			MainScreen::Instance()->ClearScreen(); // glClear GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_DEPTH_TEST
 
+			// ############################################# Camera Object !!! ################################
 			App::MainCamera(); // ########## This is the main Camera ##########
 						
 			// Render the grid and then have a coffee
@@ -115,29 +115,20 @@ void App::RunApp()
 
 			EntityNodes::Instance()->ObjectEditor(entityComponents.GetModels());
 
-			// Render the Scene
+						
+			// Darw all objects on screen
 			EntityNodes::Instance()->RenderScene(camera.GetViewMatrix(),
 				camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT),
 				entityComponents.GetModels(), currentIndex);	
 
-			
-
-			//EntityNodes::Instance()->DrawSelectionBox(ObjectVector);
-
-			//if (SelectedObject) {
-		 //     std::cout << " Selected left mouse " << SelectedObject << std::endl;
-			//  Picking::Instance()->ObjectPicking(camera, SCR_WIDTH, SCR_HEIGHT); // picking an object with the mouse
-	  //      }
-			//SelectedObject = false; // not in the right place
-				
 		MainScreen::Instance()->Unbinde_Frambuffer();
-				
 		// ############################################# End Drawing Object !!! ################################
 				
 		MainScreen::Instance()->RenderImGui(windowManager.GetWindow()); // render the imgui windows	
-
+				
 		glfwSwapBuffers(windowManager.GetWindow()); // the last 2 lines of code
-		glfwPollEvents();
+		glfwPollEvents();	
+
 	}
 	App::AppShutdown(); // clean-up
 }

@@ -147,7 +147,12 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
         
         //if (ImGui::BeginMenu("New Mesh", &ShouldAddCube)) { // as far as i can tell ShouldAddCube is not nedded
         if (ImGui::BeginMenu("Add a new mesh")) {
-             if (ImGui::MenuItem("Cube")) {
+            if (ImGui::MenuItem(".Obj File")) {
+                // set ShouldAddCube to true then add cube to the tree
+                ShouldAddObjModel = true;
+
+            }
+            if (ImGui::MenuItem("Cube")) {
              // set ShouldAddCube to true then add cube to the tree
                  ShouldAddCube = true;
                
@@ -472,6 +477,7 @@ void MainScreen::RenderImGui(GLFWwindow* window)
 void MainScreen::ClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
    
 }
 

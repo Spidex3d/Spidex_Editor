@@ -48,7 +48,7 @@ public:
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex);
 	// Obj Model files
 	void RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
-		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ObjFilesidx);
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx);
 
 	// Cube
 	void RenderCube(const glm::mat4& view, const glm::mat4& projection,

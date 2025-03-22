@@ -18,13 +18,15 @@ extern const int OBJ_GRID;
 extern const int OBJ_CONE;
 extern const int OBJ_PYRAMID;
 extern const int OBJ_TRIANGEL;
-
+// .obj files
 extern const int OBJ_OBJ_MODEL;
+extern bool ShouldAddObjModel;
+extern bool ShouldUpdateObjModel;
 
 // adding Objects
 extern bool ShouldAddCube;		// add a cube
 extern bool ShouldAddPlane;		// add a plane
-extern bool ShouldAddPyramid;
+extern bool ShouldAddPyramid;	// add a pyramid
 // updating Objects
 extern bool ShouldUpdateCube;	// update the cube
 extern bool ShouldUpdatePlane;	// update the plane
@@ -58,7 +60,9 @@ extern int Triangleobjidx;
 extern int Planeobjidx;
 extern int Pyramidobjidx;
 
+// obj models
 extern int ObjFilesidx;
+extern int ModleObjidx;
 
 // Settings Window
 extern float grid_square; // grid square size
