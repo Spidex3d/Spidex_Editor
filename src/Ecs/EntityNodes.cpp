@@ -1,5 +1,6 @@
 #include "EntityNodes.h"
 #include "../Windows/spx_FileDialog.h"
+#include "../Object_loader\objLoader.h"
 
 unsigned int loadTexture(const std::string& filePath);
 
@@ -265,6 +266,10 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                     showObjectEditor = true;
                                     LogInternals::Instance()->Debug("Data Selected  is a plane");
                                     break;
+                                case 12: // 0bj file
+                                    showObjectEditor = true;
+                                    LogInternals::Instance()->Debug("Data Selected  is a obj file");
+                                    break;
 
 
                                 default:
@@ -464,20 +469,17 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
 void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx)
 {
-    const int numModels = 1;
-    objectModel mesh[numModels];
-    
+         
+    if (ShouldAddObjModel) {     
+    ModleObjidx = ObjectVector.size();
+    //auto newMesh = std::make_unique<objLoader>(currentIndex++, "New ObjFile", ModleObjidx);
+    std::unique_ptr<objLoader> newMesh = std::make_unique<objLoader>(currentIndex++, "New ObjFile", ModleObjidx);
 
-    if (ShouldAddObjModel) {
-        ModleObjidx = ObjectVector.size();
-        std::unique_ptr<objectModel> newMesh = std::make_unique<objectModel>(currentIndex++, "Woodcrate", ModleObjidx);
-
-        if (mesh[0].loadOBJ("Assets/Modles/woodcrate.obj")) {
-            mesh[0].Models(currentIndex, "Woodcrate", ModleObjidx);
-            mesh[0].Models(currentIndex, "Woodcrate", ModleObjidx);
+       
+        if (newMesh->Loadobj("Assets/Models/bunny.obj")) {
+            newMesh->objModels();          
         }
-
-
+        
         switch (ModleObjidx) {
         case 1:
             newMesh->position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -485,8 +487,8 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
             break;
 
         default:
-            newMesh->position = glm::vec3(1.0f, 2.0f, 0.0f);
-            newMesh->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            newMesh->position = glm::vec3(1.0f, 0.0f, 0.0f);
+            newMesh->scale = glm::vec3(0.5f, 0.5f, 0.5f);
             break;
         }
 
@@ -495,7 +497,7 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
         newMesh->modelMatrix = glm::scale(newMesh->modelMatrix, newMesh->scale);
 
         ObjectVector.push_back(std::move(newMesh));
-
+      
         ShouldAddObjModel = false; // Reset the flag after adding the Obj Model
     }
 
@@ -522,11 +524,13 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
         ShaderManager::defaultShader->setMat4("projection", projection);
         ShaderManager::defaultShader->setMat4("view", view);
 
-        if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
+        //if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
+        if (auto* objModel = dynamic_cast<objLoader*>(model.get())) {
             std::cout << "Dynamic cast succeeded for model at address: " << model.get() << std::endl;
 
             ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
-            objModel->objDraw();
+           
+            objModel->objDrawModels();
         }
         else {
             std::cout << "Dynamic cast failed for model at address: " << model.get() << std::endl;

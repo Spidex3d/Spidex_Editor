@@ -10,18 +10,6 @@
 #include "Object_loader\spxObjectLoader.h"
 #include "Ecs\Picking.h"
 
-//void LoadFBX(const char* filename) {
-//	Assimp::Importer importer;
-//	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_OptimizeMeshes);
-//
-//	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-//		printf("Failed to load FBX: %s\n", importer.GetErrorString());
-//		return;
-//	}
-//
-//	// Process scene (extract meshes, nodes, etc.)
-//}
-
 
 App::App()
 {

@@ -16,17 +16,13 @@
 
 #include "../Headers/GlobalVars.h"
 
-#include "../Object_loader\spxObjectLoader.h"
-
-
-
-
+//#include "../Object_loader\spxObjectLoader.h"
+//#include "../Object_loader\objLoader.h"
 
 class EntityNodes
 {
 public:
 	
-
 	static EntityNodes* Instance();
 
 	void Initialize();

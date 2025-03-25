@@ -81,7 +81,7 @@
     <ClCompile Include="src\Ecs\Picking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Object_loader\spxObjectLoader.cpp">
+    <ClCompile Include="src\Object_loader\objLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,7 +176,7 @@
     <ClInclude Include="src\Ecs\Picking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Object_loader\spxObjectLoader.h">
+    <ClInclude Include="src\Object_loader\objLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

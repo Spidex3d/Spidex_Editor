@@ -1,6 +1,7 @@
 #include "Headers\GlobalVars.h"
 
 std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
+//std::vector<std::shared_ptr<BaseModel>> ObjectVector; // the vector for all Models
 //std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
 
 const int MAIN_GRID = 0; // this is for the editor grid
@@ -28,16 +29,12 @@ bool ShouldUpdateCube = false;  // update the cube
 bool ShouldUpdatePlane = false; // update the plane
 bool ShouldUpdatePyramid = false; // update the pyramid
 
-
 //int objectUpdateIndex = -1;
 int objectUpdateIndex = 0; 
 // #######
 
-
 // Selecting objects
- bool SelectedObject = false;
-
-
+bool SelectedObject = false;
 
 unsigned int creatMap = 0;      // this only for the image that shows on the edit window for the selected texture
 
@@ -51,8 +48,6 @@ int grid_size = 40;
 
 // ###### Textures ##############
 
-
-
 int currentIndex = -1;
 
 int Gridobjidx = 0;
@@ -62,9 +57,8 @@ int Pyramidobjidx = -1; //0
 int Sphereobjidx = 0;
 int Triangleobjidx = 0;
 // obj models
-int ObjFilesidx = 0;
+//int ObjFilesidx = 0;
 int ModleObjidx = 0;
-
 
 float object_Pos[3] = { 0.0f, 0.0f, 0.0f };
 float object_Scale[3] = { 1.0f, 1.0f, 1.0f };

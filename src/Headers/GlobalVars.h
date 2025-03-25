@@ -4,6 +4,7 @@
 #include "../Ecs/BaseModel.h"
 
 extern std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
+//extern std::vector<std::shared_ptr<BaseModel>> ObjectVector; // the vector for all Models
 //extern std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
 
 extern const int MAIN_GRID;
@@ -61,7 +62,7 @@ extern int Planeobjidx;
 extern int Pyramidobjidx;
 
 // obj models
-extern int ObjFilesidx;
+//extern int ObjFilesidx;
 extern int ModleObjidx;
 
 // Settings Window
