@@ -7,7 +7,6 @@
 #include "Headers\GlobalVars.h"
 
 #include "Headers/EditorInput.h" // keybord & mouse input
-#include "Object_loader\spxObjectLoader.h"
 #include "Ecs\Picking.h"
 
 

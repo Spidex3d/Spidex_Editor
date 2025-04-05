@@ -43,7 +43,7 @@ float grid_square = 2;
 int grid_size = 40;
 
 // ###### Textures ##############
-
+bool IsTexture = true; // for the open dialoge box the default is for textures
 
 
 // ###### Textures ##############

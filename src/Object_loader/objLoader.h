@@ -6,6 +6,7 @@
 
 #include "../Ecs/BaseModel.h"
 #include "../Headers/GlobalVars.h"
+#include <stb\stb_image.h>
 
 #include <iostream>
 #include <sstream>
@@ -14,6 +15,18 @@
 class objLoader : public BaseModel
 {
 public:
+
+	struct Material {
+		std::string name;
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+		float shininess;
+		std::string diffuseMap;
+		GLuint textureID;
+		Material() : ambient(0.2f, 0.2f, 0.2f), diffuse(0.8f, 0.8f, 0.8f), specular(1.0f, 1.0f, 1.0f),
+			shininess(32.0f), textureID(0) { }
+	};
 		
 	objLoader(int idx, const std::string& name, int ModleObjidx); // Default constructor
 	
@@ -24,6 +37,9 @@ public:
 	std::vector<std::string> split(const std::string& s, const std::string& delimiter);
 
 	bool Loadobj(const std::string& filename); // get the obj file name & path
+
+	bool LoadMTL(const std::string& filename);
+	bool LoadObjTexture(const std::string& filename, GLuint& textureID);
 
 	void objModels();
 
@@ -45,6 +61,8 @@ public:
 		glm::vec2 texCoords;
 	};
 	std::vector<Vertex> m_Vertices;
+
+	std::unordered_map<std::string, Material> materials;
 
 };
 

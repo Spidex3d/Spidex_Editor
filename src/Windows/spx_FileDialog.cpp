@@ -12,7 +12,13 @@ std::string spx_FileDialog::openFileDialog()
     ofn.lpstrFile = filename;
     ofn.lpstrFile[0] = '\0';
     ofn.nMaxFile = sizeof(filename);
-    ofn.lpstrFilter = L"Image Files\0*.jpg;*.jpeg;*.png;*.bmp\0All Files\0*.*\0";
+    if (IsTexture) {
+        ofn.lpstrFilter = L"Image Files\0*.jpg;*.jpeg;*.png;*.bmp\0All Files\0*.*\0";
+    }
+    else {
+        ofn.lpstrFilter = L"Model Files\0*.obj;";
+
+    }
     ofn.nFilterIndex = 1;
     ofn.lpstrFileTitle = NULL;
     ofn.nMaxFileTitle = 0;

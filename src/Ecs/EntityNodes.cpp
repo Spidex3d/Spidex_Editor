@@ -56,7 +56,7 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
         }
 
         ImGui::EndTable();
-
+        // put an if in here
         ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Texture Editor");
         ImGui::SeparatorText(" Texture Editor");
        
@@ -476,7 +476,7 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
     std::unique_ptr<objLoader> newMesh = std::make_unique<objLoader>(currentIndex++, "New ObjFile", ModleObjidx);
 
        
-        if (newMesh->Loadobj("Assets/Models/bunny.obj")) {
+        if (newMesh->Loadobj("Assets/Models/woodcrate.obj")) {
             newMesh->objModels();          
         }
         
@@ -526,14 +526,14 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
 
         //if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
         if (auto* objModel = dynamic_cast<objLoader*>(model.get())) {
-            std::cout << "Dynamic cast succeeded for model at address: " << model.get() << std::endl;
+           // std::cout << "Dynamic cast succeeded for model at address: " << model.get() << std::endl;
 
             ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
            
             objModel->objDrawModels();
         }
         else {
-            std::cout << "Dynamic cast failed for model at address: " << model.get() << std::endl;
+           // std::cout << "Dynamic cast failed for model at address: " << model.get() << std::endl;
         }
     }
 }

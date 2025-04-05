@@ -30,6 +30,7 @@ bool objLoader::Loadobj(const std::string& filename)
 	std::vector<glm::vec3> tempVertices;
 	std::vector<glm::vec2> tempUVs;
 	std::vector<glm::vec3> tempNormals;
+	std::string materialFile;
 
 	if (filename.find(".obj") != std::string::npos) {
 		std::ifstream fin(filename, std::ios::in);
@@ -88,6 +89,9 @@ bool objLoader::Loadobj(const std::string& filename)
 					}
 				}
 			}
+			else if (cmd == "mtllib") { // new for MTL file
+				ss >> materialFile;
+			}
 		}
 		fin.close();
 
@@ -108,10 +112,95 @@ bool objLoader::Loadobj(const std::string& filename)
 			m_Vertices.push_back(meshVertex);
 		}
 		 
-		//objLoader::objModels(mesh[], size);
+		if (!materialFile.empty()) {
+			LoadMTL(materialFile);
+		}
 		return (m_Loaded = true);
 	}
 	return false;
+}
+bool objLoader::LoadMTL(const std::string& filename)
+{
+	std::string folderpath = "Assets/Models/";
+	std::string fullpath = folderpath + filename;
+	std::ifstream fin(fullpath, std::ios::in);
+	if (!fin.is_open()) {
+		std::cout << "Cannot open MTL file " << fullpath << std::endl;
+		return false;
+	}
+		std::cout << "Loading MTL file OK " << fullpath << std::endl;
+
+		std::string lineBuffer;
+		Material* currentMatirial = nullptr;
+
+		while (std::getline(fin, lineBuffer)) {
+			std::stringstream ss(lineBuffer);
+			std::string cmd;
+			ss >> cmd;
+	
+			if (cmd == "newmtl") {
+				std::string matirialName;
+				ss >> matirialName;
+				materials[matirialName] = Material();
+				currentMatirial = &materials[matirialName];
+				currentMatirial->name = matirialName;
+			}
+			else if (cmd == "Ka" && currentMatirial) {
+				ss >> currentMatirial->ambient.r >> currentMatirial->ambient.g >> currentMatirial->ambient.b;
+ 			}
+			else if (cmd == "Kd" && currentMatirial) {
+				ss >> currentMatirial->diffuse.r >> currentMatirial->diffuse.g >> currentMatirial->diffuse.b;
+			}
+			else if (cmd == "Ks" && currentMatirial) {
+				ss >> currentMatirial->specular.r >> currentMatirial->specular.g >> currentMatirial->specular.b;
+			}
+			else if (cmd == "Ns" && currentMatirial) {
+				ss >> currentMatirial->shininess;
+			}
+			else if (cmd == "map_Kd" && currentMatirial) {
+				ss >> currentMatirial->diffuseMap;
+				LoadObjTexture(folderpath + currentMatirial->diffuseMap, currentMatirial->textureID);
+			}
+			
+		}
+
+	fin.close();
+	return true;
+}
+bool objLoader::LoadObjTexture(const std::string& filename, GLuint& textureID)
+{
+	std::cout << "MTL file found Loaded " << filename << std::endl;
+
+	glGenTextures(1, &textureID);
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+
+	if (data) {
+		GLenum i_format;
+		if (nrComponents == 1)  
+			i_format = GL_RED;
+		else if (nrComponents == 3) // jpg
+			i_format = GL_RGB;
+		else if (nrComponents == 4) // png
+			i_format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, i_format, width, height, 0, i_format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(data);
+	}
+	else {
+		std::cout << "Texture failed to load at path: " << filename << std::endl;
+		stbi_image_free(data);
+	}
+
+	return textureID;
 }
 // set up the obj vertices and stuff
 //void objLoader::objModels(int mesh[], int size)
@@ -141,8 +230,19 @@ void objLoader::objDrawModels()
 	if (!m_Loaded) return;
 
 	glBindVertexArray(m_VAO);
+
+	// Bind the texture for each material (assuming there is only one material for simplicity)
+	for (const auto& materialPair : materials) { // matirials
+		const Material& material = materialPair.second;
+		if (material.textureID != 0) {
+			glBindTexture(GL_TEXTURE_2D, material.textureID);
+		}
+	}
+
+	//glBindTexture(GL_TEXTURE_2D, matirials["matirialName"].textureID);
 	glDrawArrays(GL_TRIANGLES, 0, m_Vertices.size());
 	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 // clean up the mess
 
