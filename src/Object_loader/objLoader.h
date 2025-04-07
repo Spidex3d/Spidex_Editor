@@ -16,7 +16,7 @@ class objLoader : public BaseModel
 {
 public:
 
-	struct Material {
+	struct Material {  // NEW MTL
 		std::string name;
 		glm::vec3 ambient;
 		glm::vec3 diffuse;
@@ -38,8 +38,8 @@ public:
 
 	bool Loadobj(const std::string& filename); // get the obj file name & path
 
-	bool LoadMTL(const std::string& filename);
-	bool LoadObjTexture(const std::string& filename, GLuint& textureID);
+	bool LoadMTL(const std::string& filename); // NEW MTL
+	bool LoadObjTexture(const std::string& filename, GLuint& textureID);  // NEW MTL
 
 	void objModels();
 
@@ -62,7 +62,7 @@ public:
 	};
 	std::vector<Vertex> m_Vertices;
 
-	std::unordered_map<std::string, Material> materials;
+	std::unordered_map<std::string, Material> materials;  // new for MTL
 
 };
 

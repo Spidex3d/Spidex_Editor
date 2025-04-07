@@ -12,7 +12,7 @@ std::string spx_FileDialog::openFileDialog()
     ofn.lpstrFile = filename;
     ofn.lpstrFile[0] = '\0';
     ofn.nMaxFile = sizeof(filename);
-    if (IsTexture) {
+    if (dialogType) {
         ofn.lpstrFilter = L"Image Files\0*.jpg;*.jpeg;*.png;*.bmp\0All Files\0*.*\0";
     }
     else {

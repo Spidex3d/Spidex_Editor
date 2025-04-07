@@ -45,9 +45,10 @@ extern unsigned int creatMap;	// this only for the image that shows on the edit 
 
 //#############
 
-// ###### Textures ##############
-extern bool IsTexture;  // for the open dialoge box
-
+// ###### For use with Textures and obj Files ##############
+extern bool IsTexture; 
+extern std::string modelPath;
+extern bool dialogType;  // sets is textured or obj file for the opendialog box
 // ###### Textures ##############
 
 extern int currentIndex;

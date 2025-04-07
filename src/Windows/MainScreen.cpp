@@ -150,11 +150,13 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
             if (ImGui::MenuItem(".Obj File")) {
                 // set ShouldAddCube to true then add cube to the tree
                 ShouldAddObjModel = true;
+                dialogType = false;   // sets is textured or obj file for the opendialog box
 
             }
             if (ImGui::MenuItem("Cube")) {
              // set ShouldAddCube to true then add cube to the tree
                  ShouldAddCube = true;
+                 dialogType = true;   // sets is textured or obj file for the opendialog box
                
              }
              if (ImGui::MenuItem("Plane")) {

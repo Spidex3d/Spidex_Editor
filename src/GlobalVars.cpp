@@ -43,10 +43,11 @@ float grid_square = 2;
 int grid_size = 40;
 
 // ###### Textures ##############
-bool IsTexture = true; // for the open dialoge box the default is for textures
+bool IsTexture = true; // sets is textured or obj file for opendialog
+std::string modelPath = "";
+bool dialogType = false; // false = dialog Image, true = dialog model
 
-
-// ###### Textures ##############
+// ###### End Textures ##############
 
 int currentIndex = -1;
 

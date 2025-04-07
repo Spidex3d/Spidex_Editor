@@ -56,31 +56,34 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
         }
 
         ImGui::EndTable();
+        
         // put an if in here
+        if (dialogType) { //  IsTexture must be true to show button
         ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Texture Editor");
         ImGui::SeparatorText(" Texture Editor");
        
         // load the texture
         spx_FileDialog openDialog;
-        if (ImGui::Button("Set New Texture")) {
-            std::string myTexturePath = openDialog.openFileDialog();
-            if (!myTexturePath.empty()) {
-                std::cout << "Texture path selected: " << myTexturePath << std::endl;
-                objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex; // just added
-                if (objectUpdateIndex != -1) {
-                    std::cout << "Updating texture for cube index: " << objectUpdateIndex << std::endl;
-                     ObjectVector[objectUpdateIndex]->textureID = loadTexture(myTexturePath);
-                   
-                    std::cout << "New texture ID: " << ObjectVector[objectUpdateIndex]->textureID << std::endl;
+            if (ImGui::Button("Set New Texture")) {
+                std::string myTexturePath = openDialog.openFileDialog();
+                if (!myTexturePath.empty()) {
+                    std::cout << "Texture path selected: " << myTexturePath << std::endl;
+                    objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex; // just added
+                    if (objectUpdateIndex != -1) {
+                        std::cout << "Updating texture for cube index: " << objectUpdateIndex << std::endl;
+                        ObjectVector[objectUpdateIndex]->textureID = loadTexture(myTexturePath);
 
-                    creatMap = loadTexture((myTexturePath).c_str()); // this is the image on the object edit window
+                        std::cout << "New texture ID: " << ObjectVector[objectUpdateIndex]->textureID << std::endl;
+
+                        creatMap = loadTexture((myTexturePath).c_str()); // this is the image on the object edit window
+                    }
+                    else {
+                        std::cout << "objectUpdateIndex is not set correctly." << std::endl;
+                    }
                 }
                 else {
-                    std::cout << "objectUpdateIndex is not set correctly." << std::endl;
+                    std::cout << "No texture path selected." << std::endl;
                 }
-            }
-            else {
-                std::cout << "No texture path selected." << std::endl;
             }
         }
 
@@ -143,6 +146,7 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                             break;
                         case 12: // Obj Models
                             ShouldUpdateObjModel = true;
+                           
                             break;
                         }
                     }
@@ -158,6 +162,7 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                 
             }
                 showObjectEditor = false;
+
                 
                 creatMap = 0;
                
@@ -234,6 +239,7 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                     break;
                                 case 1: // cube
                                     showObjectEditor = true;
+                                    IsTexture = true;
 
                                     std::cout << "Data Selected  is a Cube " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
                                     LogInternals::Instance()->Debug("Data Selected  is a Cube");
@@ -268,6 +274,7 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                     break;
                                 case 12: // 0bj file
                                     showObjectEditor = true;
+                                    IsTexture = false; // set to false and not show the add texture button
                                     LogInternals::Instance()->Debug("Data Selected  is a obj file");
                                     break;
 
@@ -472,11 +479,13 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
          
     if (ShouldAddObjModel) {     
     ModleObjidx = ObjectVector.size();
-    //auto newMesh = std::make_unique<objLoader>(currentIndex++, "New ObjFile", ModleObjidx);
+    
     std::unique_ptr<objLoader> newMesh = std::make_unique<objLoader>(currentIndex++, "New ObjFile", ModleObjidx);
-
-       
-        if (newMesh->Loadobj("Assets/Models/woodcrate.obj")) {
+   
+    spx_FileDialog openModelDialog;
+    std::string modelPath = openModelDialog.openFileDialog();
+           
+        if (newMesh->Loadobj(modelPath)) {
             newMesh->objModels();          
         }
         
@@ -526,18 +535,16 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
 
         //if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
         if (auto* objModel = dynamic_cast<objLoader*>(model.get())) {
-           // std::cout << "Dynamic cast succeeded for model at address: " << model.get() << std::endl;
-
+           
             ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
            
             objModel->objDrawModels();
         }
         else {
-           // std::cout << "Dynamic cast failed for model at address: " << model.get() << std::endl;
+           
         }
     }
 }
-
 
 float posx = 0;
 // #############   Render a Cube

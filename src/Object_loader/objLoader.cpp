@@ -8,6 +8,10 @@ void objLoader::Initialize()
 }
 objLoader::objLoader(int idx, const std::string& name, int ModleObjidx)
 	: idx(idx), name(name), ModleObjidx(ModleObjidx) {
+	index = idx;             // list index
+	objectName = name;       // cube name
+	objectIndex = ModleObjidx;         // start index for a cube
+	objectTypeID = OBJ_OBJ_MODEL; // Example type ID for Cube set in config = 1
 }
 
 std::vector<std::string> objLoader::split(const std::string& s, const std::string& delimiter)
@@ -112,7 +116,7 @@ bool objLoader::Loadobj(const std::string& filename)
 			m_Vertices.push_back(meshVertex);
 		}
 		 
-		if (!materialFile.empty()) {
+		if (!materialFile.empty()) { // NEW MTL
 			LoadMTL(materialFile);
 		}
 		return (m_Loaded = true);
@@ -121,7 +125,7 @@ bool objLoader::Loadobj(const std::string& filename)
 }
 bool objLoader::LoadMTL(const std::string& filename)
 {
-	std::string folderpath = "Assets/Models/";
+	std::string folderpath = modelPath;
 	std::string fullpath = folderpath + filename;
 	std::ifstream fin(fullpath, std::ios::in);
 	if (!fin.is_open()) {
@@ -177,11 +181,11 @@ bool objLoader::LoadObjTexture(const std::string& filename, GLuint& textureID)
 
 	if (data) {
 		GLenum i_format;
-		if (nrComponents == 1)  
+		if (nrComponents == 1)  // grayscale
 			i_format = GL_RED;
-		else if (nrComponents == 3) // jpg
+		else if (nrComponents == 3) // jpg, 24-bit BMP
 			i_format = GL_RGB;
-		else if (nrComponents == 4) // png
+		else if (nrComponents == 4) // png, 23-bit BMP
 			i_format = GL_RGBA;
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
@@ -239,12 +243,10 @@ void objLoader::objDrawModels()
 		}
 	}
 
-	//glBindTexture(GL_TEXTURE_2D, matirials["matirialName"].textureID);
 	glDrawArrays(GL_TRIANGLES, 0, m_Vertices.size());
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-// clean up the mess
 
 
 
