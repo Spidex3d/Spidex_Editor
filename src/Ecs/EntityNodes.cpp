@@ -93,7 +93,7 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
             ImGui::Image((void*)(intptr_t)creatMap, ImVec2(65, 65));
         }
         else {
-            std::cout << "No texture loaded." << std::endl;
+            //std::cout << "No texture loaded." << std::endl;
         }
         
 
