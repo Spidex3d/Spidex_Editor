@@ -621,7 +621,7 @@ PFNGLISRENDERBUFFERPROC glad_glIsRenderbuffer = NULL;
 PFNGLISSAMPLERPROC glad_glIsSampler = NULL;
 PFNGLISSHADERPROC glad_glIsShader = NULL;
 PFNGLISSYNCPROC glad_glIsSync = NULL;
-PFNGLISTEXTUREPROC glad_glIsTexture = NULL;
+PFNGLdialogTypePROC glad_gldialogType = NULL;
 PFNGLISTRANSFORMFEEDBACKPROC glad_glIsTransformFeedback = NULL;
 PFNGLISVERTEXARRAYPROC glad_glIsVertexArray = NULL;
 PFNGLLINEWIDTHPROC glad_glLineWidth = NULL;
@@ -1039,7 +1039,7 @@ static void load_GL_VERSION_1_1(GLADloadproc load) {
 	glad_glBindTexture = (PFNGLBINDTEXTUREPROC)load("glBindTexture");
 	glad_glDeleteTextures = (PFNGLDELETETEXTURESPROC)load("glDeleteTextures");
 	glad_glGenTextures = (PFNGLGENTEXTURESPROC)load("glGenTextures");
-	glad_glIsTexture = (PFNGLISTEXTUREPROC)load("glIsTexture");
+	glad_gldialogType = (PFNGLdialogTypePROC)load("gldialogType");
 }
 static void load_GL_VERSION_1_2(GLADloadproc load) {
 	if(!GLAD_GL_VERSION_1_2) return;

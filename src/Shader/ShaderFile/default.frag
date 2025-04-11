@@ -1,11 +1,11 @@
 #version 460
-    out vec4 FragColor;
 
     in vec2 TexCoord;
+    out vec4 FragColor;
+
     in vec3 FragPos;
 
     uniform sampler2D myTexture;
-
     void main()
     {
      

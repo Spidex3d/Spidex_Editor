@@ -1701,9 +1701,9 @@ GLAPI PFNGLDELETETEXTURESPROC glad_glDeleteTextures;
 typedef void (APIENTRYP PFNGLGENTEXTURESPROC)(GLsizei n, GLuint *textures);
 GLAPI PFNGLGENTEXTURESPROC glad_glGenTextures;
 #define glGenTextures glad_glGenTextures
-typedef GLboolean (APIENTRYP PFNGLISTEXTUREPROC)(GLuint texture);
-GLAPI PFNGLISTEXTUREPROC glad_glIsTexture;
-#define glIsTexture glad_glIsTexture
+typedef GLboolean (APIENTRYP PFNGLdialogTypePROC)(GLuint texture);
+GLAPI PFNGLdialogTypePROC glad_gldialogType;
+#define gldialogType glad_gldialogType
 #endif
 #ifndef GL_VERSION_1_2
 #define GL_VERSION_1_2 1

@@ -4,6 +4,7 @@
 #include "../Ecs/BaseModel.h"
 
 extern std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
+//extern std::vector<std::shared_ptr<BaseModel>> ObjectVector; // the vector for all Models
 //extern std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
 
 extern const int MAIN_GRID;
@@ -44,8 +45,8 @@ extern unsigned int creatMap;	// this only for the image that shows on the edit 
 
 //#############
 
-// ###### Textures ##############
-
+// ###### For use with Textures and Obj Files ##############
+extern std::string modelPath;  // sets the MTL file path from the opendialog box
 
 
 // ###### Textures ##############
@@ -60,14 +61,17 @@ extern int Triangleobjidx;
 extern int Planeobjidx;
 extern int Pyramidobjidx;
 
-// obj models
-extern int ObjFilesidx;
-extern int ModleObjidx;
+// Model Index
+extern int ModelIndex;
 
 // Settings Window
 extern float grid_square; // grid square size
 extern int grid_size; // grid size x, z
 extern bool show_settings_window;
+// dialog box
+extern bool dialogType;  // sets is textured or obj file for the opendialog box
+
+
 
 // For the Cube
 extern glm::vec3 newCubePosition;

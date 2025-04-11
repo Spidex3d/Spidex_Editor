@@ -142,7 +142,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Object_loader\spxObjectLoader.cpp" />
     <ClCompile Include="src\Ecs\Picking.cpp" />
     <ClCompile Include="src\GlobalVars.cpp" />
     <ClCompile Include="src\Windows\spx_FileDialog.cpp" />
@@ -167,7 +166,8 @@
     <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Object_loader\spxObjectLoader.h" />
+    <ClInclude Include="src\Object_loader\mesh.h" />
+    <ClInclude Include="src\Object_loader\model.h" />
     <ClInclude Include="src\Ecs\Picking.h" />
     <ClInclude Include="src\Ecs\BaseModel.h" />
     <ClInclude Include="src\Headers\GlobalVars.h" />

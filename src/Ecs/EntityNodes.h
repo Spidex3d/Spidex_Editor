@@ -13,11 +13,7 @@
 #include "ObjectManager.h"
 #include "SelectedDataManager.h"
 
-
 #include "../Headers/GlobalVars.h"
-
-#include "../Object_loader\spxObjectLoader.h"
-
 
 
 
@@ -26,7 +22,6 @@ class EntityNodes
 {
 public:
 	
-
 	static EntityNodes* Instance();
 
 	void Initialize();
@@ -47,8 +42,8 @@ public:
 	void RenderScene(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex);
 	// Obj Model files
-	void RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
-		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx);
+	void RenderModelFiles(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModelIndex);
 
 	// Cube
 	void RenderCube(const glm::mat4& view, const glm::mat4& projection,

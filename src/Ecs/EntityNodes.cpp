@@ -1,7 +1,9 @@
 #include "EntityNodes.h"
 #include "../Windows/spx_FileDialog.h"
+#include "../Object_loader\model.h"
 
 unsigned int loadTexture(const std::string& filePath);
+
 
 EntityNodes* EntityNodes::Instance() {
     static EntityNodes component;
@@ -56,30 +58,32 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
 
         ImGui::EndTable();
 
-        ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Texture Editor");
-        ImGui::SeparatorText(" Texture Editor");
-       
-        // load the texture
-        spx_FileDialog openDialog;
-        if (ImGui::Button("Set New Texture")) {
-            std::string myTexturePath = openDialog.openFileDialog();
-            if (!myTexturePath.empty()) {
-                std::cout << "Texture path selected: " << myTexturePath << std::endl;
-                objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex; // just added
-                if (objectUpdateIndex != -1) {
-                    std::cout << "Updating texture for cube index: " << objectUpdateIndex << std::endl;
-                     ObjectVector[objectUpdateIndex]->textureID = loadTexture(myTexturePath);
-                   
-                    std::cout << "New texture ID: " << ObjectVector[objectUpdateIndex]->textureID << std::endl;
+        if (dialogType) {
+            ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Texture Editor");
+            ImGui::SeparatorText(" Texture Editor");
 
-                    creatMap = loadTexture((myTexturePath).c_str()); // this is the image on the object edit window
+            // load the texture
+            spx_FileDialog openDialog;
+            if (ImGui::Button("Set New Texture")) {
+                std::string myTexturePath = openDialog.openFileDialog();
+                if (!myTexturePath.empty()) {
+                    std::cout << "Texture path selected: " << myTexturePath << std::endl;
+                    objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex; // just added
+                    if (objectUpdateIndex != -1) {
+                        std::cout << "Updating texture for cube index: " << objectUpdateIndex << std::endl;
+                        ObjectVector[objectUpdateIndex]->textureID = loadTexture(myTexturePath);
+
+                        std::cout << "New texture ID: " << ObjectVector[objectUpdateIndex]->textureID << std::endl;
+
+                        creatMap = loadTexture((myTexturePath).c_str()); // this is the image on the object edit window
+                    }
+                    else {
+                        std::cout << "objectUpdateIndex is not set correctly." << std::endl;
+                    }
                 }
                 else {
-                    std::cout << "objectUpdateIndex is not set correctly." << std::endl;
+                    std::cout << "No texture path selected." << std::endl;
                 }
-            }
-            else {
-                std::cout << "No texture path selected." << std::endl;
             }
         }
 
@@ -233,37 +237,52 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                     break;
                                 case 1: // cube
                                     showObjectEditor = true;
+                                    dialogType = true;
 
                                     std::cout << "Data Selected  is a Cube " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
                                     LogInternals::Instance()->Debug("Data Selected  is a Cube");
                                     break;
                                 case 2: // plane
                                     showObjectEditor = true;
+                                    dialogType = true;
                                     LogInternals::Instance()->Debug("Data Selected  is a plane");
                                     break;
                                 case 3:
+                                    // dialogType = true;
                                     break;
                                 case 4: //
-                                   
+                                   // dialogType = true;
                                     break;
                                 case 5:
+                                    // dialogType = true;
                                     break;
                                 case 6:
+                                    //dialogType = true;
                                     break;
                                 case 7:
+                                    //dialogType = true;
                                     break;
                                 case 8:
                                     showObjectEditor = true;
+                                    //dialogType = true;
                                     break;
                                 case 9:
                                     showObjectEditor = true;
+                                    //sTexture = true;
                                     break;
                                 case 10:
                                     showObjectEditor = true;
+                                    //dialogType = true;
                                     break;
                                 case 11: // pyramid
                                     showObjectEditor = true;
+                                    dialogType = true;
                                     LogInternals::Instance()->Debug("Data Selected  is a plane");
+                                    break;
+                                case 12: // 0bj file
+                                    showObjectEditor = true;
+                                    dialogType = false;
+                                    LogInternals::Instance()->Debug("Data Selected  is a obj file");
                                     break;
 
 
@@ -458,35 +477,34 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderTriangle(view, projection, ObjectVector);
     EntityNodes::RenderPlane(view, projection, ObjectVector, currentIndex, Planeobjidx);
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
-    EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
+    EntityNodes::RenderModelFiles(view, projection, ObjectVector, currentIndex, ModelIndex);
    
 }
-void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
-    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx)
+void EntityNodes::RenderModelFiles(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModelIndex)
 {
-    const int numModels = 1;
-    objectModel mesh[numModels];
-    
+         
+    if (ShouldAddObjModel) {     
+    ModelIndex = ObjectVector.size();
 
-    if (ShouldAddObjModel) {
-        ModleObjidx = ObjectVector.size();
-        std::unique_ptr<objectModel> newMesh = std::make_unique<objectModel>(currentIndex++, "Woodcrate", ModleObjidx);
+   //############### open a dialog box to load an obj model ###############
+    spx_FileDialog openModelDialog;
+    std::string modelPath = openModelDialog.openFileDialog();
+       
+    std::cout << " obj File path is" << modelPath << std::endl; // just for testing
+       
+    if (!modelPath.empty()) {
+    std::unique_ptr<Model> newMesh = std::make_unique<Model>(modelPath, false, currentIndex++, "New Model File", ModelIndex);
 
-        if (mesh[0].loadOBJ("Assets/Modles/woodcrate.obj")) {
-            mesh[0].Models(currentIndex, "Woodcrate", ModleObjidx);
-            mesh[0].Models(currentIndex, "Woodcrate", ModleObjidx);
-        }
-
-
-        switch (ModleObjidx) {
+        switch (ModelIndex) {
         case 1:
             newMesh->position = glm::vec3(0.0f, 0.0f, 0.0f);
-            newMesh->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            newMesh->scale = glm::vec3(0.5f, 0.5f, 0.5f);
             break;
 
         default:
-            newMesh->position = glm::vec3(1.0f, 2.0f, 0.0f);
-            newMesh->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            newMesh->position = glm::vec3(1.0f, 0.0f, 0.0f);
+            newMesh->scale = glm::vec3(0.5f, 0.5f, 0.5f);
             break;
         }
 
@@ -495,6 +513,11 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
         newMesh->modelMatrix = glm::scale(newMesh->modelMatrix, newMesh->scale);
 
         ObjectVector.push_back(std::move(newMesh));
+
+    }
+    else {
+        std::cout << "No file selected or dialog was conceled" << std::endl;
+    }
 
         ShouldAddObjModel = false; // Reset the flag after adding the Obj Model
     }
@@ -522,14 +545,15 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
         ShaderManager::defaultShader->setMat4("projection", projection);
         ShaderManager::defaultShader->setMat4("view", view);
 
-        if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
-            std::cout << "Dynamic cast succeeded for model at address: " << model.get() << std::endl;
+        //if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
+        if (auto* aiModels = dynamic_cast<Model*>(model.get())) {
+           // std::cout << "Dynamic cast succeeded for model at address: " << model.get() << std::endl;
 
-            ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
-            objModel->objDraw();
+            ShaderManager::defaultShader->setMat4("model", aiModels->modelMatrix);
+            aiModels->Draw(*ShaderManager::defaultShader);
         }
         else {
-            std::cout << "Dynamic cast failed for model at address: " << model.get() << std::endl;
+           // std::cout << "Dynamic cast failed for model at address: " << model.get() << std::endl;
         }
     }
 }

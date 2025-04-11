@@ -19,7 +19,7 @@ unsigned int loadTexture(const std::string& filePath) // use this one
     {
         GLenum i_format;
 
-        if (nrComponents == 1)
+        if (nrComponents == 1) // grayscale
             i_format = GL_RED;
         else if (nrComponents == 3) // jpg file
             i_format = GL_RGB;
