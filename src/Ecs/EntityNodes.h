@@ -73,12 +73,6 @@ private:
 	
 	glm::mat4 modelMatrix;
 
-		
-	// End Object Mesh Editor
-	//std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Models
-	//std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
-	//std::vector<std::unique_ptr<BaseModel>> SceneVector; // the vector for all Sky, water, 
-
 	int objectIndex; // needed
 	
 	void onRightClick(int objectId) {
