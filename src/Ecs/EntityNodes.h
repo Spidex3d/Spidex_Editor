@@ -13,11 +13,8 @@
 #include "ObjectManager.h"
 #include "SelectedDataManager.h"
 
-
 #include "../Headers/GlobalVars.h"
 
-//#include "../Object_loader\spxObjectLoader.h"
-//#include "../Object_loader\objLoader.h"
 
 class EntityNodes
 {
@@ -42,6 +39,10 @@ public:
 
 	void RenderScene(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex);
+	// gltf Model files
+	void RenderglTFFiles(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex);
+
 	// Obj Model files
 	void RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx);

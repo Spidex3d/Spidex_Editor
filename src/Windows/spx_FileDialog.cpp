@@ -16,7 +16,7 @@ std::string spx_FileDialog::openFileDialog()
         ofn.lpstrFilter = L"Image Files\0*.jpg;*.jpeg;*.png;*.bmp\0All Files\0*.*\0";
     }
     else {
-        ofn.lpstrFilter = L"Model Files\0*.obj;";
+        ofn.lpstrFilter = L"glTF Files\0*.gltf\0Obj File\0*.obj\0All Files\0*.*\0";
 
     }
     ofn.nFilterIndex = 1;

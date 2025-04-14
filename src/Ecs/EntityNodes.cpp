@@ -1,6 +1,7 @@
 #include "EntityNodes.h"
 #include "../Windows/spx_FileDialog.h"
 #include "../Object_loader\objLoader.h"
+#include "../Object_loader/Model.h"
 
 unsigned int loadTexture(const std::string& filePath);
 
@@ -146,7 +147,11 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                             break;
                         case 12: // Obj Models
                             ShouldUpdateObjModel = true;
-                           
+                            break;
+                        case 13: // Not in use
+                             break;
+                        case 14: // glTF Models file
+                            ShouldUpdateglTFModel = true;
                             break;
                         }
                     }
@@ -274,8 +279,15 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                     break;
                                 case 12: // 0bj file
                                     showObjectEditor = true;
-                                    IsTexture = false; // set to false and not show the add texture button
+                                    dialogType = false; // set to false and not show the add texture button
                                     LogInternals::Instance()->Debug("Data Selected  is a obj file");
+                                    break;
+                                case 13:
+                                    break;
+                                case 14:
+                                    showObjectEditor = true;
+                                    dialogType = false; // set to false and not show the add texture button
+                                    LogInternals::Instance()->Debug("Data Selected  is a glTF file");
                                     break;
 
 
@@ -471,7 +483,26 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderPlane(view, projection, ObjectVector, currentIndex, Planeobjidx);
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
     EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
+    EntityNodes::RenderglTFFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex);
    
+}
+void EntityNodes::RenderglTFFiles(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex)
+{
+    if (ShouldAddglTFModel) {
+        glTFModelIndex = ObjectVector.size();
+
+        std::unique_ptr<Model> newglTFMesh = std::make_unique<Model>(currentIndex++,
+            "New gltf File", glTFModelIndex);
+
+        spx_FileDialog openModelDialog;
+        std::string modelPath = openModelDialog.openFileDialog();
+
+        ObjectVector.push_back(std::move(newglTFMesh));
+
+        ShouldAddglTFModel = false;
+
+    }
 }
 void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx)

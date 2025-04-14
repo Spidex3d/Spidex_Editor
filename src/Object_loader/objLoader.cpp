@@ -210,11 +210,11 @@ bool objLoader::LoadObjTexture(const std::string& filename, GLuint& textureID)
 //void objLoader::objModels(int mesh[], int size)
 void objLoader::objModels()
 {
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
 
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(Vertex), &m_Vertices[0], GL_STATIC_DRAW);
 	// Position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
@@ -233,7 +233,7 @@ void objLoader::objDrawModels()
 {
 	if (!m_Loaded) return;
 
-	glBindVertexArray(m_VAO);
+	glBindVertexArray(VAO);
 
 	// Bind the texture for each material (assuming there is only one material for simplicity)
 	for (const auto& materialPair : materials) { // matirials
@@ -247,6 +247,8 @@ void objLoader::objDrawModels()
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+
 
 
 

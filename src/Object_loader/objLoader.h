@@ -6,11 +6,16 @@
 
 #include "../Ecs/BaseModel.h"
 #include "../Headers/GlobalVars.h"
+
 #include <stb\stb_image.h>
 
 #include <iostream>
 #include <sstream>
 #include <fstream>
+
+
+
+
 // we do need the basemode
 class objLoader : public BaseModel
 {
@@ -28,29 +33,30 @@ public:
 			shininess(32.0f), textureID(0) { }
 	};
 		
-	objLoader(int idx, const std::string& name, int ModleObjidx); // Default constructor
 	
-	~objLoader() {} // Private destructor
+	
 
 	void Initialize();
-
+	// load obj files
+	objLoader(int idx, const std::string& name, int ModleObjidx); // Default constructor
 	std::vector<std::string> split(const std::string& s, const std::string& delimiter);
-
 	bool Loadobj(const std::string& filename); // get the obj file name & path
-
 	bool LoadMTL(const std::string& filename); // NEW MTL
 	bool LoadObjTexture(const std::string& filename, GLuint& textureID);  // NEW MTL
-
 	void objModels();
-
 	void objDrawModels();
 
+	
+
+	~objLoader() {} // Private destructor
+
 	private:
-	GLuint m_VBO, m_VAO;
+	GLuint VBO, VAO, EBO;
 
 	int idx;
 	const std::string& name;
-	int ModleObjidx;
+	int ModleObjidx;  // obj files
+	int glTFModelIndex; // gltf files
 
 	bool m_Loaded;
 

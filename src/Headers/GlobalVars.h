@@ -19,10 +19,17 @@ extern const int OBJ_GRID;
 extern const int OBJ_CONE;
 extern const int OBJ_PYRAMID;
 extern const int OBJ_TRIANGEL;
+// .gltf files
+extern const int GLTF_MODEL;
+extern bool ShouldAddglTFModel;
+extern bool ShouldUpdateglTFModel;
+extern int glTFModelIndex;
+
 // .obj files
 extern const int OBJ_OBJ_MODEL;
 extern bool ShouldAddObjModel;
 extern bool ShouldUpdateObjModel;
+extern int ModleObjidx;
 
 // adding Objects
 extern bool ShouldAddCube;		// add a cube
@@ -60,10 +67,6 @@ extern int Sphereobjidx;
 extern int Triangleobjidx;
 extern int Planeobjidx;
 extern int Pyramidobjidx;
-
-// obj models
-//extern int ObjFilesidx;
-extern int ModleObjidx;
 
 // Settings Window
 extern float grid_square; // grid square size
