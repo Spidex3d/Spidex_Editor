@@ -8,6 +8,7 @@ class ShaderManager {
 public:
     static void SetupShaders();
     static Shader* defaultGridShader; // Declare the shader as a static member
+    static Shader* GLTFShader; // Declare the shader as a static member
     static Shader* LightBulbShader; // Declare the shader as a static member
     static Shader* LightCubeShader; // Declare the shader as a static member
     static Shader* defaultShader; // Declare the shader as a static member

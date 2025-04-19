@@ -1,54 +1,41 @@
 #pragma once
-#include "../Shader/Shader.h"
+#include <vector>
+#include <string>
 #include "../Ecs/BaseModel.h"
-#include "../Headers/GlobalVars.h"
-#include <json\json.hpp>
+#include <assimp\Importer.hpp>
+#include <assimp\scene.h>
+#include <assimp\postprocess.h>
 
-
-
-using json = nlohmann::json;
-
-struct Vertex {
-	glm::vec3 Position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
-};
-
-struct Texture {
-	unsigned int id;
-	std::string type;
-	std::string path;
-};
+#include "Mesh.h"
+#include "Texture.h"
 
 class Model : public BaseModel
 {
 public:
-	// load gltf files
 	Model(int inx, const std::string& name, int glTFModelIndex);
+
+	void LoadModel(const std::string& fileName);
+	//void ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+
+	void RenderModel();
+	void ClearModel();
+
 	~Model();
 
-	void LoadglTF(const std::string filename);
-
-	void DrawModel(Shader& shader);
-
-	
-
 private:
-	GLuint VBO, EBO, VAO; 
 
 	int idx;
 	const std::string& name;
 	int glTFModelIndex;
-	json JSON;
 
-	std::vector<unsigned char> getData();
-	std::vector<float> getFloat(json accessor);
-	std::vector<GLuint> getIndices(json accessor);
+	void LoadNode(aiNode* node, const aiScene* scene);
+	void LoadMesh(aiMesh* mesh, const aiScene* scene);
+	void LoadMaterials(const aiScene* scene);
 
-	std::vector<glm::vec2> groupFloatsVec2(std::vector<float> floatVec);
-	std::vector<glm::vec3> groupFloatsVec3(std::vector<float> floatVec);
-	std::vector<glm::vec4> groupFloatsVec4(std::vector<float> floatVec);
-
-
+	std::vector<Mesh*> meshList;
+	std::vector<Texture*> textureList;
+	std::vector<unsigned int> meshToTex;
 };
+
+
 

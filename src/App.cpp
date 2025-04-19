@@ -1,6 +1,7 @@
 #include "Headers\App.h"
 #include "Ecs/EntityNodes.h"
 #include "Shader\Shader.h"
+//#include "Shader\ShaderManager.h"
 
 #include "Ecs\ObjectManager.h"
 #include "Camera/Camera.h"
@@ -101,12 +102,12 @@ void App::RunApp()
 			}
 
 			EntityNodes::Instance()->ObjectEditor(entityComponents.GetModels());
-
+			
 						
 			// Darw all objects on screen
 			EntityNodes::Instance()->RenderScene(camera.GetViewMatrix(),
 				camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT),
-				entityComponents.GetModels(), currentIndex);	
+				entityComponents.GetModels(), currentIndex, *ShaderManager::defaultShader, camera);
 
 		MainScreen::Instance()->Unbinde_Frambuffer();
 		// ############################################# End Drawing Object !!! ################################
@@ -117,6 +118,7 @@ void App::RunApp()
 		glfwPollEvents();	
 
 	}
+		
 	App::AppShutdown(); // clean-up
 }
 
@@ -145,6 +147,14 @@ void App::Timer()
 
 void App::AppShutdown()
 {
+
+	delete ShaderManager::defaultGridShader;
+	delete ShaderManager::defaultShader;
+	delete ShaderManager::LightBulbShader;
+	delete ShaderManager::LightCubeShader;
+	delete ShaderManager::skyShader;
+	delete ShaderManager::SimpelColor;
+
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();

@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Object_loader\Mesh.cpp" />
     <ClCompile Include="src\Object_loader\Model.cpp" />
     <ClCompile Include="src\Object_loader\objLoader.cpp" />
     <ClCompile Include="src\Ecs\Picking.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Windows\WindowsManager.cpp" />
+    <ClCompile Include="src\Object_loader\Texture.cpp" />
     <ClCompile Include="vendors\imgui\imgui.cpp" />
     <ClCompile Include="vendors\imgui\imgui_demo.cpp" />
     <ClCompile Include="vendors\imgui\imgui_draw.cpp" />
@@ -168,6 +170,8 @@
     <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Headers\Helper.h" />
+    <ClInclude Include="src\Object_loader\Mesh.h" />
     <ClInclude Include="src\Object_loader\Model.h" />
     <ClInclude Include="src\Object_loader\objLoader.h" />
     <ClInclude Include="src\Ecs\Picking.h" />
@@ -188,6 +192,7 @@
     <ClInclude Include="src\Windows\MainScreen.h" />
     <ClInclude Include="SpdLog\LogInternals.h" />
     <ClInclude Include="src\Headers\Config.h" />
+    <ClInclude Include="src\Object_loader\Texture.h" />
     <ClInclude Include="vendors\glad\glad.h" />
     <ClInclude Include="src\Windows\WindowsManager.h" />
     <ClInclude Include="vendors\imgui\imconfig.h" />
@@ -211,6 +216,8 @@
     <None Include="src\Shader\ShaderFile\default.vert" />
     <None Include="src\Shader\ShaderFile\default_Grid.frag" />
     <None Include="src\Shader\ShaderFile\default_Grid.vert" />
+    <None Include="src\Shader\ShaderFile\gltf.frag" />
+    <None Include="src\Shader\ShaderFile\gltf.vert" />
     <None Include="src\Shader\ShaderFile\test.frag" />
     <None Include="src\Shader\ShaderFile\test.vert" />
   </ItemGroup>

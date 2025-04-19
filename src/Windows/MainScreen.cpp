@@ -147,13 +147,13 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
         
         //if (ImGui::BeginMenu("New Mesh", &ShouldAddCube)) { // as far as i can tell ShouldAddCube is not nedded
         if (ImGui::BeginMenu("Add a new mesh")) {
-            if (ImGui::MenuItem(".glTF File")) {
-                // set ShouldAddglTFModel to true then add gltf file to the tree
+            if (ImGui::MenuItem("Model File")) {
+                // set ShouldAddglTFModel to true then add a model file to the tree
                 ShouldAddglTFModel = true;
                 dialogType = false;   // sets is textured or gltf file for the opendialog box
 
             }
-            if (ImGui::MenuItem(".Obj File")) {
+            if (ImGui::MenuItem("Obj File")) {
                 // set ShouldAddObjModel to true then add obj file to the tree
                 ShouldAddObjModel = true;
                 dialogType = false;   // sets is textured or obj file for the opendialog box

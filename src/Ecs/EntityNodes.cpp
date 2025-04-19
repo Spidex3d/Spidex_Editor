@@ -2,6 +2,7 @@
 #include "../Windows/spx_FileDialog.h"
 #include "../Object_loader\objLoader.h"
 #include "../Object_loader/Model.h"
+#include "../Object_loader/Mesh.h"
 
 unsigned int loadTexture(const std::string& filePath);
 
@@ -151,7 +152,7 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                         case 13: // Not in use
                              break;
                         case 14: // glTF Models file
-                            ShouldUpdateglTFModel = true;
+                            ShouldUpdateObjModel = true;
                             break;
                         }
                     }
@@ -471,7 +472,7 @@ void EntityNodes::RenderGrid(const glm::mat4& view, const glm::mat4& projection,
 
 // ####   Render Scene
 void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection,
-    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex)
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, Shader& shader, Camera& camera)
 {
     ShaderManager::defaultShader->Use();
     ShaderManager::defaultShader->setMat4("projection", projection);
@@ -483,25 +484,99 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderPlane(view, projection, ObjectVector, currentIndex, Planeobjidx);
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
     EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
-    EntityNodes::RenderglTFFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex);
+    EntityNodes::RenderModelFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex, shader, camera);
    
 }
-void EntityNodes::RenderglTFFiles(const glm::mat4& view, const glm::mat4& projection,
-    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex)
+void EntityNodes::RenderModelFiles(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex, Shader& shader, Camera& camera)
 {
     if (ShouldAddglTFModel) {
         glTFModelIndex = ObjectVector.size();
 
-        std::unique_ptr<Model> newglTFMesh = std::make_unique<Model>(currentIndex++,
+        std::unique_ptr<Model> newGLTFModel = std::make_unique<Model>(currentIndex++,
             "New gltf File", glTFModelIndex);
 
         spx_FileDialog openModelDialog;
         std::string modelPath = openModelDialog.openFileDialog();
+        // Add some error handeling here
+        if (modelPath.empty()) {
+            std::cerr << "No file selected or invalid file path." << std::endl;
+            ShouldAddglTFModel = false;
+            return;
+        }
+        std::cout << "Loading Model from: " << modelPath << std::endl;
+        // Load the glTF model
+        try {
+           // newGLTFModel->LoadglTF(modelPath.c_str());
+            newGLTFModel->LoadModel(modelPath.c_str());
+            //newGLTFModel->Model(modelPath.c_str());
+            std::cout << "Successfully loaded glTF model." << std::endl;
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Failed to load glTF model: " << e.what() << std::endl;
+            ShouldAddglTFModel = false;
+            return;
+        }
 
-        ObjectVector.push_back(std::move(newglTFMesh));
+        switch (glTFModelIndex) {
+        case 1:
+            newGLTFModel->position = glm::vec3(0.0f, 0.0f, 0.0f);
+            newGLTFModel->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            break;
+
+        default:
+            newGLTFModel->position = glm::vec3(1.0f, 0.0f, 0.0f);
+            newGLTFModel->scale = glm::vec3(0.5f, 0.5f, 0.5f);
+            break;
+        }
+
+       newGLTFModel->modelMatrix = glm::mat4(1.0f);
+       newGLTFModel->modelMatrix = glm::translate(newGLTFModel->modelMatrix, newGLTFModel->position);
+       newGLTFModel->modelMatrix = glm::scale(newGLTFModel->modelMatrix, newGLTFModel->scale);
+       
+
+        ObjectVector.push_back(std::move(newGLTFModel));
 
         ShouldAddglTFModel = false;
 
+    }
+
+    if (ShouldUpdateglTFModel) { // Edit and move obj model
+        int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+
+        if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
+            glm::vec3 newglTFModelPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]);
+            ObjectVector[selectedIndex]->position = newglTFModelPosition;
+
+            glm::vec3 newglTFModelScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]);
+            ObjectVector[selectedIndex]->scale = newglTFModelScale;
+
+            ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
+            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newglTFModelPosition);
+            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newglTFModelScale);
+        }
+
+        ShouldUpdateglTFModel = false; // Reset the flag after Editing the gltf Model
+    }
+
+    for (const auto& gltfmodel : ObjectVector) {
+        // GLTFShader
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->setMat4("view", view);
+
+        if (auto* glTFModel = dynamic_cast<Model*>(gltfmodel.get())) {
+
+            ShaderManager::defaultShader->setMat4("model", glTFModel->modelMatrix);
+            //ShaderManager::defaultShader->setInt("textureMap", 0);
+            ShaderManager::defaultShader->setInt("baseColorMap", 0);
+
+            glTFModel->RenderModel();
+           
+        }
+        else {
+
+        }
     }
 }
 void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
@@ -511,32 +586,32 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
     if (ShouldAddObjModel) {     
     ModleObjidx = ObjectVector.size();
     
-    std::unique_ptr<objLoader> newMesh = std::make_unique<objLoader>(currentIndex++, "New ObjFile", ModleObjidx);
+    std::unique_ptr<objLoader> newObjModel = std::make_unique<objLoader>(currentIndex++, "New ObjFile", ModleObjidx);
    
     spx_FileDialog openModelDialog;
     std::string modelPath = openModelDialog.openFileDialog();
            
-        if (newMesh->Loadobj(modelPath)) {
-            newMesh->objModels();          
+        if (newObjModel->Loadobj(modelPath)) {
+            newObjModel->objModels();          
         }
         
         switch (ModleObjidx) {
         case 1:
-            newMesh->position = glm::vec3(0.0f, 0.0f, 0.0f);
-            newMesh->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            newObjModel->position = glm::vec3(0.0f, 0.0f, 0.0f);
+            newObjModel->scale = glm::vec3(1.0f, 1.0f, 1.0f);
             break;
 
         default:
-            newMesh->position = glm::vec3(1.0f, 0.0f, 0.0f);
-            newMesh->scale = glm::vec3(0.5f, 0.5f, 0.5f);
+            newObjModel->position = glm::vec3(1.0f, 0.0f, 0.0f);
+            newObjModel->scale = glm::vec3(0.5f, 0.5f, 0.5f);
             break;
         }
 
-        newMesh->modelMatrix = glm::mat4(1.0f);
-        newMesh->modelMatrix = glm::translate(newMesh->modelMatrix, newMesh->position);
-        newMesh->modelMatrix = glm::scale(newMesh->modelMatrix, newMesh->scale);
+        newObjModel->modelMatrix = glm::mat4(1.0f);
+        newObjModel->modelMatrix = glm::translate(newObjModel->modelMatrix, newObjModel->position);
+        newObjModel->modelMatrix = glm::scale(newObjModel->modelMatrix, newObjModel->scale);
 
-        ObjectVector.push_back(std::move(newMesh));
+        ObjectVector.push_back(std::move(newObjModel));
       
         ShouldAddObjModel = false; // Reset the flag after adding the Obj Model
     }
@@ -545,15 +620,15 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
         int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
 
         if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
-            glm::vec3 newMeshPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]);
-            ObjectVector[selectedIndex]->position = newMeshPosition;
+            glm::vec3 newObjModelPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]);
+            ObjectVector[selectedIndex]->position = newObjModelPosition;
 
-            glm::vec3 newMeshScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]);
-            ObjectVector[selectedIndex]->scale = newMeshScale;
+            glm::vec3 newObjModelScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]);
+            ObjectVector[selectedIndex]->scale = newObjModelScale;
 
             ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
-            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newMeshPosition);
-            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newMeshScale);
+            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newObjModelPosition);
+            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newObjModelScale);
         }
 
         ShouldUpdateObjModel = false; // Reset the flag after Editing the Obj Model
@@ -568,7 +643,7 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
         if (auto* objModel = dynamic_cast<objLoader*>(model.get())) {
            
             ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
-           
+            
             objModel->objDrawModels();
         }
         else {

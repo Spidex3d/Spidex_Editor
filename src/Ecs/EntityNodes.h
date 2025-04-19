@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 
 #include "../Shader/ShaderManager.h"
+#include "../Camera/Camera.h"
 
 #include <stb\stb_image.h>
 
@@ -38,10 +39,10 @@ public:
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Gridobjidx);
 
 	void RenderScene(const glm::mat4& view, const glm::mat4& projection,
-		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex);
-	// gltf Model files
-	void RenderglTFFiles(const glm::mat4& view, const glm::mat4& projection,
-		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex);
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, Shader& shader, Camera& camera);
+	//// gltf Model files
+	void RenderModelFiles(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex, Shader& shader, Camera& camera);
 
 	// Obj Model files
 	void RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,

@@ -84,6 +84,12 @@
     <ClCompile Include="src\Object_loader\objLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Object_loader\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Object_loader\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\Object_loader\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -182,6 +188,15 @@
     <ClInclude Include="src\Object_loader\objLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Headers\Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Object_loader\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Object_loader\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\Object_loader\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -204,6 +219,8 @@
     <None Include="src\Shader\ShaderFile\test.frag" />
     <None Include="src\Shader\ShaderFile\default.frag" />
     <None Include="src\Shader\ShaderFile\default.vert" />
+    <None Include="src\Shader\ShaderFile\gltf.vert" />
+    <None Include="src\Shader\ShaderFile\gltf.frag" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="vendors\assimp\lib\assimp-vc143-mtd.lib" />
