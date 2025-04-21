@@ -123,5 +123,6 @@ void main()
     color += emissive;
 
     FragColor = vec4(color, baseColor.a);
+   // FragColor = vec4(TexCoords, 0.0, 1.0);
 }
 

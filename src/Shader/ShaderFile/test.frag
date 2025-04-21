@@ -1,25 +1,19 @@
 #version 460
-out vec4 FragColor;
+in vec3 FragPos;
+in vec3 Normal;
+in vec2 TexCoords;  // UV coordinates from the vertex shader
 
-void main()
-{
-    FragColor = vec4(1.0, 0.0, 0.2, 1.0); 
+out vec4 FragColor; // Output color
+
+uniform sampler2D baseColorMap;			// Albedo/BaseColor map
+uniform sampler2D metallicRoughnessMap; // Metallic-Roughness map
+uniform sampler2D normalMap;			// Normal map
+uniform sampler2D emissiveMap;        // Emissive map (optional)
+
+
+void main() {
+
+ vec4 baseColor = texture(baseColorMap, TexCoords);
+
+    FragColor = texture(baseColorMap, TexCoords); // Sample texture color at UV coordinates
 }
-
-//#version 460
-//out vec4 FragColor;
-//
-//
-//    in vec3 myColor;
-//    in vec2 TexCoord;
-//    in vec3 FragPos;
-//
-//    uniform sampler2D myTexture;
-//    void main()
-//    {
-//     
-//       FragColor = texture(myTexture, TexCoord);
-//       //FragColor = vec4(myColor, 1.0f);
-//       // FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-//
-//    }

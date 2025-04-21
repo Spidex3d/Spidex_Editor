@@ -2,7 +2,6 @@
 
 #include<glad/glad.h>
 
-
 class Mesh
 {
 public:
@@ -18,6 +17,5 @@ public:
 private:
 	GLuint mVAO, mVBO, mEBO;
 	GLsizei indexCount;
-
 
 };

@@ -561,15 +561,15 @@ void EntityNodes::RenderModelFiles(const glm::mat4& view, const glm::mat4& proje
 
     for (const auto& gltfmodel : ObjectVector) {
         // GLTFShader
-        ShaderManager::defaultShader->Use();
-        ShaderManager::defaultShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::TestShadre->Use();
+        ShaderManager::TestShadre->setMat4("projection", projection);
+        ShaderManager::TestShadre->setMat4("view", view);
 
         if (auto* glTFModel = dynamic_cast<Model*>(gltfmodel.get())) {
 
-            ShaderManager::defaultShader->setMat4("model", glTFModel->modelMatrix);
-            //ShaderManager::defaultShader->setInt("textureMap", 0);
-            ShaderManager::defaultShader->setInt("baseColorMap", 0);
+            ShaderManager::TestShadre->setMat4("model", glTFModel->modelMatrix);
+            
+            
 
             glTFModel->RenderModel();
            
@@ -633,16 +633,16 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
 
         ShouldUpdateObjModel = false; // Reset the flag after Editing the Obj Model
     }
-
+    // defaultShader
     for (const auto& model : ObjectVector) {
-        ShaderManager::defaultShader->Use();
-        ShaderManager::defaultShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::TestShadre->Use();
+        ShaderManager::TestShadre->setMat4("projection", projection);
+        ShaderManager::TestShadre->setMat4("view", view);
 
         //if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
         if (auto* objModel = dynamic_cast<objLoader*>(model.get())) {
            
-            ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
+            ShaderManager::TestShadre->setMat4("model", objModel->modelMatrix);
             
             objModel->objDrawModels();
         }

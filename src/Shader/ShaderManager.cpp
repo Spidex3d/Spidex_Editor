@@ -10,6 +10,7 @@ Shader * ShaderManager::LightCubeShader = nullptr;   // the obj shaders
 Shader * ShaderManager::defaultShader = nullptr;   // the obj shaders 
 Shader * ShaderManager::skyShader = nullptr;   // the sky shaders 
 Shader * ShaderManager::SimpelColor = nullptr;   // the sky shaders 
+Shader * ShaderManager::TestShadre = nullptr;   // the sky shaders 
 
 glm::vec3 lightPos(1.2f, 1.5f, 2.0f);
 
@@ -23,6 +24,7 @@ void ShaderManager::SetupShaders() {
 
     GLTFShader = new Shader("src/Shader/ShaderFile/gltf.vert", "src/Shader/ShaderFile/gltf.frag");
     defaultShader = new Shader("src/Shader/ShaderFile/default.vert", "src/Shader/ShaderFile/default.frag");
+    TestShadre = new Shader("src/Shader/ShaderFile/test.vert", "src/Shader/ShaderFile/test.frag");
     
 }
 

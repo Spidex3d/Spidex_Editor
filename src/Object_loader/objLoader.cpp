@@ -185,7 +185,7 @@ bool objLoader::LoadObjTexture(const std::string& filename, GLuint& textureID)
 			i_format = GL_RED;
 		else if (nrComponents == 3) // jpg, 24-bit BMP
 			i_format = GL_RGB;
-		else if (nrComponents == 4) // png, 23-bit BMP
+		else if (nrComponents == 4) // png, 32-bit BMP
 			i_format = GL_RGBA;
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
