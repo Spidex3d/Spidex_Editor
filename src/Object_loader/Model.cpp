@@ -73,7 +73,7 @@ std::pair<std::vector<GLfloat>, std::vector<unsigned int>> Model::ProcessMesh(ai
 				<< " UV: y " << mesh->mTextureCoords[0][i].y << std::endl*/;
 
 			vertices.insert(vertices.end(), {
-				mesh->mTextureCoords[0][i].x,    // U coordinate
+				mesh->mTextureCoords[0][i].x,		// U coordinate
 				1.0f - mesh->mTextureCoords[0][i].y // Flip V coordinate
 				});
 		}

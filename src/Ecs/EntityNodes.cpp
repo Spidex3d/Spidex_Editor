@@ -2,7 +2,7 @@
 #include "../Windows/spx_FileDialog.h"
 #include "../Object_loader\objLoader.h"
 #include "../Object_loader/Model.h"
-#include "../Object_loader/Mesh.h"
+//#include "../Object_loader/Mesh.h"
 
 unsigned int loadTexture(const std::string& filePath);
 
@@ -607,8 +607,8 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
             break;
         }
 
-        newObjModel->modelMatrix = glm::mat4(1.0f);
-        newObjModel->modelMatrix = glm::translate(newObjModel->modelMatrix, newObjModel->position);
+       // newObjModel->modelMatrix = glm::mat4(1.0f);
+        newObjModel->modelMatrix = glm::translate(glm::mat4(1.0f), newObjModel->position);
         newObjModel->modelMatrix = glm::scale(newObjModel->modelMatrix, newObjModel->scale);
 
         ObjectVector.push_back(std::move(newObjModel));
