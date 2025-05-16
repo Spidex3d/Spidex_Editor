@@ -1,8 +1,8 @@
 #include "EntityNodes.h"
 #include "../Windows/spx_FileDialog.h"
 #include "../Object_loader\objLoader.h"
-#include "../Object_loader/Model.h"
-//#include "../Object_loader/Mesh.h"
+
+#include "../Object_loader/gltf.h"
 
 unsigned int loadTexture(const std::string& filePath);
 
@@ -88,7 +88,6 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                 }
             }
         }
-
 
         if (creatMap != 0) {
             ImGui::Text("Your selected Texture");
@@ -474,26 +473,26 @@ void EntityNodes::RenderGrid(const glm::mat4& view, const glm::mat4& projection,
 void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, Shader& shader, Camera& camera)
 {
-    ShaderManager::defaultShader->Use();
+    /*ShaderManager::defaultShader->Use();
     ShaderManager::defaultShader->setMat4("projection", projection);
     ShaderManager::defaultShader->setMat4("view", view);
-    ShaderManager::defaultShader->setMat4("model", modelMatrix);
+    ShaderManager::defaultShader->setMat4("model", modelMatrix);*/
 
     EntityNodes::RenderCube(view, projection, ObjectVector, currentIndex, Cubeobjidx);
     EntityNodes::RenderTriangle(view, projection, ObjectVector);
     EntityNodes::RenderPlane(view, projection, ObjectVector, currentIndex, Planeobjidx);
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
     EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
-    EntityNodes::RenderModelFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex, shader, camera);
+    EntityNodes::RendergltfFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex, shader, camera);
    
 }
-void EntityNodes::RenderModelFiles(const glm::mat4& view, const glm::mat4& projection,
+void EntityNodes::RendergltfFiles(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex, Shader& shader, Camera& camera)
 {
     if (ShouldAddglTFModel) {
         glTFModelIndex = ObjectVector.size();
 
-        std::unique_ptr<Model> newGLTFModel = std::make_unique<Model>(currentIndex++,
+        std::unique_ptr<Gltf> newGLTFModel = std::make_unique<Gltf>(currentIndex++,
             "New gltf File", glTFModelIndex);
 
         spx_FileDialog openModelDialog;
@@ -504,16 +503,15 @@ void EntityNodes::RenderModelFiles(const glm::mat4& view, const glm::mat4& proje
             ShouldAddglTFModel = false;
             return;
         }
-        std::cout << "Loading Model from: " << modelPath << std::endl;
         // Load the glTF model
-        try {
-           // newGLTFModel->LoadglTF(modelPath.c_str());
-            newGLTFModel->LoadModel(modelPath.c_str());
-            //newGLTFModel->Model(modelPath.c_str());
-            std::cout << "Successfully loaded glTF model." << std::endl;
-        }
-        catch (const std::exception& e) {
-            std::cerr << "Failed to load glTF model: " << e.what() << std::endl;
+        
+        std::string binPath = modelPath;
+        binPath.replace(binPath.find(".gltf"), 5, ".bin");
+
+        std::cout << "Loading Gltf Model from: " << modelPath << std::endl;
+
+        if (!newGLTFModel->Load(modelPath, binPath)) {
+            std::cerr << "Failed to load gltf model: " << std::endl;
             ShouldAddglTFModel = false;
             return;
         }
@@ -530,8 +528,8 @@ void EntityNodes::RenderModelFiles(const glm::mat4& view, const glm::mat4& proje
             break;
         }
 
-       newGLTFModel->modelMatrix = glm::mat4(1.0f);
-       newGLTFModel->modelMatrix = glm::translate(newGLTFModel->modelMatrix, newGLTFModel->position);
+      
+       newGLTFModel->modelMatrix = glm::translate(glm::mat4(1.0f), newGLTFModel->position);
        newGLTFModel->modelMatrix = glm::scale(newGLTFModel->modelMatrix, newGLTFModel->scale);
        
 
@@ -559,24 +557,18 @@ void EntityNodes::RenderModelFiles(const glm::mat4& view, const glm::mat4& proje
         ShouldUpdateglTFModel = false; // Reset the flag after Editing the gltf Model
     }
 
-    for (const auto& gltfmodel : ObjectVector) {
+    for (const auto& model : ObjectVector) {
         // GLTFShader
-        ShaderManager::TestShadre->Use();
-        ShaderManager::TestShadre->setMat4("projection", projection);
-        ShaderManager::TestShadre->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->setMat4("view", view);
 
-        if (auto* glTFModel = dynamic_cast<Model*>(gltfmodel.get())) {
+        for (const auto& model : ObjectVector) {
 
-            ShaderManager::TestShadre->setMat4("model", glTFModel->modelMatrix);
-            
-            
+            if (auto* gltfModel = dynamic_cast<Gltf*>(model.get())) {
 
-            glTFModel->RenderModel();
-           
-        }
-        else {
-
-        }
+                gltfModel->Draw(shader, camera);
+            }
+        }        
     }
 }
 void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
@@ -607,7 +599,6 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
             break;
         }
 
-       // newObjModel->modelMatrix = glm::mat4(1.0f);
         newObjModel->modelMatrix = glm::translate(glm::mat4(1.0f), newObjModel->position);
         newObjModel->modelMatrix = glm::scale(newObjModel->modelMatrix, newObjModel->scale);
 
@@ -635,14 +626,14 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
     }
     // defaultShader
     for (const auto& model : ObjectVector) {
-        ShaderManager::TestShadre->Use();
-        ShaderManager::TestShadre->setMat4("projection", projection);
-        ShaderManager::TestShadre->setMat4("view", view);
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->setMat4("view", view);
 
         //if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
         if (auto* objModel = dynamic_cast<objLoader*>(model.get())) {
            
-            ShaderManager::TestShadre->setMat4("model", objModel->modelMatrix);
+            ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
             
             objModel->objDrawModels();
         }

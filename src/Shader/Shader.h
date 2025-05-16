@@ -10,6 +10,8 @@
 class Shader
 {
 public:
+    
+
     unsigned int ID;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
@@ -99,7 +101,19 @@ public:
     // ------------------------------------------------------------------------
     void Use()
     {
+        
         glUseProgram(ID);
+        /* GLint count;
+        glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &count);
+        for (int i = 0; i < count; ++i) {
+            char name[256];
+            GLsizei length;
+            GLint size;
+            GLenum type;
+            glGetActiveUniform(ID, i, sizeof(name), &length, &size, &type, name);
+            std::cout << "Active Uniform: " << name << std::endl;
+            
+        }*/
     }
     // utility uniform functions
     // ------------------------------------------------------------------------
@@ -110,9 +124,7 @@ public:
     // ------------------------------------------------------------------------
     void setInt(const std::string& name, int value) const
     {
-        glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
-        std::cout << "Uniform location for 'textureMap': "
-            << glGetUniformLocation(ID, "textureMap") << std::endl;
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
     }
     // ------------------------------------------------------------------------
     void setFloat(const std::string& name, float value) const

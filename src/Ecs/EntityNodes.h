@@ -41,7 +41,7 @@ public:
 	void RenderScene(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, Shader& shader, Camera& camera);
 	//// gltf Model files
-	void RenderModelFiles(const glm::mat4& view, const glm::mat4& projection,
+	void RendergltfFiles(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex, Shader& shader, Camera& camera);
 
 	// Obj Model files
@@ -60,12 +60,7 @@ public:
 	void RenderPyramid(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Planeobjidx);
 
-	
-
 	void DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector);
-	
-
-
 	
 private:
 	// Object Mesh Editor

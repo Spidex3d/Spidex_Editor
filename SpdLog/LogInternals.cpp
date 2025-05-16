@@ -23,9 +23,10 @@ bool LogInternals::Initialize()
 	SpidexLogger->sinks().push_back(debugLogFileSink);
 
 	SpidexLogger->set_level(spdlog::level::trace);
-	SpidexLogger->set_pattern("%d.%m.%Y %T: [%n] :%^ %v%$");
-	/*
-	SpidexLogger->log(spdlog::level::trace, "TRACE");
+	SpidexLogger->set_pattern("[%d.%m.%Y %T:] [%n] :%^ %v%l%$");
+	//SpidexLogger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v"); // Set the log format
+	
+	/*SpidexLogger->log(spdlog::level::trace, "TRACE");
 	SpidexLogger->log(spdlog::level::debug, "DEBUG");
 	SpidexLogger->log(spdlog::level::info, "INFO");
 	SpidexLogger->log(spdlog::level::warn, "WARN");

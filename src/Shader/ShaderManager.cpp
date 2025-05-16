@@ -4,7 +4,7 @@
 
 // Define the static member
 Shader * ShaderManager::defaultGridShader = nullptr; // the grid shader
-Shader * ShaderManager::GLTFShader = nullptr;
+Shader * ShaderManager::defaultGLTFShader = nullptr;
 Shader * ShaderManager::LightBulbShader = nullptr;   // the light bulb shader
 Shader * ShaderManager::LightCubeShader = nullptr;   // the obj shaders 
 Shader * ShaderManager::defaultShader = nullptr;   // the obj shaders 
@@ -22,9 +22,11 @@ void ShaderManager::SetupShaders() {
     // Initialize the shader
     defaultGridShader = new Shader("src/Shader/ShaderFile/default_Grid.vert", "src/Shader/ShaderFile/default_Grid.frag");
 
-    GLTFShader = new Shader("src/Shader/ShaderFile/gltf.vert", "src/Shader/ShaderFile/gltf.frag");
-    defaultShader = new Shader("src/Shader/ShaderFile/default.vert", "src/Shader/ShaderFile/default.frag");
-    TestShadre = new Shader("src/Shader/ShaderFile/test.vert", "src/Shader/ShaderFile/test.frag");
+    //defaultGLTFShader = new Shader("src/Shader/ShaderFile/gltf.vert", "src/Shader/ShaderFile/gltf.frag");
+    defaultShader = new Shader("src/Shader/ShaderFile/gltf.vert", "src/Shader/ShaderFile/gltf.frag");
+
+    //defaultShader = new Shader("src/Shader/ShaderFile/default.vert", "src/Shader/ShaderFile/default.frag");
+    
     
 }
 

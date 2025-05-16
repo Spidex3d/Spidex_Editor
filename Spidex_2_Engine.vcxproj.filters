@@ -87,12 +87,6 @@
     <ClCompile Include="src\Object_loader\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Object_loader\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Object_loader\Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Headers\Config.h">
@@ -194,10 +188,7 @@
     <ClInclude Include="src\Object_loader\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Object_loader\Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Object_loader\Model.h">
+    <ClInclude Include="src\Object_loader\gltf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
