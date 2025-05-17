@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Headers\Helper.h" />
+    <ClInclude Include="src\Lighting\Lighting.h" />
     <ClInclude Include="src\Object_loader\gltf.h" />
     <ClInclude Include="src\Object_loader\objLoader.h" />
     <ClInclude Include="src\Ecs\Picking.h" />

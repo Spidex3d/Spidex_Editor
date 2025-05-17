@@ -29,9 +29,11 @@ int ModleObjidx = 0;
 
 bool ShouldAddCube = false;     // add a new cube
 bool ShouldAddPlane = false;    // add a new plane
+bool ShouldAddSphere = false;
 bool ShouldAddPyramid = false;
 
 bool ShouldUpdateCube = false;  // update the cube
+bool ShouldUpdateSphere = false;  // update the cube
 bool ShouldUpdatePlane = false; // update the plane
 bool ShouldUpdatePyramid = false; // update the pyramid
 
@@ -62,6 +64,7 @@ int Cubeobjidx = 0;   // Definition and initialization of the global variable
 int Planeobjidx = -1; //0
 int Pyramidobjidx = -1; //0
 int Sphereobjidx = 0;
+
 int Triangleobjidx = 0;
 
 

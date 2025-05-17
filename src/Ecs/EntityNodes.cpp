@@ -131,6 +131,9 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                         case 4: // Line
                             break;
                         case 5: // OBJ_SPHERE
+                            ShouldUpdateSphere = true;
+                            std::cout << "Cube Object update index set to: " <<
+                                SelectedDataManager::Instance().GetSelectedData()->objectIndex << " Type " << OBJ_SPHERE << std::endl;
                             break;
                         case 6: // OBJ_CYLINDER
                             break;
@@ -259,6 +262,8 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                    
                                     break;
                                 case 5:
+                                    showObjectEditor = true;
+                                    IsTexture = true;
                                     break;
                                 case 6:
                                     break;
@@ -473,12 +478,9 @@ void EntityNodes::RenderGrid(const glm::mat4& view, const glm::mat4& projection,
 void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, Shader& shader, Camera& camera)
 {
-    /*ShaderManager::defaultShader->Use();
-    ShaderManager::defaultShader->setMat4("projection", projection);
-    ShaderManager::defaultShader->setMat4("view", view);
-    ShaderManager::defaultShader->setMat4("model", modelMatrix);*/
-
+   
     EntityNodes::RenderCube(view, projection, ObjectVector, currentIndex, Cubeobjidx);
+    EntityNodes::RenderSphere(view, projection, ObjectVector, currentIndex, Sphereobjidx);
     EntityNodes::RenderTriangle(view, projection, ObjectVector);
     EntityNodes::RenderPlane(view, projection, ObjectVector, currentIndex, Planeobjidx);
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
@@ -504,7 +506,6 @@ void EntityNodes::RendergltfFiles(const glm::mat4& view, const glm::mat4& projec
             return;
         }
         // Load the glTF model
-        
         std::string binPath = modelPath;
         binPath.replace(binPath.find(".gltf"), 5, ".bin");
 
@@ -527,8 +528,7 @@ void EntityNodes::RendergltfFiles(const glm::mat4& view, const glm::mat4& projec
             newGLTFModel->scale = glm::vec3(0.5f, 0.5f, 0.5f);
             break;
         }
-
-      
+              
        newGLTFModel->modelMatrix = glm::translate(glm::mat4(1.0f), newGLTFModel->position);
        newGLTFModel->modelMatrix = glm::scale(newGLTFModel->modelMatrix, newGLTFModel->scale);
        
@@ -675,8 +675,9 @@ void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
             break;
         }
 
-        newCube->modelMatrix = glm::mat4(1.0f);
-        newCube->modelMatrix = glm::translate(newCube->modelMatrix, newCube->position);
+       // newCube->modelMatrix = glm::mat4(1.0f);
+       // newCube->modelMatrix = glm::translate(newCube->modelMatrix, newCube->position);
+        newCube->modelMatrix = glm::translate(glm::mat4(1.0f), newCube->position);
         newCube->modelMatrix = glm::scale(newCube->modelMatrix, newCube->scale);
 
         newCube->textureID = loadTexture("Textures/default_1.jpg");
@@ -731,6 +732,88 @@ void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
     }
 }
 
+void EntityNodes::RenderSphere(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Sphereobjidx)
+{
+    stbi_set_flip_vertically_on_load(true);
+
+    if (ShouldAddSphere) { // so we add the cube
+        Sphereobjidx = ObjectVector.size();
+        std::unique_ptr<SphereModel> newSphere = std::make_unique<SphereModel>(currentIndex++, "DefaultSphere", Sphereobjidx);
+
+        switch (Sphereobjidx) {
+        case 1:
+            newSphere->position = glm::vec3(0.0f, 0.0f, 0.0f);
+            newSphere->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            break;
+        case 2:
+            newSphere->position = glm::vec3(1.5f, 0.0f, 0.0f);
+            newSphere->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            break;
+
+        case 3:
+            newSphere->position = glm::vec3(2.0f, 0.0f, 0.0f);
+            newSphere->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            break;
+        default:
+            newSphere->position = glm::vec3(posx, 2.0f, 0.0f);
+            newSphere->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            posx += 1.5;
+            break;
+        }
+
+        newSphere->modelMatrix = glm::translate(glm::mat4(1.0f), newSphere->position);
+        newSphere->modelMatrix = glm::scale(newSphere->modelMatrix, newSphere->scale);
+
+        newSphere->textureID = loadTexture("Textures/default_1.jpg");
+
+        ObjectVector.push_back(std::move(newSphere));
+
+        ShouldAddSphere = false; // Reset the flag after adding the cube
+    }
+
+    if (ShouldUpdateSphere) { // then we update the cube position and scale
+
+        int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+
+        if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) { // -1 to remove the grid
+
+            glm::vec3 newSpherePosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]); // New position
+            ObjectVector[selectedIndex]->position = newSpherePosition;
+
+            glm::vec3 newSphereScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
+            ObjectVector[selectedIndex]->scale = newSphereScale;
+
+            //glm::mat4 newCubeRotation = glm::mat4(object_Rotation[0], object_Rotation[1], object_Rotation[2], object_Rotation[3]); // New Rotation
+           // ObjectVector[index]->rotation = newCubeRotation;
+
+            ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
+            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newSpherePosition);
+            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newSphereScale);
+
+        }
+
+        ShouldUpdateSphere = false;
+
+    }
+
+    for (const auto& model : ObjectVector) {
+        //ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->setMat4("view", view);
+
+        if (auto* sphere = dynamic_cast<SphereModel*>(model.get())) {
+            modelMatrix = glm::mat4(1.0f);
+            ShaderManager::defaultShader->setMat4("model", sphere->modelMatrix);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, sphere->textureID);
+            sphere->DrawSphere();
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
+}
+
 void EntityNodes::RenderTriangle(const glm::mat4& view, const glm::mat4& projection,
     const std::vector<std::unique_ptr<BaseModel>>& models)
 {
@@ -759,7 +842,6 @@ void EntityNodes::RenderPlane(const glm::mat4& view, const glm::mat4& projection
     if (ShouldAddPlane) {
         Planeobjidx = ObjectVector.size();
 
-        //std::unique_ptr<PlaneModel> newPlane = std::make_unique<PlaneModel>(currentIndex++, "DefaultPlane", Planeobjidx++);
         std::unique_ptr<PlaneModel> newPlane = std::make_unique<PlaneModel>(currentIndex, "DefaultPlane", Planeobjidx);
         switch (Planeobjidx) {
         case 0:
@@ -782,8 +864,7 @@ void EntityNodes::RenderPlane(const glm::mat4& view, const glm::mat4& projection
             break;
         }
 
-        newPlane->modelMatrix = glm::mat4(1.0f);
-        newPlane->modelMatrix = glm::translate(newPlane->modelMatrix, newPlane->position);
+        newPlane->modelMatrix = glm::translate(glm::mat4(1.0f), newPlane->position);
         newPlane->modelMatrix = glm::scale(newPlane->modelMatrix, newPlane->scale);
         
         newPlane->textureID = loadTexture("Textures/default_1.jpg");
@@ -877,8 +958,7 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
             break;
         }
 
-        newPyramid->modelMatrix = glm::mat4(1.0f);
-        newPyramid->modelMatrix = glm::translate(newPyramid->modelMatrix, newPyramid->position);
+        newPyramid->modelMatrix = glm::translate(glm::mat4(1.0f), newPyramid->position);
         newPyramid->modelMatrix = glm::scale(newPyramid->modelMatrix, newPyramid->scale);
        
         newPyramid->modelMatrix = glm::rotate(newPyramid->modelMatrix, angle, glm::vec3(1.0f, 0.0f, 0.0f));

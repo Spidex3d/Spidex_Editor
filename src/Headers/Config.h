@@ -17,12 +17,13 @@
 const int SCR_WIDTH = 1920;
 const int SCR_HEIGHT = 1080;
 
+#define M_PI 3.14159265358979323846
 
 
-static GLuint VAO;
-static GLuint VBO;
-static GLuint FBO;
-static GLuint RBO;
+//static GLuint VAO;
+//static GLuint VBO;
+//static GLuint FBO;
+//static GLuint RBO;
 
 enum FontIndex : int {
 	REG_FONT_INDEX = 0,

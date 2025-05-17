@@ -33,10 +33,12 @@ extern int ModleObjidx;
 
 // adding Objects
 extern bool ShouldAddCube;		// add a cube
+extern bool ShouldAddSphere;		// add a cube
 extern bool ShouldAddPlane;		// add a plane
 extern bool ShouldAddPyramid;	// add a pyramid
 // updating Objects
 extern bool ShouldUpdateCube;	// update the cube
+extern bool ShouldUpdateSphere;	// update the sphere
 extern bool ShouldUpdatePlane;	// update the plane
 extern bool ShouldUpdatePyramid;	// update the plane
 

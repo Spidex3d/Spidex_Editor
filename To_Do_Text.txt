@@ -13,7 +13,7 @@ we need to have a move or fly around our new world to see how wonderful it all i
 1 remove the control panel window
 2 change the object edit window 
 3 set up a plane blue sky box
-4 loade an 3d start object obj or fbx file, with assimp file loader
-5 loade an obj or fbx file from a list (maybe a image of the object)
+4 loade an 3d start object obj or fbx file, with my gltf file loader
+5 loade an obj, gltf or fbx file from a list (maybe a image of the object)
 6 What's next Lights or terrian
  save the scene

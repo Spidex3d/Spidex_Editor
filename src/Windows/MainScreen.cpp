@@ -170,7 +170,10 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
                  ShouldAddPlane = true;
              }
              if (ImGui::MenuItem("Circle")) {}
-             if (ImGui::MenuItem("Sphere")) {}
+             if (ImGui::MenuItem("Sphere")) {
+                 ShouldAddSphere = true;
+                 dialogType = true;   // sets dialogType is textured or obj file for the opendialog box
+             }
              if (ImGui::MenuItem("Cylinder")) {}
              if (ImGui::MenuItem("Torus")) {}
              if (ImGui::MenuItem("Grid")) {}

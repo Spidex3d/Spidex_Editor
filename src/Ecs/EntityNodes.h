@@ -51,7 +51,11 @@ public:
 	// Cube
 	void RenderCube(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Cubeobjidx);
-		// Triangel
+
+	// Sphere
+	void RenderSphere(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Sphereobjidx);
+	// Triangel
 	void RenderTriangle(const glm::mat4& view, const glm::mat4& projection, const std::vector<std::unique_ptr<BaseModel>>& models);
 	// Plane
 	void RenderPlane(const glm::mat4& view, const glm::mat4& projection,
