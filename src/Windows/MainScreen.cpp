@@ -168,6 +168,7 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
              if (ImGui::MenuItem("Plane")) {
                  // set ShouldAddPlane to true then add plane to the tree
                  ShouldAddPlane = true;
+                 dialogType = true;
              }
              if (ImGui::MenuItem("Circle")) {}
              if (ImGui::MenuItem("Sphere")) {
@@ -185,10 +186,18 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Add a new Light")) {       
-            if (ImGui::MenuItem("Sun Light")) {}
-            if (ImGui::MenuItem("Point Light")) {}
-            if (ImGui::MenuItem("Spot Light")) {}
-            if (ImGui::MenuItem("Area Light")) {}
+            if (ImGui::MenuItem("Sun Light")) {
+                ShouldAddLight = true;
+            }
+            if (ImGui::MenuItem("Point Light")) {
+                ShouldAddLight = true;
+            }
+            if (ImGui::MenuItem("Spot Light")) {
+                ShouldAddLight = true;
+            }
+            if (ImGui::MenuItem("Area Light")) {
+                ShouldAddLight = true;
+            }
 
            ImGui::EndMenu();
         }

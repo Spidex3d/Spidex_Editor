@@ -12,6 +12,7 @@
 #include <stb\stb_image.h>
 
 #include "ObjectManager.h"
+#include "../Lighting/Lighting.h"
 #include "SelectedDataManager.h"
 
 #include "../Headers/GlobalVars.h"
@@ -63,6 +64,17 @@ public:
 	// Pyramid
 	void RenderPyramid(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Planeobjidx);
+
+	// ############################   LIGHTING #######################################
+	void RenderSunLightSprite(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx);
+	void RenderPointLightSprite(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx);
+	void RenderSpotLightSprite(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx);
+	void RenderAreaLightSprite(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx);
+	// ############################   END LIGHTING #######################################
 
 	void DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector);
 	

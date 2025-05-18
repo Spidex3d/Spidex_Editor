@@ -152,7 +152,7 @@ void App::AppShutdown()
 	delete ShaderManager::defaultGLTFShader;
 	delete ShaderManager::defaultShader;
 	delete ShaderManager::LightBulbShader;
-	delete ShaderManager::LightCubeShader;
+	delete ShaderManager::LightShader;
 	delete ShaderManager::skyShader;
 	delete ShaderManager::SimpelColor;
 

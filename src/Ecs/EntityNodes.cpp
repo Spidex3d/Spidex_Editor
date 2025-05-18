@@ -155,6 +155,19 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                              break;
                         case 14: // glTF Models file
                             ShouldUpdateObjModel = true;
+                            break;               
+                        case 15: // Not in use
+                            break;
+                        case 16: // Not in use
+                            break;
+                        case 17: // Not in use
+                            break;
+                        case 18: // Not in use
+                            break;
+                        case 19: // Not in use
+                            break;
+                        case 20: // sun light LIGHT_SUN
+                            ShouldUpdateLight = true;
                             break;
                         }
                     }
@@ -294,6 +307,19 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                     dialogType = false; // set to false and not show the add texture button
                                     LogInternals::Instance()->Debug("Data Selected  is a glTF file");
                                     break;
+                                case 15: // Not in use
+                                    break;
+                                case 16: // Not in use
+                                        break;
+                                case 17: // Not in use
+                                        break;
+                                case 18: // Not in use
+                                        break;
+                                case 19: // Not in use
+                                        break;
+                                 case 20: // sun light LIGHT_SUN
+                                     showObjectEditor = true;
+                                        break;
 
 
                                 default:
@@ -486,6 +512,8 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
     EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
     EntityNodes::RendergltfFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex, shader, camera);
+    // ############################### Lighting #####################################
+    EntityNodes::RenderSunLightSprite(view, projection, ObjectVector, currentIndex, Lightidx);
    
 }
 void EntityNodes::RendergltfFiles(const glm::mat4& view, const glm::mat4& projection,
@@ -712,8 +740,7 @@ void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
         ShouldUpdateCube = false;
         
     }
-
-    
+        
     for (const auto& model : ObjectVector) {
         ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
@@ -1021,6 +1048,102 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
         }
         
     }
+}
+// #######################################################################################################################
+// ###########################################    LIGHTING SECTION         ###############################################
+// #######################################################################################################################
+
+void EntityNodes::RenderSunLightSprite(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx)
+{
+    stbi_set_flip_vertically_on_load(true);
+
+    if (ShouldAddLight) {
+        Lightidx = ObjectVector.size();
+
+        std::unique_ptr<LightSprite> newLight = std::make_unique<LightSprite>(currentIndex, "DefaultLight", Lightidx);
+        switch (Lightidx) {
+        case 0:
+            newLight->position = glm::vec3(0.0f, 1.0f, 0.0f);
+            newLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            break;
+        case 1:
+            newLight->position = glm::vec3(0.0f, 1.0f, 0.0f);
+            newLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            break;
+
+        default:
+            newLight->position = glm::vec3(0.0f, 1.0f, 0.0f);
+            newLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+            posx += 1.5;
+            break;
+        }
+
+        newLight->modelMatrix = glm::translate(glm::mat4(1.0f), newLight->position);
+        newLight->modelMatrix = glm::scale(newLight->modelMatrix, newLight->scale);
+
+        newLight->textureID = loadTexture("Textures/lighting/light_01.png");
+        //newLight->textureID = loadTexture("Textures/lighting/sun_01.png");
+
+        ObjectVector.push_back(std::move(newLight));
+
+        ShouldAddLight = false; // Reset the flag after adding the plane
+    }
+    // ##########
+    if (ShouldUpdateLight) { // then we update the cube position and scale
+
+        int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+
+        if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
+
+            glm::vec3 newLightPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]); // New position
+            ObjectVector[selectedIndex]->position = newLightPosition;
+
+            glm::vec3 newLightScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
+            ObjectVector[selectedIndex]->scale = newLightScale;
+
+            ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
+            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newLightPosition);
+            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newLightScale);
+
+        }
+
+        ShouldUpdateLight = false;
+    }
+
+    for (const auto& model : ObjectVector) {
+      
+        ShaderManager::LightShader->Use();
+        ShaderManager::LightShader->setMat4("view", view);
+        ShaderManager::LightShader->setMat4("projection", projection);
+       
+        if (auto* light = dynamic_cast<LightSprite*>(model.get())) {
+            ShaderManager::LightShader->setVec3("lightPos", light->position);
+            ShaderManager::LightShader->setFloat("scale", 0.3f);
+            //
+            modelMatrix = glm::mat4(1.0f);
+            ShaderManager::LightShader->setMat4("model", light->modelMatrix);
+           
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, light->textureID);
+            //
+            light->DrawLight();
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
+
+}
+
+void EntityNodes::RenderPointLightSprite(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx)
+{
+}
+
+void EntityNodes::RenderSpotLightSprite(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx)
+{
+}
+
+void EntityNodes::RenderAreaLightSprite(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx)
+{
 }
 
 void EntityNodes::DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector)

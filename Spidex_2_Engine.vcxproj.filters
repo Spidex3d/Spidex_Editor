@@ -215,6 +215,8 @@
     <None Include="src\Shader\ShaderFile\default.vert" />
     <None Include="src\Shader\ShaderFile\gltf.vert" />
     <None Include="src\Shader\ShaderFile\gltf.frag" />
+    <None Include="src\Shader\ShaderFile\lightSprite.vert" />
+    <None Include="src\Shader\ShaderFile\lightSprite.frag" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="vendors\assimp\lib\assimp-vc143-mtd.lib" />

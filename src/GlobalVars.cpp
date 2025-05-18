@@ -27,6 +27,16 @@ bool ShouldAddObjModel = false;
 bool ShouldUpdateObjModel = false;
 int ModleObjidx = 0;
 
+// ##### Lighting ###########
+const int LIGHT_SUN = 20;
+const int LIGHT_PIONT = 21;
+const int LIGHT_SPOT = 22;
+const int LIGHT_AREA = 23;
+int Lightidx = 0;
+bool ShouldAddLight = false;
+bool ShouldUpdateLight = false;
+// ##### End Lighting ########
+
 bool ShouldAddCube = false;     // add a new cube
 bool ShouldAddPlane = false;    // add a new plane
 bool ShouldAddSphere = false;

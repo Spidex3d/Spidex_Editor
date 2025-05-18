@@ -10,6 +10,8 @@ layout(location = 3) in vec3 aTangent;  // Tangent
 uniform mat4 model;
 uniform mat4 view;   // camMatrix
 uniform mat4 projection;
+uniform vec3 lightPos;
+uniform float scale;
 
 //out vec3 FragPos;   // World-space position of the vertex
 out vec3 Normal;    // World-space normal vector
@@ -18,11 +20,14 @@ out vec3 Tangent;   // Tangent vector
 
 void main()
 {
+    
+
    // FragPos = vec3(model * vec4(aPos, 1.0));
     Normal = mat3(transpose(inverse(model))) * aNormal; // Transform normals to world space
     Tangent = mat3(model) * aTangent;                  // Transform tangent to world space
-    TexCoord = aTexCoord;
     
+   
+    TexCoord = aTexCoord;
     gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
 

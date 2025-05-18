@@ -31,6 +31,16 @@ extern bool ShouldAddObjModel;
 extern bool ShouldUpdateObjModel;
 extern int ModleObjidx;
 
+// ##### Lighting ########### 
+extern const int LIGHT_SUN;
+extern const int LIGHT_PIONT;
+extern const int LIGHT_SPOT;
+extern const int LIGHT_AREA;
+extern int Lightidx;
+extern bool ShouldAddLight;
+extern bool ShouldUpdateLight;
+// ##### End Lighting ########
+
 // adding Objects
 extern bool ShouldAddCube;		// add a cube
 extern bool ShouldAddSphere;		// add a cube
@@ -69,6 +79,8 @@ extern int Sphereobjidx;
 extern int Triangleobjidx;
 extern int Planeobjidx;
 extern int Pyramidobjidx;
+
+
 
 // Settings Window
 extern float grid_square; // grid square size
