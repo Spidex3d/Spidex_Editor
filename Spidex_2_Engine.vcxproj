@@ -176,6 +176,7 @@
     <ClInclude Include="src\Ecs\BaseModel.h" />
     <ClInclude Include="src\Headers\GlobalVars.h" />
     <ClInclude Include="src\Headers\Textures.h" />
+    <ClInclude Include="src\Terrain\Terrain.h" />
     <ClInclude Include="src\Windows\spx_FileDialog.h" />
     <ClInclude Include="src\Ecs\ObjectEditor.h" />
     <ClInclude Include="src\Ecs\EntityNodes.h" />

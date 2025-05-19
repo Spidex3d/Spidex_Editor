@@ -194,6 +194,9 @@
     <ClInclude Include="src\Lighting\Lighting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Terrain\Terrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Icon.png">

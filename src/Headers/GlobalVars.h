@@ -40,7 +40,20 @@ extern int Lightidx;
 extern bool ShouldAddLight;
 extern bool ShouldUpdateLight;
 // ##### End Lighting ########
-
+// 
+// #####  Terrain ############
+extern const int TERRAIN_FLOOR;
+extern const int TERRAIN_TERRAIN;
+extern const int TERRAIN_WATER;
+extern int TerrainIdx;
+extern bool ShouldAddFloor;
+extern bool ShouldAddTerrain;
+extern bool ShouldAddWater;
+extern bool ShouldUpdateTerrain;
+extern bool ShouldUpdateWater;
+extern bool ShouldUpdateFloor;
+// ##### End Terrain #########
+//
 // adding Objects
 extern bool ShouldAddCube;		// add a cube
 extern bool ShouldAddSphere;		// add a cube

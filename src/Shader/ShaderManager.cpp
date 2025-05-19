@@ -9,7 +9,7 @@ Shader * ShaderManager::LightBulbShader = nullptr;   // the light bulb shader
 Shader * ShaderManager::LightShader = nullptr;   // the obj shaders 
 Shader * ShaderManager::defaultShader = nullptr;   // the obj shaders 
 Shader * ShaderManager::skyShader = nullptr;   // the sky shaders 
-Shader * ShaderManager::SimpelColor = nullptr;   // the sky shaders 
+Shader * ShaderManager::TerrainShader = nullptr;   // the sky shaders 
 Shader * ShaderManager::TestShadre = nullptr;   // the sky shaders 
 
 glm::vec3 lightPos(1.2f, 1.5f, 2.0f);
@@ -31,6 +31,7 @@ void ShaderManager::SetupShaders() {
     // This is the shader just for the light bulb sprite
     LightShader = new Shader("src/Shader/ShaderFile/lightSprite.vert", "src/Shader/ShaderFile/lightSprite.frag");
 
+    TerrainShader = new Shader("src/Shader/ShaderFile/TerrainFloor.vert", "src/Shader/ShaderFile/TerrainFloor.frag");
     
 }
 

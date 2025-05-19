@@ -204,7 +204,9 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
         if (ImGui::BeginMenu("Add a Terrain")) {
             if (ImGui::MenuItem("Terrain")) {}
             if (ImGui::MenuItem("Water")) {}
-            if (ImGui::MenuItem("Floor")) {}
+            if (ImGui::MenuItem("Floor")) {
+                ShouldAddFloor = true;
+            }
             
             ImGui::EndMenu();
         }

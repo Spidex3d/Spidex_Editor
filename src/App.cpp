@@ -154,7 +154,7 @@ void App::AppShutdown()
 	delete ShaderManager::LightBulbShader;
 	delete ShaderManager::LightShader;
 	delete ShaderManager::skyShader;
-	delete ShaderManager::SimpelColor;
+	delete ShaderManager::TerrainShader;
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

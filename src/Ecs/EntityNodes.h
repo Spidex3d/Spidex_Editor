@@ -13,6 +13,7 @@
 
 #include "ObjectManager.h"
 #include "../Lighting/Lighting.h"
+#include "../Terrain/Terrain.h"
 #include "SelectedDataManager.h"
 
 #include "../Headers/GlobalVars.h"
@@ -27,6 +28,8 @@ public:
 	void Initialize();
 
 	void ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
+	void LightEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
+	void TerrainEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
 
 	std::vector<std::unique_ptr<BaseModel>>& GetModels();
 
@@ -75,6 +78,11 @@ public:
 	void RenderAreaLightSprite(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx);
 	// ############################   END LIGHTING #######################################
+	
+	// ############################    TERRAIN    #######################################
+	void RenderTerrainFloor(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& TerrainIdx);
+	// ############################   END TERRAIN #######################################
 
 	void DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector);
 	

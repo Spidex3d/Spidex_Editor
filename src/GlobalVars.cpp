@@ -37,6 +37,19 @@ bool ShouldAddLight = false;
 bool ShouldUpdateLight = false;
 // ##### End Lighting ########
 
+// #####  Terrain ############
+const int TERRAIN_FLOOR = 25;
+const int TERRAIN_TERRAIN = 26;
+const int TERRAIN_WATER = 27;
+int TerrainIdx = 0;
+bool ShouldAddFloor = false;
+bool ShouldAddTerrain = false;
+bool ShouldAddWater = false;
+bool ShouldUpdateTerrain = false;
+bool ShouldUpdateWater = false;
+bool ShouldUpdateFloor = false;
+// ##### End Terrain #########
+
 bool ShouldAddCube = false;     // add a new cube
 bool ShouldAddPlane = false;    // add a new plane
 bool ShouldAddSphere = false;

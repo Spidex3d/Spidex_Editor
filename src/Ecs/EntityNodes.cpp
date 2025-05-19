@@ -23,6 +23,7 @@ void EntityNodes::Initialize()
 void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData)
 {
     if (showObjectEditor) { // if this is true open the editor window
+        ImGui::GetStyle().WindowRounding = 12.0f;
         ImGui::Begin("Mesh Object Editor", &showObjectEditor);
         ImGui::InputText("Object Name", nameBuffer, IM_ARRAYSIZE(nameBuffer));
         ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " Mesh Editor");
@@ -169,6 +170,25 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                         case 20: // sun light LIGHT_SUN
                             ShouldUpdateLight = true;
                             break;
+
+                        case 21: // Point Light
+                            break;
+                        case 22: // Spot Light
+                            break;
+                        case 23: // Area Light
+                            break;
+                        case 24: // Not in use
+                            break;
+                        case 25: // Floor
+                            ShouldUpdateFloor = true;  
+                            break;
+                        case 26: // Terrain
+                            //ShouldAddTerrain = true;
+                            break;
+                        case 27: // Water
+                            //ShouldAddWater = true;
+                            break;
+
                         }
                     }
 
@@ -310,16 +330,33 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                 case 15: // Not in use
                                     break;
                                 case 16: // Not in use
-                                        break;
+                                    break;
                                 case 17: // Not in use
-                                        break;
+                                   break;
                                 case 18: // Not in use
-                                        break;
+                                   break;
                                 case 19: // Not in use
-                                        break;
+                                   break;
                                  case 20: // sun light LIGHT_SUN
                                      showObjectEditor = true;
-                                        break;
+                                    break;
+                                 case 21: // Not in use
+                                    break;
+                                 case 22: // Not in use
+                                    break;
+                                 case 23: // Not in use
+                                    break;
+                                 case 24: // Not in use
+                                    break;
+                                 case 25: // Not in use
+                                     showObjectEditor = true;
+                                    break;
+                                 case 26: // Not in use
+                                     showObjectEditor = true;
+                                    break;
+                                 case 27: // Not in use
+                                     showObjectEditor = true;
+                                    break;
 
 
                                 default:
@@ -510,11 +547,14 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderTriangle(view, projection, ObjectVector);
     EntityNodes::RenderPlane(view, projection, ObjectVector, currentIndex, Planeobjidx);
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
+    // ############################### Models #####################################
     EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
     EntityNodes::RendergltfFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex, shader, camera);
     // ############################### Lighting #####################################
     EntityNodes::RenderSunLightSprite(view, projection, ObjectVector, currentIndex, Lightidx);
    
+    // ############################### Terrain #####################################
+    EntityNodes::RenderTerrainFloor(view, projection, ObjectVector, currentIndex, TerrainIdx);
 }
 void EntityNodes::RendergltfFiles(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex, Shader& shader, Camera& camera)
@@ -1145,6 +1185,78 @@ void EntityNodes::RenderSpotLightSprite(const glm::mat4& view, const glm::mat4& 
 void EntityNodes::RenderAreaLightSprite(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx)
 {
 }
+// ###########################################    END LIGHTING SECTION      ###############################################
+
+// ###########################################    TERRAIN SECTION           ###############################################
+void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Terrainidx)
+{
+    stbi_set_flip_vertically_on_load(true);
+
+    if (ShouldAddFloor) {
+        TerrainIdx = ObjectVector.size();
+
+        std::unique_ptr<FloorModel> newTerrain = std::make_unique<FloorModel>(currentIndex, "DefaultFloor", TerrainIdx);
+        newTerrain->position = glm::vec3(0.0f, -0.5f, 0.0f);
+        newTerrain->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+       
+        newTerrain->modelMatrix = glm::translate(glm::mat4(1.0f), newTerrain->position);
+        newTerrain->modelMatrix = glm::scale(newTerrain->modelMatrix, newTerrain->scale);
+
+        newTerrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg");
+        //newLight->textureID = loadTexture("Textures/lighting/sun_01.png");
+
+        ObjectVector.push_back(std::move(newTerrain));
+
+        ShouldAddFloor = false; // Reset the flag after adding the plane
+    }
+    // ##########
+    if (ShouldUpdateFloor) { // then we update the cube position and scale
+
+        int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+
+        if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
+
+            glm::vec3 newTerrainPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]); // New position
+            ObjectVector[selectedIndex]->position = newTerrainPosition;
+
+            glm::vec3 newTerrainScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
+            ObjectVector[selectedIndex]->scale = newTerrainScale;
+
+            ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
+            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newTerrainPosition);
+            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newTerrainScale);
+
+        }
+
+        ShouldUpdateFloor = false;
+    }
+
+    for (const auto& model : ObjectVector) {
+
+        ShaderManager::TerrainShader->Use();
+        ShaderManager::TerrainShader->setMat4("view", view);
+        ShaderManager::TerrainShader->setMat4("projection", projection);
+
+        if (auto* terrain = dynamic_cast<FloorModel*>(model.get())) {
+            ShaderManager::TerrainShader->setVec3("terrainPos", terrain->position);
+            ShaderManager::TerrainShader->setFloat("scale", 25.0f);
+            //
+            modelMatrix = glm::mat4(1.0f);
+            ShaderManager::TerrainShader->setMat4("model", terrain->modelMatrix);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, terrain->textureID);
+            //
+            terrain->DrawFloor();
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
+
+}
+
+// ###########################################    END TERRAIN SECTION       ###############################################
 
 void EntityNodes::DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector)
 {
