@@ -32,9 +32,15 @@ const int LIGHT_SUN = 20;
 const int LIGHT_PIONT = 21;
 const int LIGHT_SPOT = 22;
 const int LIGHT_AREA = 23;
+int MAX_SUN_LIGHTS = 0;
+int MAX_POINT_LIGHTS = 10;
+int MAX_LIGHT_SPOT = 10;
+int MAX_LIGHT_AREA = 10;
 int Lightidx = 0;
-bool ShouldAddLight = false;
+bool ShouldAddSunLight = false;
+bool ShouldAddPointLight = false;
 bool ShouldUpdateLight = false;
+bool ShouldUpdatePointLight = false;
 // ##### End Lighting ########
 
 // #####  Terrain ############

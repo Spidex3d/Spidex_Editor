@@ -36,9 +36,15 @@ extern const int LIGHT_SUN;
 extern const int LIGHT_PIONT;
 extern const int LIGHT_SPOT;
 extern const int LIGHT_AREA;
+extern int MAX_SUN_LIGHTS;
+extern int MAX_POINT_LIGHTS;
+extern int MAX_LIGHT_SPOT;
+extern int MAX_LIGHT_AREA;
 extern int Lightidx;
-extern bool ShouldAddLight;
+extern bool ShouldAddSunLight;
+extern bool ShouldAddPointLight;
 extern bool ShouldUpdateLight;
+extern bool ShouldUpdatePointLight;
 // ##### End Lighting ########
 // 
 // #####  Terrain ############

@@ -10,40 +10,11 @@
 // #######################################################################################################################
 
 
-class SunLight : public BaseModel {
-public:
-    glm::vec3 direction = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f));
-    glm::vec3 color = glm::vec3(1.0f);
-    float intensity = 1.0f;
-
-    SunLight(int idx, const std::string& name, int lightidx) {
-        index = idx;
-        objectName = name;
-        objectIndex = lightidx;
-        objectTypeID = LIGHT_SUN;
-    }
-
-    void ApplyToShader(GLuint shaderID) {
-        glUniform3fv(glGetUniformLocation(shaderID, "sun.direction"), 1, glm::value_ptr(direction));
-        glUniform3fv(glGetUniformLocation(shaderID, "sun.color"), 1, glm::value_ptr(color));
-        glUniform1f(glGetUniformLocation(shaderID, "sun.intensity"), intensity);
-    }
-
-};
-class PointLight : public BaseModel {
-
-};
-class SpotLight : public BaseModel {
-
-};
-class AreaLight : public BaseModel {
-
-};
-
 class LightSprite : public BaseModel {
 
 public:
     GLuint VAO, VBO, EBO;
+
 
     LightSprite(int idx, const std::string& name, int lightidx) {
         index = idx;
@@ -150,3 +121,35 @@ private:
 //ShaderManager::LightBulbShader->setMat4("projection", projection);
 //
 //lightMesh.objDraw();
+
+
+//class SunLight : public BaseModel {
+//public:
+    //glm::vec3 position;
+    //std::unique_ptr<LightSprite> sprite;
+
+    //SunLight(int idx, const std::string& name, int LightIdx) {
+    //    index = idx;
+    //    objectName = name;
+    //    objectIndex = LightIdx;
+    //    objectTypeID = LIGHT_SUN;
+    //    position = glm::vec3(0.0f, 3.0f, 2.0f);
+    //    sprite = std::make_unique<LightSprite>(idx, name + "_Sprite", LightIdx);
+    //}
+
+    //void Draw() {
+    //    if (sprite) {
+    //        sprite->position = position;  // sprite now has a position member
+    //        sprite->DrawLight();
+    //    }
+    //}
+//};
+//class PointLight : public BaseModel {
+
+//};
+//class SpotLight : public BaseModel {
+
+//};
+//class AreaLight : public BaseModel {
+
+//};

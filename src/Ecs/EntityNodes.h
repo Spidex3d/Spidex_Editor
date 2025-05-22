@@ -81,7 +81,7 @@ public:
 	
 	// ############################    TERRAIN    #######################################
 	void RenderTerrainFloor(const glm::mat4& view, const glm::mat4& projection,
-		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& TerrainIdx);
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& TerrainIdx, Camera camera);
 	// ############################   END TERRAIN #######################################
 
 	void DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector);

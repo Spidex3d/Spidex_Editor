@@ -6,6 +6,7 @@
 
 unsigned int loadTexture(const std::string& filePath);
 
+
 EntityNodes* EntityNodes::Instance() {
     static EntityNodes component;
     return &component;
@@ -552,9 +553,10 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RendergltfFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex, shader, camera);
     // ############################### Lighting #####################################
     EntityNodes::RenderSunLightSprite(view, projection, ObjectVector, currentIndex, Lightidx);
+    EntityNodes::RenderPointLightSprite(view, projection, ObjectVector, currentIndex, Lightidx);
    
     // ############################### Terrain #####################################
-    EntityNodes::RenderTerrainFloor(view, projection, ObjectVector, currentIndex, TerrainIdx);
+    EntityNodes::RenderTerrainFloor(view, projection, ObjectVector, currentIndex, TerrainIdx, camera);
 }
 void EntityNodes::RendergltfFiles(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex, Shader& shader, Camera& camera)
@@ -1068,12 +1070,14 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
 
         ShouldUpdatePyramid = false;
     }
-        
+   
+   
     
     for (const auto& model : ObjectVector) {
         ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
         ShaderManager::defaultShader->setMat4("view", view);
+        
        
         if (auto* pyramid = dynamic_cast<PyramidModel*>(model.get())) {
 
@@ -1094,40 +1098,29 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
 // #######################################################################################################################
 
 void EntityNodes::RenderSunLightSprite(const glm::mat4& view, const glm::mat4& projection,
-    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx)
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& LightIdx)
 {
     stbi_set_flip_vertically_on_load(true);
 
-    if (ShouldAddLight) {
-        Lightidx = ObjectVector.size();
+    if (ShouldAddSunLight) {
+        LightIdx = ObjectVector.size();
 
-        std::unique_ptr<LightSprite> newLight = std::make_unique<LightSprite>(currentIndex, "DefaultLight", Lightidx);
-        switch (Lightidx) {
-        case 0:
-            newLight->position = glm::vec3(0.0f, 1.0f, 0.0f);
-            newLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-            break;
-        case 1:
-            newLight->position = glm::vec3(0.0f, 1.0f, 0.0f);
-            newLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-            break;
+        if (MAX_SUN_LIGHTS < 1) {
+            std::unique_ptr<LightSprite> newLight = std::make_unique<LightSprite>(currentIndex, "Default_Sun", LightIdx);
 
-        default:
             newLight->position = glm::vec3(0.0f, 1.0f, 0.0f);
             newLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-            posx += 1.5;
-            break;
+
+            newLight->modelMatrix = glm::translate(glm::mat4(1.0f), newLight->position);
+            newLight->modelMatrix = glm::scale(newLight->modelMatrix, newLight->scale);
+
+            newLight->textureID = loadTexture("Textures/lighting/sun_01.png");
+            //newLight->textureID = loadTexture("Textures/lighting/sun_01.png");
+
+            ObjectVector.push_back(std::move(newLight));
         }
-
-        newLight->modelMatrix = glm::translate(glm::mat4(1.0f), newLight->position);
-        newLight->modelMatrix = glm::scale(newLight->modelMatrix, newLight->scale);
-
-        newLight->textureID = loadTexture("Textures/lighting/light_01.png");
-        //newLight->textureID = loadTexture("Textures/lighting/sun_01.png");
-
-        ObjectVector.push_back(std::move(newLight));
-
-        ShouldAddLight = false; // Reset the flag after adding the plane
+        MAX_SUN_LIGHTS++;
+        ShouldAddSunLight = false; // Reset the flag after adding the plane
     }
     // ##########
     if (ShouldUpdateLight) { // then we update the cube position and scale
@@ -1158,6 +1151,7 @@ void EntityNodes::RenderSunLightSprite(const glm::mat4& view, const glm::mat4& p
         ShaderManager::LightShader->setMat4("projection", projection);
        
         if (auto* light = dynamic_cast<LightSprite*>(model.get())) {
+
             ShaderManager::LightShader->setVec3("lightPos", light->position);
             ShaderManager::LightShader->setFloat("scale", 0.3f);
             //
@@ -1174,8 +1168,73 @@ void EntityNodes::RenderSunLightSprite(const glm::mat4& view, const glm::mat4& p
 
 }
 
-void EntityNodes::RenderPointLightSprite(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx)
+void EntityNodes::RenderPointLightSprite(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& LightIdx)
 {
+    stbi_set_flip_vertically_on_load(true);
+
+    if (ShouldAddPointLight) {
+        LightIdx = ObjectVector.size();
+
+        if (MAX_POINT_LIGHTS >= 10) {
+            std::unique_ptr<LightSprite> newPointLight = std::make_unique<LightSprite>(currentIndex, "Default_Point", LightIdx);
+
+            newPointLight->position = glm::vec3(0.5f, 1.0f, 0.0f);
+            newPointLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+            newPointLight->modelMatrix = glm::translate(glm::mat4(1.0f), newPointLight->position);
+            newPointLight->modelMatrix = glm::scale(newPointLight->modelMatrix, newPointLight->scale);
+
+            newPointLight->textureID = loadTexture("Textures/lighting/light_01.png");
+           
+            ObjectVector.push_back(std::move(newPointLight));
+        }
+        MAX_POINT_LIGHTS++;
+        ShouldAddPointLight = false; // Reset the flag after adding the plane
+    }
+    // ##########
+    if (ShouldUpdateLight) { // then we update the cube position and scale
+
+        int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+
+        if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
+
+            glm::vec3 newPointLightPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]); // New position
+            ObjectVector[selectedIndex]->position = newPointLightPosition;
+
+            glm::vec3 newPointLightScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
+            ObjectVector[selectedIndex]->scale = newPointLightScale;
+
+            ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
+            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newPointLightPosition);
+            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newPointLightScale);
+
+        }
+
+        ShouldUpdateLight = false;
+    }
+
+    for (const auto& model : ObjectVector) {
+
+        ShaderManager::LightShader->Use();
+        ShaderManager::LightShader->setMat4("view", view);
+        ShaderManager::LightShader->setMat4("projection", projection);
+
+        if (auto* pointlight = dynamic_cast<LightSprite*>(model.get())) {
+
+            ShaderManager::LightShader->setVec3("lightPos", pointlight->position);
+            ShaderManager::LightShader->setFloat("scale", 0.3f);
+            //
+            modelMatrix = glm::mat4(1.0f);
+            ShaderManager::LightShader->setMat4("model", pointlight->modelMatrix);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, pointlight->textureID);
+            //
+            pointlight->DrawLight();
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
 }
 
 void EntityNodes::RenderSpotLightSprite(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Lightidx)
@@ -1189,7 +1248,7 @@ void EntityNodes::RenderAreaLightSprite(const glm::mat4& view, const glm::mat4& 
 
 // ###########################################    TERRAIN SECTION           ###############################################
 void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& projection,
-    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Terrainidx)
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Terrainidx, Camera camera)
 {
     stbi_set_flip_vertically_on_load(true);
 
@@ -1198,7 +1257,7 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
 
         std::unique_ptr<FloorModel> newTerrain = std::make_unique<FloorModel>(currentIndex, "DefaultFloor", TerrainIdx);
         newTerrain->position = glm::vec3(0.0f, -0.5f, 0.0f);
-        newTerrain->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+        newTerrain->scale = glm::vec3(10.0f, 10.0f, 10.0f);
 
        
         newTerrain->modelMatrix = glm::translate(glm::mat4(1.0f), newTerrain->position);
@@ -1232,23 +1291,55 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
 
         ShouldUpdateFloor = false;
     }
+       
+    glm::vec3 sunDirection(0.0f, -1.0f, 0.0f); // default fallback
+    glm::vec3 pointLightDirection(2.0f, 3.0f, 1.0f);
+    // Loop through objects to find your LightSprite:
+    for (const auto& model : ObjectVector) {
+        if (auto* light = dynamic_cast<LightSprite*>(model.get())) {
+            sunDirection = glm::normalize(glm::vec3(0.0f) - light->position);
+            break; // Assuming one sun light
+        }
+    }
+    // pointlight
+    for (const auto& model : ObjectVector) {
+        if (auto* pointlight = dynamic_cast<LightSprite*>(model.get())) {
+            pointLightDirection = pointlight->position;
+            break; 
+        }
+    }
+
+
+
+    ShaderManager::TerrainShader->Use();
+    ShaderManager::TerrainShader->setMat4("view", view);
+    ShaderManager::TerrainShader->setMat4("projection", projection);
+
+    ShaderManager::TerrainShader->setVec3("SunLight.direction", sunDirection);
+    ShaderManager::TerrainShader->setVec3("SunLight.color", glm::vec3(1.0f, 0.0f, 0.0f));
+    ShaderManager::TerrainShader->setFloat("SunLight.intensity", 0.3f);
+
+    ShaderManager::TerrainShader->setVec3("PointLights[0].position", pointLightDirection);
+   // ShaderManager::TerrainShader->setVec3("PointLights[0].position", glm::vec3(2.0f, 3.0f, 1.0f));
+    ShaderManager::TerrainShader->setVec3("PointLights[0].color", glm::vec3(0.0f, 0.0f, 0.6f));
+    ShaderManager::TerrainShader->setFloat("PointLights[0].intensity", 1.0f);
+    ShaderManager::TerrainShader->setFloat("PointLights[0].radius", 10.0f); // affects attenuation
 
     for (const auto& model : ObjectVector) {
 
-        ShaderManager::TerrainShader->Use();
-        ShaderManager::TerrainShader->setMat4("view", view);
-        ShaderManager::TerrainShader->setMat4("projection", projection);
-
+        
+     
         if (auto* terrain = dynamic_cast<FloorModel*>(model.get())) {
-            ShaderManager::TerrainShader->setVec3("terrainPos", terrain->position);
-            ShaderManager::TerrainShader->setFloat("scale", 25.0f);
-            //
-            modelMatrix = glm::mat4(1.0f);
-            ShaderManager::TerrainShader->setMat4("model", terrain->modelMatrix);
 
+           
+
+            // 5. Pass the direction to the shader
+            //ShaderManager::TerrainShader->setVec3("SunLight.direction", sunDirection);
+            ShaderManager::TerrainShader->setMat4("model", terrain->modelMatrix);
+                               
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, terrain->textureID);
-            //
+            
             terrain->DrawFloor();
             glBindTexture(GL_TEXTURE_2D, 0);
         }
@@ -1279,10 +1370,33 @@ void EntityNodes::DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& Obje
 
 
 
+/* ShaderManager::TerrainShader->setVec3("light.ambient", 0.3f, 0.3f, 0.3f);
+    ShaderManager::TerrainShader->setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+    ShaderManager::TerrainShader->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+    ShaderManager::TerrainShader->setVec3("matirial.specular", 0.5f, 0.5f, 0.5f);
+    ShaderManager::TerrainShader->setFloat("matirial.shininess", 30.0f);*/
+
+    //ShaderManager::TerrainShader->setVec3("viewPos", camera.Position);
+
+
+/*ShaderManager::TerrainShader->Use();
+        ShaderManager::TerrainShader->setMat4("view", view);
+        ShaderManager::TerrainShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->setVec3("lightColor", lightColor);
+        ShaderManager::defaultShader->setVec3("lightPos", lightPos);
+        ShaderManager::TerrainShader->setVec3("light.position", lightPos);
+        ShaderManager::TerrainShader->setVec3("light.color", lightColor);
+        ShaderManager::defaultShader->setFloat("ambientFactor", ambientFactor);*/
 
 
 
+        /*ShaderManager::TerrainShader->setVec3("terrainPos", terrain->position);
+                   ShaderManager::TerrainShader->setFloat("scale", 25.0f);*/
+
+                   /* model = glm::translate(glm::mat4(1.0), modelPos) * glm::scale(glm::mat4(1.0), modelScale[i]);
+
+                              ShaderManager::TerrainShader->setMet4("model", model);*/
 
 
-
-
+                              // ShaderManager::TerrainShader->setInt("texture_diffuse", 0);
