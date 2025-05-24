@@ -100,9 +100,11 @@ void App::RunApp()
 					camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT),
 					entityComponents.GetModels(), currentIndex, Gridobjidx);
 			}
-
+			// Objects
 			EntityNodes::Instance()->ObjectEditor(entityComponents.GetModels());
-			
+			// Lighting
+			EntityNodes::Instance()->LightingEditor(entityComponents.GetModels());
+					
 						
 			// Darw all objects on screen
 			EntityNodes::Instance()->RenderScene(camera.GetViewMatrix(),

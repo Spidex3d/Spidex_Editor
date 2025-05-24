@@ -4,6 +4,8 @@ std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Mode
 //std::vector<std::shared_ptr<BaseModel>> ObjectVector; // the vector for all Models
 //std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
 
+char nameBuffer[128] = "";
+
 const int MAIN_GRID = 0; // this is for the editor grid
 const int OBJ_CUBE = 1;
 const int OBJ_PLANE = 2;
@@ -36,11 +38,15 @@ int MAX_SUN_LIGHTS = 0;
 int MAX_POINT_LIGHTS = 10;
 int MAX_LIGHT_SPOT = 10;
 int MAX_LIGHT_AREA = 10;
-int Lightidx = 0;
+int LightIdx = 0;
 bool ShouldAddSunLight = false;
 bool ShouldAddPointLight = false;
 bool ShouldUpdateLight = false;
 bool ShouldUpdatePointLight = false;
+bool ShowLightEditor = false;
+float LightCol[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float LightIntensity = 0.5f;
+
 // ##### End Lighting ########
 
 // #####  Terrain ############

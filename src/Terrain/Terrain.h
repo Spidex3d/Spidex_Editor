@@ -30,7 +30,6 @@ public:
             1, 2, 3
         };
 
-
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 

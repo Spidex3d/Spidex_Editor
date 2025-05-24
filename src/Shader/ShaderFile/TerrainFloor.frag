@@ -4,7 +4,7 @@ in vec3 Normal;
 in vec2 TexCoords;
 
 out vec4 FragColor;
-
+// using this as a sun
 struct DirectionalLight {
     vec3 direction;
     vec3 color;
@@ -21,7 +21,8 @@ struct PointLight {
 // Uniforms
 uniform sampler2D texture_diffuse;
 uniform DirectionalLight SunLight;
-uniform PointLight PointLights[1];
+uniform PointLight PointLights[10];
+
 
 void main()
 {
@@ -53,6 +54,10 @@ void main()
 
   
 }
+
+
+
+
 
 
 //in vec3 FragPos;

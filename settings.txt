@@ -1,2 +1,2 @@
 BgCol=0.117743,0.120752,0.130081,1
-Grid=false
+Grid=true

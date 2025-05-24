@@ -173,6 +173,7 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                             break;
 
                         case 21: // Point Light
+                            ShouldUpdateLight = true;
                             break;
                         case 22: // Spot Light
                             break;
@@ -213,6 +214,115 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
         ImGui::End();
     }
     
+}
+
+
+    
+void EntityNodes::LightingEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData)
+{
+    if (ShowLightEditor) { // if this is true open the editor window
+        ImGui::GetStyle().WindowRounding = 12.0f;
+        ImGui::Begin("Lighting Editor", &ShowLightEditor);
+        ImGui::InputText("Light Name", nameBuffer, IM_ARRAYSIZE(nameBuffer));
+        ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_LIGHTBULB " Lightiing Editor");
+        ImGui::SeparatorText("Light Settings");
+
+       // ImGui::Begin(ICON_FA_COGS" Spidex 3d editor Settings");
+        
+        ImGui::SliderFloat("Intensity", &LightIntensity, 0.0f, 0.6f);
+
+        ImGui::SeparatorText(" Light Settings ");
+        
+
+        if (ImGui::CollapsingHeader(ICON_FA_PALETTE" Light Settings", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+
+            ImGui::ColorEdit4("Light Colour", LightCol);
+
+        }
+       
+
+        ImGui::BeginTable("Edit Table", 1, ImGuiTableFlags_Reorderable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders);
+
+        ImGui::TableNextColumn();
+
+        // Retrieve the current position and scale from the selected object
+        ImGui::DragFloat3("##pos", object_Pos, 0.0f, 0.0f, 0.0f);
+        ImGui::SameLine();
+        if (ImGui::Button("Reset_Position")) {
+            object_Pos[0] = 0.0f, object_Pos[1] = 0.0f, object_Pos[2] = 0.0f;
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+
+        ImGui::DragFloat3("##Scale", object_Scale, 0.0f, 0.0f, 0.0f);
+        ImGui::SameLine();
+        if (ImGui::Button("Reset Scale")) {
+            object_Scale[0], object_Scale[1], object_Scale[2];
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+
+        ImGui::DragFloat3("##Rot", object_Rotation, 0.0f, 0.0f, 0.0f);
+        ImGui::SameLine();
+        if (ImGui::Button("Reset Rotation")) {
+            object_Rotation[0] = 0.0f, object_Rotation[1] = 0.0f, object_Rotation[2] = 0.0f;
+        }
+
+        ImGui::EndTable();
+               
+                
+        // Update button                           
+        if (ImGui::Button("Update")) { // Update the object's name 
+
+            // Check if nameBuffer is not empty
+            if (strlen(nameBuffer) > 0) {
+                if (SelectedDataManager::Instance().GetSelectedData() != nullptr) {
+                    SelectedDataManager::Instance().GetSelectedData()->objectName = std::string(nameBuffer);
+                    // THIS is what we are working on
+                    if (SelectedDataManager::Instance().GetSelectedData()->objectTypeID != -1) {
+
+                        switch (SelectedDataManager::Instance().GetSelectedData()->objectTypeID) {
+                        case 20: // Sun 
+                            ShouldUpdateLight = true;
+                            std::cout << "Sun Light update index set to: " <<
+                                SelectedDataManager::Instance().GetSelectedData()->objectIndex << " Type " << LIGHT_SUN << std::endl;
+                            break;
+                        case 21: // Point                     
+                            ShouldUpdateLight = true;
+                            std::cout << "Point Light update index set to: " <<
+                                SelectedDataManager::Instance().GetSelectedData()->objectIndex << " Type " << LIGHT_PIONT << std::endl;
+                            break;
+                        case 22: // spot
+                            ShouldUpdateLight = true;
+
+                            std::cout << "Spot Light update index set to: " <<
+                                SelectedDataManager::Instance().GetSelectedData()->objectIndex << " Type " << LIGHT_SPOT << std::endl;
+                            break;
+                        case 23: // area
+                            std::cout << "Area Light update index set to: " <<
+                                SelectedDataManager::Instance().GetSelectedData()->objectIndex << " Type " << LIGHT_AREA << std::endl;
+                            break;                      
+                        }
+                    }
+
+                    objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex; // Ensure this is set correctly
+
+                    std::cout << "Light update index set to: " << objectUpdateIndex << std::endl;
+
+                    std::cout << "Selected " << SelectedDataManager::Instance().GetSelectedData()->objectName << " Index " <<
+                        SelectedDataManager::Instance().GetSelectedData()->objectIndex << std::endl;
+                }
+
+            }
+            ShowLightEditor = false;
+
+        }
+
+        ImGui::End();
+    }
 }
 
 std::vector<std::unique_ptr<BaseModel>>& EntityNodes::GetModels()
@@ -339,23 +449,27 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                 case 19: // Not in use
                                    break;
                                  case 20: // sun light LIGHT_SUN
-                                     showObjectEditor = true;
+                                    // showObjectEditor = true;
+                                     ShowLightEditor = true;
+                                     
                                     break;
-                                 case 21: // Not in use
+                                 case 21: // Point
+                                     ShowLightEditor = true;
+                                   
                                     break;
-                                 case 22: // Not in use
+                                 case 22: // Spot
                                     break;
-                                 case 23: // Not in use
+                                 case 23: // Area
                                     break;
                                  case 24: // Not in use
                                     break;
-                                 case 25: // Not in use
+                                 case 25: // Terrain
                                      showObjectEditor = true;
                                     break;
-                                 case 26: // Not in use
+                                 case 26: // Water
                                      showObjectEditor = true;
                                     break;
-                                 case 27: // Not in use
+                                 case 27: // Floor / celing
                                      showObjectEditor = true;
                                     break;
 
@@ -542,7 +656,7 @@ void EntityNodes::RenderGrid(const glm::mat4& view, const glm::mat4& projection,
 void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, Shader& shader, Camera& camera)
 {
-   
+    
     EntityNodes::RenderCube(view, projection, ObjectVector, currentIndex, Cubeobjidx);
     EntityNodes::RenderSphere(view, projection, ObjectVector, currentIndex, Sphereobjidx);
     EntityNodes::RenderTriangle(view, projection, ObjectVector);
@@ -552,8 +666,8 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
     EntityNodes::RendergltfFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex, shader, camera);
     // ############################### Lighting #####################################
-    EntityNodes::RenderSunLightSprite(view, projection, ObjectVector, currentIndex, Lightidx);
-    EntityNodes::RenderPointLightSprite(view, projection, ObjectVector, currentIndex, Lightidx);
+    EntityNodes::RenderSunLightSprite(view, projection, ObjectVector, currentIndex, LightIdx);
+    EntityNodes::RenderPointLightSprite(view, projection, ObjectVector, currentIndex, LightIdx);
    
     // ############################### Terrain #####################################
     EntityNodes::RenderTerrainFloor(view, projection, ObjectVector, currentIndex, TerrainIdx, camera);
@@ -696,9 +810,11 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
     }
     // defaultShader
     for (const auto& model : ObjectVector) {
-        ShaderManager::defaultShader->Use();
+        /*ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("view", view);*/
+
+        ApplyLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
 
         //if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
         if (auto* objModel = dynamic_cast<objLoader*>(model.get())) {
@@ -784,9 +900,11 @@ void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
     }
         
     for (const auto& model : ObjectVector) {
-        ShaderManager::defaultShader->Use();
+        /*ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("view", view);*/
+
+        ApplyLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
 
 
         if (auto* cube = dynamic_cast<CubeModel*>(model.get())) {
@@ -867,9 +985,11 @@ void EntityNodes::RenderSphere(const glm::mat4& view, const glm::mat4& projectio
 
     for (const auto& model : ObjectVector) {
         //ShaderManager::defaultShader->Use();
-        ShaderManager::defaultShader->Use();
+        /*ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("view", view);*/
+
+        ApplyLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
 
         if (auto* sphere = dynamic_cast<SphereModel*>(model.get())) {
             modelMatrix = glm::mat4(1.0f);
@@ -970,9 +1090,11 @@ void EntityNodes::RenderPlane(const glm::mat4& view, const glm::mat4& projection
 
     for (const auto& model : ObjectVector) {
 
-        ShaderManager::defaultShader->Use();
+        /*ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("view", view);*/
+
+        ApplyLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
 
         if (auto* plane = dynamic_cast<PlaneModel*>(model.get())) {
             //
@@ -1074,10 +1196,11 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
    
     
     for (const auto& model : ObjectVector) {
-        ShaderManager::defaultShader->Use();
+        /*ShaderManager::defaultShader->Use();
         ShaderManager::defaultShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("view", view);*/
         
+        ApplyLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
        
         if (auto* pyramid = dynamic_cast<PyramidModel*>(model.get())) {
 
@@ -1106,7 +1229,7 @@ void EntityNodes::RenderSunLightSprite(const glm::mat4& view, const glm::mat4& p
         LightIdx = ObjectVector.size();
 
         if (MAX_SUN_LIGHTS < 1) {
-            std::unique_ptr<LightSprite> newLight = std::make_unique<LightSprite>(currentIndex, "Default_Sun", LightIdx);
+            std::unique_ptr<LightSprite> newLight = std::make_unique<LightSprite>(currentIndex, "Sun Light", LightIdx);
 
             newLight->position = glm::vec3(0.0f, 1.0f, 0.0f);
             newLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -1177,7 +1300,7 @@ void EntityNodes::RenderPointLightSprite(const glm::mat4& view, const glm::mat4&
         LightIdx = ObjectVector.size();
 
         if (MAX_POINT_LIGHTS >= 10) {
-            std::unique_ptr<LightSprite> newPointLight = std::make_unique<LightSprite>(currentIndex, "Default_Point", LightIdx);
+            std::unique_ptr<LightSprite> newPointLight = std::make_unique<LightSprite>(currentIndex, "Point Light", LightIdx);
 
             newPointLight->position = glm::vec3(0.5f, 1.0f, 0.0f);
             newPointLight->scale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -1264,8 +1387,7 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
         newTerrain->modelMatrix = glm::scale(newTerrain->modelMatrix, newTerrain->scale);
 
         newTerrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg");
-        //newLight->textureID = loadTexture("Textures/lighting/sun_01.png");
-
+        
         ObjectVector.push_back(std::move(newTerrain));
 
         ShouldAddFloor = false; // Reset the flag after adding the plane
@@ -1292,46 +1414,45 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
         ShouldUpdateFloor = false;
     }
        
-    glm::vec3 sunDirection(0.0f, -1.0f, 0.0f); // default fallback
-    glm::vec3 pointLightDirection(2.0f, 3.0f, 1.0f);
-    // Loop through objects to find your LightSprite:
+    ApplyLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+
+   // glm::vec3 sunDirection(0.0f, -1.0f, 0.0f); // default fallback
+   // glm::vec3 pointLightDirection(2.0f, 3.0f, 1.0f);
+   // // Loop through objects to find your LightSprite:
+   // for (const auto& model : ObjectVector) {
+   //     if (auto* light = dynamic_cast<LightSprite*>(model.get())) {
+   //         sunDirection = glm::normalize(glm::vec3(0.0f) - light->position);
+   //         break; // Assuming one sun light
+   //     }
+   // }
+   // // pointlight
+   // for (const auto& model : ObjectVector) {
+   //     if (auto* pointlight = dynamic_cast<LightSprite*>(model.get())) {
+   //         pointLightDirection = pointlight->position;
+   //         break; 
+   //     }
+   // }
+
+
+
+   // ShaderManager::TerrainShader->Use();
+   // ShaderManager::TerrainShader->setMat4("view", view);
+   // ShaderManager::TerrainShader->setMat4("projection", projection);
+
+   // ShaderManager::TerrainShader->setVec3("SunLight.direction", sunDirection);
+   // ShaderManager::TerrainShader->setVec3("SunLight.color", glm::vec3(1.0f, 1.0f, 1.0f));
+   // ShaderManager::TerrainShader->setFloat("SunLight.intensity", 0.3f);
+
+   // ShaderManager::TerrainShader->setVec3("PointLights[0].position", pointLightDirection);
+   //// ShaderManager::TerrainShader->setVec3("PointLights[0].position", glm::vec3(2.0f, 3.0f, 1.0f));
+   // ShaderManager::TerrainShader->setVec3("PointLights[0].color", glm::vec3(0.0f, 0.0f, 0.6f));
+   // ShaderManager::TerrainShader->setFloat("PointLights[0].intensity", 1.0f);
+   // ShaderManager::TerrainShader->setFloat("PointLights[0].radius", 10.0f); // affects attenuation
+
     for (const auto& model : ObjectVector) {
-        if (auto* light = dynamic_cast<LightSprite*>(model.get())) {
-            sunDirection = glm::normalize(glm::vec3(0.0f) - light->position);
-            break; // Assuming one sun light
-        }
-    }
-    // pointlight
-    for (const auto& model : ObjectVector) {
-        if (auto* pointlight = dynamic_cast<LightSprite*>(model.get())) {
-            pointLightDirection = pointlight->position;
-            break; 
-        }
-    }
-
-
-
-    ShaderManager::TerrainShader->Use();
-    ShaderManager::TerrainShader->setMat4("view", view);
-    ShaderManager::TerrainShader->setMat4("projection", projection);
-
-    ShaderManager::TerrainShader->setVec3("SunLight.direction", sunDirection);
-    ShaderManager::TerrainShader->setVec3("SunLight.color", glm::vec3(1.0f, 0.0f, 0.0f));
-    ShaderManager::TerrainShader->setFloat("SunLight.intensity", 0.3f);
-
-    ShaderManager::TerrainShader->setVec3("PointLights[0].position", pointLightDirection);
-   // ShaderManager::TerrainShader->setVec3("PointLights[0].position", glm::vec3(2.0f, 3.0f, 1.0f));
-    ShaderManager::TerrainShader->setVec3("PointLights[0].color", glm::vec3(0.0f, 0.0f, 0.6f));
-    ShaderManager::TerrainShader->setFloat("PointLights[0].intensity", 1.0f);
-    ShaderManager::TerrainShader->setFloat("PointLights[0].radius", 10.0f); // affects attenuation
-
-    for (const auto& model : ObjectVector) {
-
         
      
-        if (auto* terrain = dynamic_cast<FloorModel*>(model.get())) {
-
-           
+        if (auto* terrain = dynamic_cast<FloorModel*>(model.get())) {          
 
             // 5. Pass the direction to the shader
             //ShaderManager::TerrainShader->setVec3("SunLight.direction", sunDirection);
@@ -1370,33 +1491,3 @@ void EntityNodes::DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& Obje
 
 
 
-/* ShaderManager::TerrainShader->setVec3("light.ambient", 0.3f, 0.3f, 0.3f);
-    ShaderManager::TerrainShader->setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-    ShaderManager::TerrainShader->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-
-    ShaderManager::TerrainShader->setVec3("matirial.specular", 0.5f, 0.5f, 0.5f);
-    ShaderManager::TerrainShader->setFloat("matirial.shininess", 30.0f);*/
-
-    //ShaderManager::TerrainShader->setVec3("viewPos", camera.Position);
-
-
-/*ShaderManager::TerrainShader->Use();
-        ShaderManager::TerrainShader->setMat4("view", view);
-        ShaderManager::TerrainShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setVec3("lightColor", lightColor);
-        ShaderManager::defaultShader->setVec3("lightPos", lightPos);
-        ShaderManager::TerrainShader->setVec3("light.position", lightPos);
-        ShaderManager::TerrainShader->setVec3("light.color", lightColor);
-        ShaderManager::defaultShader->setFloat("ambientFactor", ambientFactor);*/
-
-
-
-        /*ShaderManager::TerrainShader->setVec3("terrainPos", terrain->position);
-                   ShaderManager::TerrainShader->setFloat("scale", 25.0f);*/
-
-                   /* model = glm::translate(glm::mat4(1.0), modelPos) * glm::scale(glm::mat4(1.0), modelScale[i]);
-
-                              ShaderManager::TerrainShader->setMet4("model", model);*/
-
-
-                              // ShaderManager::TerrainShader->setInt("texture_diffuse", 0);

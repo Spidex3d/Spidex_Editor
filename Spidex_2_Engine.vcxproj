@@ -146,7 +146,6 @@
     <ClCompile Include="src\Ecs\Picking.cpp" />
     <ClCompile Include="src\GlobalVars.cpp" />
     <ClCompile Include="src\Windows\spx_FileDialog.cpp" />
-    <ClCompile Include="src\Ecs\ObjectEditor.cpp" />
     <ClCompile Include="src\Ecs\EntityNodes.cpp" />
     <ClCompile Include="src\Camera\Camera.cpp" />
     <ClCompile Include="src\EditorInput.cpp" />
@@ -178,7 +177,6 @@
     <ClInclude Include="src\Headers\Textures.h" />
     <ClInclude Include="src\Terrain\Terrain.h" />
     <ClInclude Include="src\Windows\spx_FileDialog.h" />
-    <ClInclude Include="src\Ecs\ObjectEditor.h" />
     <ClInclude Include="src\Ecs\EntityNodes.h" />
     <ClInclude Include="src\Windows\Settings.h" />
     <ClInclude Include="src\Camera\Camera.h" />

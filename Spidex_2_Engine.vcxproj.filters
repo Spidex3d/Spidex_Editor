@@ -69,9 +69,6 @@
     <ClCompile Include="src\Ecs\EntityNodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Ecs\ObjectEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Windows\spx_FileDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -159,9 +156,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Ecs\EntityNodes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Ecs\ObjectEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Windows\spx_FileDialog.h">

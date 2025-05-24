@@ -18,6 +18,12 @@
 
 #include "../Headers/GlobalVars.h"
 
+//struct PointLight {
+//    glm::vec3 position;
+//    glm::vec3 color;
+//    float intensity;
+//    float radius;
+//};
 
 class EntityNodes
 {
@@ -28,8 +34,8 @@ public:
 	void Initialize();
 
 	void ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
-	void LightEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
-	void TerrainEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
+	void LightingEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
+	//void TerrainEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
 
 	std::vector<std::unique_ptr<BaseModel>>& GetModels();
 
@@ -85,12 +91,12 @@ public:
 	// ############################   END TERRAIN #######################################
 
 	void DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector);
+
 	
 private:
 	// Object Mesh Editor
-	
 	bool showObjectEditor = false;
-	char nameBuffer[128] = "";
+	//char nameBuffer[128] = "";
 	
 	glm::mat4 modelMatrix;
 

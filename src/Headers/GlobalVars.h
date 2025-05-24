@@ -7,6 +7,8 @@ extern std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for a
 //extern std::vector<std::shared_ptr<BaseModel>> ObjectVector; // the vector for all Models
 //extern std::vector<std::unique_ptr<BaseModel>> LightVector; // the vector for all Lights 
 
+extern char nameBuffer[128];
+
 extern const int MAIN_GRID;
 extern const int OBJ_CUBE;
 extern const int OBJ_PLANE;
@@ -40,11 +42,16 @@ extern int MAX_SUN_LIGHTS;
 extern int MAX_POINT_LIGHTS;
 extern int MAX_LIGHT_SPOT;
 extern int MAX_LIGHT_AREA;
-extern int Lightidx;
+extern int LightIdx;
 extern bool ShouldAddSunLight;
 extern bool ShouldAddPointLight;
 extern bool ShouldUpdateLight;
 extern bool ShouldUpdatePointLight;
+extern bool ShowLightEditor;
+extern float LightCol[4]; 
+extern float LightIntensity;
+
+
 // ##### End Lighting ########
 // 
 // #####  Terrain ############
