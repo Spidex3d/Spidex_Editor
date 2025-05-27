@@ -10,53 +10,92 @@ struct DirectionalLight {
     vec3 color;
     float intensity;
 };
-struct PointLight {
+uniform int numPointLights;
+uniform struct{
     vec3 position;
     vec3 color;
     float intensity;
     float radius;
-};
+}PointLights[10];
 
 
 // Uniforms
 uniform sampler2D texture_diffuse;
 uniform DirectionalLight SunLight;
-uniform PointLight PointLights[10];
-
 
 void main()
 {
     vec3 norm = normalize(Normal);
     vec3 albedo = texture(texture_diffuse, TexCoords).rgb;
-    vec3 ambient = 0.1 * albedo;
-    vec3 result = ambient;
-    
-    // Light direction is incoming light, so we invert it
+
+    // Start with ambient
+    vec3 result = 0.1 * albedo;
+
+    // Sun light (directional)
     vec3 lightDir = normalize(-SunLight.direction);
-    // Simple Lambertian diffuse
     float diff = max(dot(norm, lightDir), 0.0);
     result += SunLight.color * diff * SunLight.intensity * albedo;
-    
-    // ---------- Point light(s)
-    for (int i = 0; i < 1; ++i) {
+
+    // Point lights
+    for (int i = 0; i < numPointLights; ++i) {
         vec3 toLight = PointLights[i].position - FragPos;
         float distance = length(toLight);
-        //vec3 lightDir = normalize(toLight);
-        vec3 lightDir = normalize(PointLights[i].position - FragPos);
+        float attenuation = clamp(1.0 - distance / PointLights[i].radius, 0.0, 1.0);
+        vec3 lightDir = normalize(toLight);
+        float diff = max(dot(norm, lightDir), 0.0);
 
-        float attenuation = 1.0 / (distance * distance / PointLights[i].radius);
-        float diffP = max(dot(norm, lightDir), 0.0);
-
-        result += PointLights[i].color * diffP * PointLights[i].intensity * attenuation * albedo;
+        vec3 lightEffect = PointLights[i].color * PointLights[i].intensity * diff * attenuation;
+        result += lightEffect * albedo;
     }
-    
-    FragColor = vec4(result, 1.0);
 
-  
+    FragColor = vec4(result, 1.0);
 }
 
 
+//void main()
+//{
+//    vec3 norm = normalize(Normal);
+//    vec3 albedo = texture(texture_diffuse, TexCoords).rgb;
+//    vec3 ambient = 0.1 * albedo;
+//    vec3 result = ambient;
+//   
+//    
+//    // Light direction is incoming light, so we invert it
+//    vec3 lightDir = normalize(-SunLight.direction);
+//    // Simple Lambertian diffuse
+//    float diff = max(dot(norm, lightDir), 0.0);
+//    result += SunLight.color * diff * SunLight.intensity * albedo;
+//    
+//    
+//     //---------- Point light(s)
+//    vec3 totalLight = vec3(0.0);
+//    for (int i = 0; i < numPointLights; ++i) {
+//    vec3 toLight = PointLights[i].position - FragPos;
+//    float distance = length(toLight);
+//    float attenuation = clamp(1.0 - distance / PointLights[i].radius, 0.0, 1.0);
+//
+//    vec3 lightEffect = PointLights[i].color * PointLights[i].intensity * attenuation;
+//    totalLight += lightEffect;
+//    }
+//
+//    //FragColor = vec4(result, 1.0);
+//     FragColor = vec4(totalLight, 1.0);
+//
+//  
+//}
+//
 
+//    for (int i = 0; i < 1; ++i) {
+//        vec3 toLight = PointLights[i].position - FragPos;
+//        float distance = length(toLight);
+//        //vec3 lightDir = normalize(toLight);
+//        vec3 lightDir = normalize(PointLights[i].position - FragPos);
+//
+//        float attenuation = 1.0 / (distance * distance / PointLights[i].radius);
+//        float diffP = max(dot(norm, lightDir), 0.0);
+//
+//        result += PointLights[i].color * diffP * PointLights[i].intensity * attenuation * albedo;
+//    }
 
 
 

@@ -188,15 +188,19 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
         if (ImGui::BeginMenu("Add a new Light")) {       
             if (ImGui::MenuItem("Sun Light")) {
                 ShouldAddSunLight = true;
+                LightSelector = LIGHT_SUN;
             }
             if (ImGui::MenuItem("Point Light")) {
                 ShouldAddPointLight = true;
+                LightSelector = LIGHT_POINT;
             }
             if (ImGui::MenuItem("Spot Light")) {
-                ShouldAddSunLight = true;
+                ShouldAddSpotLight = true;
+                LightSelector = LIGHT_SPOT;
             }
             if (ImGui::MenuItem("Area Light")) {
-                ShouldAddSunLight = true;
+                ShouldAddAreaLight = true;
+                LightSelector = LIGHT_AREA;
             }
 
            ImGui::EndMenu();

@@ -34,22 +34,30 @@ extern bool ShouldUpdateObjModel;
 extern int ModleObjidx;
 
 // ##### Lighting ########### 
-extern const int LIGHT_SUN;
-extern const int LIGHT_PIONT;
-extern const int LIGHT_SPOT;
-extern const int LIGHT_AREA;
+extern int LIGHT_SUN;
+extern int LIGHT_POINT;
+extern int LIGHT_SPOT;
+extern int LIGHT_AREA;
 extern int MAX_SUN_LIGHTS;
 extern int MAX_POINT_LIGHTS;
 extern int MAX_LIGHT_SPOT;
 extern int MAX_LIGHT_AREA;
 extern int LightIdx;
+extern int LightSelector;  // This is used in the main screen menue
+//extern int LightUpdateSelector;  // This is used in the Light Editor to set which light to update
 extern bool ShouldAddSunLight;
 extern bool ShouldAddPointLight;
-extern bool ShouldUpdateLight;
+extern bool ShouldAddSpotLight;
+extern bool ShouldAddAreaLight;
+extern bool ShouldUpdateSunLight;
 extern bool ShouldUpdatePointLight;
+extern bool ShouldUpdateSpotLight;
+extern bool ShouldUpdateAreaLight;
 extern bool ShowLightEditor;
-extern float LightCol[4]; 
-extern float LightIntensity;
+extern float SunLightCol[4]; 
+extern float SunLightIntensity;
+extern float PointLightCol[4];
+extern float PointLightIntensity;
 
 
 // ##### End Lighting ########

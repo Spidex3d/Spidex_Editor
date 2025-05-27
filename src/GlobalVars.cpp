@@ -30,22 +30,30 @@ bool ShouldUpdateObjModel = false;
 int ModleObjidx = 0;
 
 // ##### Lighting ###########
-const int LIGHT_SUN = 20;
-const int LIGHT_PIONT = 21;
-const int LIGHT_SPOT = 22;
-const int LIGHT_AREA = 23;
+int LIGHT_SUN = 20;
+int LIGHT_POINT = 21;
+int LIGHT_SPOT = 22;
+int LIGHT_AREA = 23;
 int MAX_SUN_LIGHTS = 0;
 int MAX_POINT_LIGHTS = 10;
 int MAX_LIGHT_SPOT = 10;
 int MAX_LIGHT_AREA = 10;
 int LightIdx = 0;
+int LightSelector =  0;
+//int LightUpdateSelector =  0;
 bool ShouldAddSunLight = false;
 bool ShouldAddPointLight = false;
-bool ShouldUpdateLight = false;
+bool ShouldAddSpotLight = false;
+bool ShouldAddAreaLight = false;
+bool ShouldUpdateSunLight = false;
 bool ShouldUpdatePointLight = false;
+bool ShouldUpdateSpotLight = false;
+bool ShouldUpdateAreaLight = false;
 bool ShowLightEditor = false;
-float LightCol[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-float LightIntensity = 0.5f;
+float SunLightCol[4] = { 0.7f, 1.0f, 0.3f, 1.0f };
+float SunLightIntensity = 0.5f;
+float PointLightCol[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+float PointLightIntensity = 0.5f;
 
 // ##### End Lighting ########
 

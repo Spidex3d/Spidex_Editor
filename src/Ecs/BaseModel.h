@@ -22,7 +22,9 @@ public:
     unsigned int CubeTextureID;
     unsigned int creatMap = 0;
      
-
+    glm::vec4 lightColor = glm::vec4(1.0f);
+    float intensity = 1.0f;
+    int lightType = 0;
 
     virtual ~BaseModel() = default;
     //virtual void RenderImGui() const = 0; // Pure virtual function for ImGui rendering
