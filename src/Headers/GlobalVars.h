@@ -58,6 +58,8 @@ extern float SunLightCol[4];
 extern float SunLightIntensity;
 extern float PointLightCol[4];
 extern float PointLightIntensity;
+extern float AreaLightCol[4];
+extern float AreaLightIntensity;
 
 
 // ##### End Lighting ########
