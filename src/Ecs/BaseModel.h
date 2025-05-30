@@ -24,6 +24,8 @@ public:
      
     glm::vec4 lightColor = glm::vec4(1.0f);
     float intensity = 1.0f;
+    float radius = 10.0f;
+    float area = 10.0f;
     int lightType = 0;
 
     virtual ~BaseModel() = default;

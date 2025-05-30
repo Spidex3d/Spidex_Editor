@@ -32,6 +32,9 @@ void ShaderManager::SetupShaders() {
     LightShader = new Shader("src/Shader/ShaderFile/lightSprite.vert", "src/Shader/ShaderFile/lightSprite.frag");
 
     TerrainShader = new Shader("src/Shader/ShaderFile/TerrainFloor.vert", "src/Shader/ShaderFile/TerrainFloor.frag");
+
+    TestShadre = new Shader("src/Shader/ShaderFile/test.vert", "src/Shader/ShaderFile/test.frag");
+
     
 }
 

@@ -115,8 +115,8 @@ inline void ApplyPointLights(Shader& shader, const glm::mat4& view, const glm::m
                 shader.setVec3(arrayName + ".position", light->position);
                 shader.setVec3(arrayName + ".color", glm::vec3(light->lightColor));
                 shader.setFloat(arrayName + ".intensity", light->intensity);
-                shader.setFloat(arrayName + ".radius", 10.0f); // You can make this editable per light too
-                // shader.setFloat(arrayName + ".radius", ); // You can make this editable per light too
+               // shader.setFloat(arrayName + ".radius", 10.0f); // You can make this editable per light too
+                shader.setFloat(arrayName + ".radius", light->radius ); // You can make this editable per light too
 
                 pointLightIndex++;
             }
@@ -140,8 +140,8 @@ inline void ApplyAreaLights(Shader& shader, const glm::mat4& view, const glm::ma
                 shader.setVec3(arrayName + ".position", light->position);
                 shader.setVec3(arrayName + ".color", glm::vec3(light->lightColor));
                 shader.setFloat(arrayName + ".intensity", light->intensity);
-                shader.setFloat(arrayName + ".area", 10.0f); // You can make this editable per light too
-
+               // shader.setFloat(arrayName + ".area", 10.0f); // You can make this editable per light too
+                shader.setFloat(arrayName + ".area", light->area);
                 AreaLightIndex++;
             }
         }

@@ -21,7 +21,7 @@ void MainScreen::Initialize(GLFWwindow* window)
 {
     // Load an icon to the main window
     GLFWimage images[1];
-    images[0].pixels = stbi_load("Textures/Icon.png", &images[0].width, &images[0].height, 0, 4); // rgba = png
+    images[0].pixels = stbi_load("Textures/Texture/Icon.png", &images[0].width, &images[0].height, 0, 4); // rgba = png
     glfwSetWindowIcon(window, 1, images);
     stbi_image_free(images[0].pixels);
 
@@ -206,9 +206,11 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
            ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Add a Terrain")) {
-            if (ImGui::MenuItem("Terrain")) {}
+            if (ImGui::MenuItem("Terrain")) { // This is the main terrain
+                ShouldAddTerrain = true;
+            }
             if (ImGui::MenuItem("Water")) {}
-            if (ImGui::MenuItem("Floor")) {
+            if (ImGui::MenuItem("Floor")) {  // This is the floor
                 ShouldAddFloor = true;
             }
             
