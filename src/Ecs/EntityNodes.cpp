@@ -1579,7 +1579,8 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
         Terrain->modelMatrix = glm::translate(glm::mat4(1.0f), Terrain->position);
         Terrain->modelMatrix = glm::scale(Terrain->modelMatrix, Terrain->scale);
 
-        Terrain->textureID = loadTexture("Textures/Terrain/dead-leaves-sparse-on-grass.jpg");
+        //Terrain->textureID = loadTexture("Textures/Terrain/dead-leaves-sparse-on-grass.jpg");
+        Terrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg");
 
         ObjectVector.push_back(std::move(Terrain));
 

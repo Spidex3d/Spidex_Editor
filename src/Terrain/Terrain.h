@@ -229,66 +229,25 @@ private:
 
 };
 
-/*int rez = 1;
-    int width, height, nrChannels;
-    int numStrips = 0;
-    int vertsPerStrip = 0;*/
+class WaterTerrain : public BaseModel
+{
+    WaterTerrain(std::vector<std::unique_ptr<BaseModel>>& selectedData)
+    {
+        
 
-// At some p[oint this will need to be set from an open Dialog box
-        //unsigned char* t_data = stbi_load("Textures/Terrain/Data/test_01.png", &width, &height, &nrChannels, 0);
-        /*unsigned char* t_data = stbi_load("Textures/Terrain/Data/test.png", &width, &height, &nrChannels, 0);
-        if (t_data) {
-            std::cout << "Loading Heightmap of size " << height << " X " << width << std::endl;
-        }
-        else {
-            std::cout << "Failed Loading Heightmap " << std::endl;
-            return;
-        }
-        if ((height - 1) % rez != 0 || width % rez != 0) {
-            std::cerr << "Warning: heightmap size not divisible by rez\n";
-        }*/
+    }
 
-        ///*   std::vector<float> t_vertices;
-        //   float y_Scale = 64.0f / 256.0f, y_Shift = 16.0f;
-        //   unsigned bytePerPixel = nrChannels;
-        //   for (int i = 0; i < height; i++)
-        //   {
-        //       for (int j = 0; j < width; j++)
-        //       {
-        //           unsigned char* pixelOffset = t_data + (j + width * i) * bytePerPixel;
-        //           unsigned char y = pixelOffset[0];
-        //           t_vertices.push_back(-height / 2.0f + height * i / (float)height);
-        //           t_vertices.push_back((int)y * y_Scale - y_Shift);
-        //           t_vertices.push_back(-width / 2.0f + width * j / (float)width);
-        //       }
-        //   }
-        //   std::cout << "Loaded " << t_vertices.size() / 3 << " Vertices" << std::endl;*/
-        //    stbi_image_free(t_data);
+};
 
+// OK this is the terrain Editor ImGui window which will allow us to edit the terrain, water & floor / ceiling
+// Change size / update the map / change the texture and so on 
 
+class TerrainEditor : public BaseModel
+{
+    TerrainEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData)
+    {
+        ImGui::GetStyle().WindowRounding = 12.0f;
 
-        //    /*std::vector<unsigned> t_indices;
-        //    for (unsigned i = 0; i < height - 1; i += rez)
-        //    {
-        //        for (unsigned j = 0; j < width; j += rez)
-        //        {
-        //            for (unsigned k = 0; k < 2; k++) {
+    }
 
-        //                t_indices.push_back(j + width * (i + k * rez));
-        //            }
-        //        }
-        //    }*/
-
-//numStrips = (height - 1) / rez;
-    //int vertsPerStrip = (width / rez) * 2 - 2; // Number of indices per triangle strip
-    //std::cout << "Created lattice of " << numStrips << " Strips with " << vertsPerStrip << " Triangles each" << std::endl;
-    //std::cout << "Created " << numStrips * vertsPerStrip << " Triangles total" << std::endl;
-
-    //for (int strip = 0; strip < numStrips; ++strip) {
-    //    glDrawElements(
-    //        GL_TRIANGLE_STRIP,
-    //        vertsPerStrip + 2,
-    //        GL_UNSIGNED_INT,
-    //        (void*)(sizeof(unsigned) * vertsPerStrip + 2 * strip) // Correct byte offset per strip
-    //    );
-    //}
+};
