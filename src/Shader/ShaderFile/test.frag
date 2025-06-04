@@ -1,4 +1,12 @@
 #version 460
+
+//out vec4 FragColor;
+//
+//void main()
+//{
+//    FragColor = vec4(0.2, 1.0, 0.2, 1.0); // Bright green
+//}
+//
 out vec4 FragColor; // Output color
 
 in float Height;
@@ -6,7 +14,8 @@ in float Height;
 void main()
 {
 float h = (Height + 16)/32.0f;
-FragColor = vec4(h, h, h, 1.0);
+ FragColor = vec4(h, h, h, 1.0);
+//FragColor = vec4(0.2, 1.0, 0.3, 1.0); 
 }
 
 

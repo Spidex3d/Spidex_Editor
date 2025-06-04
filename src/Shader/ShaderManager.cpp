@@ -10,7 +10,7 @@ Shader * ShaderManager::LightShader = nullptr;   // the obj shaders
 Shader * ShaderManager::defaultShader = nullptr;   // the obj shaders 
 Shader * ShaderManager::skyShader = nullptr;   // the sky shaders 
 Shader * ShaderManager::TerrainShader = nullptr;   // the sky shaders 
-Shader * ShaderManager::TestShadre = nullptr;   // the sky shaders 
+Shader * ShaderManager::TestShader = nullptr;   // the sky shaders 
 
 glm::vec3 lightPos(1.2f, 1.5f, 2.0f);
 
@@ -33,7 +33,7 @@ void ShaderManager::SetupShaders() {
 
     TerrainShader = new Shader("src/Shader/ShaderFile/TerrainFloor.vert", "src/Shader/ShaderFile/TerrainFloor.frag");
 
-    TestShadre = new Shader("src/Shader/ShaderFile/test.vert", "src/Shader/ShaderFile/test.frag");
+    TestShader = new Shader("src/Shader/ShaderFile/test.vert", "src/Shader/ShaderFile/test.frag");
 
     
 }

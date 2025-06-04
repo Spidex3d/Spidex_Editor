@@ -37,7 +37,7 @@ void main()
 {
     vec3 norm = normalize(Normal);
     vec3 albedo = texture(texture_diffuse, TexCoords).rgb;
-
+   
     // Start with ambient
     vec3 result = 0.1 * albedo;
 

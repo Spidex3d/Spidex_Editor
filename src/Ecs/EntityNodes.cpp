@@ -552,13 +552,13 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                     break;
                                  case 24: // Not in use
                                     break;
-                                 case 25: // Terrain
+                                 case 25: // Floor / celing
                                      showObjectEditor = true;
                                     break;
-                                 case 26: // Water
+                                 case 26:   // Terrain  
                                      showObjectEditor = true;
                                     break;
-                                 case 27: // Floor / celing
+                                 case 27: // Water
                                      showObjectEditor = true;
                                     break;
 
@@ -758,7 +758,6 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderSunLightSprite(view, projection, ObjectVector, currentIndex, LightIdx);
     EntityNodes::RenderPointLightSprite(view, projection, ObjectVector, currentIndex, LightIdx);
     EntityNodes::RenderAreaLightSprite(view, projection, ObjectVector, currentIndex, LightIdx);
-   
     // ############################### Terrain #####################################
     EntityNodes::RenderTerrain(view, projection, ObjectVector, currentIndex, TerrainIdx, camera);
     EntityNodes::RenderTerrainFloor(view, projection, ObjectVector, currentIndex, TerrainIdx, camera);
@@ -1565,25 +1564,28 @@ void EntityNodes::RenderAreaLightSprite(const glm::mat4& view, const glm::mat4& 
 // ###########################################    END LIGHTING SECTION      ###############################################
 
 // ###########################################    TERRAIN SECTION           ###############################################
-void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projection, std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& TerrainIdx, Camera camera)
+void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& TerrainIdx, Camera camera)
 {
     stbi_set_flip_vertically_on_load(true);
-
+    
     if (ShouldAddTerrain) {
         TerrainIdx = ObjectVector.size();
 
-        std::unique_ptr<MainTerrain> m_Terrain = std::make_unique<MainTerrain>(currentIndex, "Main Terrain", TerrainIdx);
-        m_Terrain->position = glm::vec3(0.0f, -0.5f, 0.0f);
-        m_Terrain->scale = glm::vec3(10.0f, 10.0f, 10.0f);
+        std::unique_ptr<MainTerrain> Terrain = std::make_unique<MainTerrain>(currentIndex, "Terrain", TerrainIdx);
+        Terrain->position = glm::vec3(0.0f, 3.0f, 0.0f);
+        Terrain->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-        m_Terrain->modelMatrix = glm::translate(glm::mat4(1.0f), m_Terrain->position);
-        m_Terrain->modelMatrix = glm::scale(m_Terrain->modelMatrix, m_Terrain->scale);
+        Terrain->modelMatrix = glm::translate(glm::mat4(1.0f), Terrain->position);
+        Terrain->modelMatrix = glm::scale(Terrain->modelMatrix, Terrain->scale);
 
-        //m_Terrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg");
+        Terrain->textureID = loadTexture("Textures/Terrain/dead-leaves-sparse-on-grass.jpg");
 
-        ObjectVector.push_back(std::move(m_Terrain));
+        ObjectVector.push_back(std::move(Terrain));
 
         ShouldAddTerrain = false; // Reset the flag after adding the plane
+
+        
     }
     // ##########
     if (ShouldUpdateTerrain) { // then we update the cube position and scale
@@ -1606,36 +1608,41 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
 
         ShouldUpdateTerrain = false;
     }
-    /*ShaderManager::TerrainShader->Use();
+    ShaderManager::TerrainShader->Use();
     ShaderManager::TerrainShader->setMat4("view", view);
-    ShaderManager::TerrainShader->setMat4("projection", projection);*/
+    ShaderManager::TerrainShader->setMat4("projection", projection);
 
-    ShaderManager::TestShadre->Use();
-    ShaderManager::TestShadre->setMat4("view", view);
-    ShaderManager::TestShadre->setMat4("projection", projection);
+    /*ShaderManager::TestShader->Use();
+    ShaderManager::TestShader->setMat4("view", view);
+    ShaderManager::TestShader->setMat4("projection", projection);*/
 
 
-    /*ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+    ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
     ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-    ApplyAreaLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);*/
+    ApplyAreaLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
 
+
+        
     for (const auto& model : ObjectVector) {
+        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // using indices
+        
 
+        if (auto* t_terrain = dynamic_cast<MainTerrain*>(model.get())) {
 
-        if (auto* m_terrain = dynamic_cast<MainTerrain*>(model.get())) {
+            ShaderManager::TerrainShader->setMat4("model", t_terrain->modelMatrix);
+            //ShaderManager::TestShader->setMat4("model", t_terrain->modelMatrix);
 
-            // 5. Pass the direction to the shader
-            //ShaderManager::TerrainShader->setVec3("SunLight.direction", sunDirection);
-            ShaderManager::TestShadre->setMat4("model", m_terrain->modelMatrix);
-
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, m_terrain->textureID);
-
-            m_terrain->DrawMainTerrain();
-            glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, t_terrain->textureID);
+            t_terrain->DrawMainTerrain();
+           
+            //glBindTexture(GL_TEXTURE_2D, 0);
+            
         }
+
     }
-}
+
+};
 
 void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& Terrainidx, Camera camera)
@@ -1645,8 +1652,8 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
     if (ShouldAddFloor) {
         TerrainIdx = ObjectVector.size();
 
-        std::unique_ptr<FloorModel> newTerrain = std::make_unique<FloorModel>(currentIndex, "DefaultFloor", TerrainIdx);
-        newTerrain->position = glm::vec3(0.0f, -0.5f, 0.0f);
+        std::unique_ptr<FloorModel> newTerrain = std::make_unique<FloorModel>(currentIndex, "Floor", TerrainIdx);
+        newTerrain->position = glm::vec3(0.0f, -0.4f, 0.0f);
         newTerrain->scale = glm::vec3(10.0f, 10.0f, 10.0f);
                
         newTerrain->modelMatrix = glm::translate(glm::mat4(1.0f), newTerrain->position);
@@ -1684,9 +1691,9 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
     ShaderManager::TerrainShader->setMat4("projection", projection);
 
     
-         ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+         /*ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
          ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-         ApplyAreaLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+         ApplyAreaLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);*/
         
     for (const auto& model : ObjectVector) {
         

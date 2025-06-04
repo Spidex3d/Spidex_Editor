@@ -76,11 +76,11 @@ bool ShouldUpdateFloor = false;
 
 bool ShouldAddCube = false;     // add a new cube
 bool ShouldAddPlane = false;    // add a new plane
-bool ShouldAddSphere = false;
+bool ShouldAddSphere = false;    // add a new sphere
 bool ShouldAddPyramid = false;
 
 bool ShouldUpdateCube = false;  // update the cube
-bool ShouldUpdateSphere = false;  // update the cube
+bool ShouldUpdateSphere = false;  // update the sphere
 bool ShouldUpdatePlane = false; // update the plane
 bool ShouldUpdatePyramid = false; // update the pyramid
 

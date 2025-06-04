@@ -5,6 +5,8 @@
 #include <string>
 
 #include <glm/glm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 
 #include "../Shader/ShaderManager.h"
 #include "../Camera/Camera.h"
@@ -17,13 +19,6 @@
 #include "SelectedDataManager.h"
 
 #include "../Headers/GlobalVars.h"
-
-//struct PointLight {
-//    glm::vec3 position;
-//    glm::vec3 color;
-//    float intensity;
-//    float radius;
-//};
 
 class EntityNodes
 {
