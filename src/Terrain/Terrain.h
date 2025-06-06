@@ -1,19 +1,37 @@
 #pragma once
+
+//#define STBI_MSC_SECURE_CRT
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <glm\glm.hpp>
 #include "../Shader/Shader.h"
 #include "../Ecs/BaseModel.h"
 #include "../Headers/GlobalVars.h"
 #include "../Headers/Config.h"
+//#include <stb\stb_image_write.h>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+struct TerrainImage {
+    GLuint textureID;
+    std::string path;
+};
+
+// Forward declaration
+unsigned int loadSaveTerrainTexture(const std::string& terrainPath);
 
 class MainTerrain : public BaseModel {
 
 public:
     GLuint t_VAO, t_VBO, t_EBO;
-    int width, height, nrChannels;
+    //int width, height, nrChannels;
+    
+    int heightmapWidth = 0;
+    int heightmapHeight = 0;
+    int heightmapChannels = 0;
     std::vector<float> t_vertice;
     std::vector<unsigned> t_indice;
-    
-    
+
     int rez = 1;
     int numStrips = 0;
     int vertsPerStrip = 0;
@@ -24,45 +42,47 @@ public:
         objectIndex = TerrainIdx;
         objectTypeID = TERRAIN_FLOOR;
 
-        unsigned char* t_data = stbi_load("Textures/Terrain/Data/test_all_black_s.png", &width, &height, &nrChannels, 0);
+        unsigned char* t_data = stbi_load("Textures/Terrain/Data/test_all_black_s.png",
+            &heightmapWidth, &heightmapHeight, &heightmapChannels, 0);
         if (!t_data) {
             std::cout << "Failed Loading the Heightmap " << std::endl;
             return;
             
         }
-        std::cout << "Loading the Heightmap of size " << height << " X " << width << std::endl;
+        std::cout << "Loading the Heightmap of size " << heightmapHeight << " X " << heightmapWidth << std::endl;
                    
-        std::vector<float> heightMap(width * height);
+        std::vector<float> heightMap(heightmapWidth * heightmapHeight);
         float y_Scale = 64.0f / 256.0f;
         float y_Shift = 16.0f;
-        unsigned bytePerPixel = nrChannels;
+        unsigned bytePerPixel = heightmapChannels;
 
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                unsigned char* pixelOffset = t_data + (j + width * i) * bytePerPixel;
+        for (int i = 0; i < heightmapHeight; ++i) {
+            for (int j = 0; j < heightmapWidth; ++j) {
+                unsigned char* pixelOffset = t_data + (j + heightmapWidth * i) * bytePerPixel;
+               
                 unsigned char y = pixelOffset[0];
-                heightMap[i * width + j] = static_cast<float>(y) * y_Scale - y_Shift;
+                heightMap[i * heightmapWidth + j] = static_cast<float>(y) * y_Scale - y_Shift;
             }
         }
         stbi_image_free(t_data);
 
         // Generate vertices with normals
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                float x = -height / 2.0f + height * i / static_cast<float>(height);
-                float y = heightMap[i * width + j];
-                float z = -width / 2.0f + width * j / static_cast<float>(width);
+        for (int i = 0; i < heightmapHeight; ++i) {
+            for (int j = 0; j < heightmapWidth; ++j) {
+                float x = -heightmapHeight / 2.0f + heightmapHeight * i / static_cast<float>(heightmapHeight);
+                float y = heightMap[i * heightmapWidth + j];
+                float z = -heightmapWidth / 2.0f + heightmapWidth * j / static_cast<float>(heightmapWidth);
 
                 // Calculate normal using surrounding heights
-                float hL = (j > 0) ? heightMap[i * width + (j - 1)] : y;
-                float hR = (j < width - 1) ? heightMap[i * width + (j + 1)] : y;
-                float hD = (i > 0) ? heightMap[(i - 1) * width + j] : y;
-                float hU = (i < height - 1) ? heightMap[(i + 1) * width + j] : y;
+                float hL = (j > 0) ? heightMap[i * heightmapWidth + (j - 1)] : y;
+                float hR = (j < heightmapWidth - 1) ? heightMap[i * heightmapWidth + (j + 1)] : y;
+                float hD = (i > 0) ? heightMap[(i - 1) * heightmapWidth + j] : y;
+                float hU = (i < heightmapHeight - 1) ? heightMap[(i + 1) * heightmapWidth + j] : y;
 
                 glm::vec3 normal = glm::normalize(glm::vec3(hL - hR, 2.0f, hD - hU)); // y is up
 
-                float u = j / float(width - 1);
-                float v = i / float(height - 1);
+                float u = j / float(heightmapWidth - 1);
+                float v = i / float(heightmapHeight - 1);
 
                 // Push position
                 t_vertice.push_back(x);
@@ -78,37 +98,24 @@ public:
                 t_vertice.push_back(v); // tex coord v
             }
         }
-
-           /*float y_Scale = 64.0f / 256.0f, y_Shift = 16.0f;
-           unsigned bytePerPixel = nrChannels;
-           for (int i = 0; i < height; i++)
-           {
-               for (int j = 0; j < width; j++)
-               {
-                   unsigned char* pixelOffset = t_data + (j + width * i) * bytePerPixel;
-                   unsigned char y = pixelOffset[0];
-                   t_vertice.push_back(-height / 2.0f + height * i / (float)height);
-                   t_vertice.push_back((int)y * y_Scale - y_Shift);
-                   t_vertice.push_back(-width / 2.0f + width * j / (float)width);
-               }
-           }*/
+                   
            std::cout << "Loaded " << t_vertice.size() / 3 << " Vertices" << std::endl;
                
-        for (unsigned i = 0; i < height - 1; i += rez)
+        for (unsigned i = 0; i < heightmapHeight - 1; i += rez)
         {
-            for (unsigned j = 0; j < width; j += rez)
+            for (unsigned j = 0; j < heightmapWidth; j += rez)
             {
                 for (unsigned k = 0; k < 2; k++) {
 
-                    t_indice.push_back(j + width * (i + k * rez));
+                    t_indice.push_back(j + heightmapWidth * (i + k * rez));
                 }
             }
         }
          
         std::cout << "Loaded " << t_indice.size() << " Indices" << std::endl;
 
-         numStrips = (height - 1) / rez;
-         vertsPerStrip = (width / rez) * 2 - 2; // Number of indices per triangle strip
+         numStrips = (heightmapHeight - 1) / rez;
+         vertsPerStrip = (heightmapWidth / rez) * 2 - 2; // Number of indices per triangle strip
 
          std::cout << "Created lattice of " << numStrips << " Strips with " << vertsPerStrip << " Triangles in each" << std::endl;
          std::cout << "Created " << numStrips * vertsPerStrip << " Triangles total" << std::endl;
@@ -144,24 +151,17 @@ public:
 
     void DrawMainTerrain() {
         glBindVertexArray(t_VAO);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // using indices
-        
-        //vertsPerStrip = (width / rez) * 2;
-
+      
         for (unsigned strip = 0; strip < numStrips; strip++) {
             glDrawElements(
                 GL_TRIANGLE_STRIP,
                 vertsPerStrip + 2,
                 GL_UNSIGNED_INT,
                 (void*)(sizeof(unsigned) * (vertsPerStrip + 2) * strip)); // Correct byte offset per strip  add + 2 to vertsPerStrip
-                    
-            /*glBindVertexArray(0);
-            glUseProgram(0);*/
+                             
         }
-    }
-    
-private:
-    
+            glBindVertexArray(0);
+    }   
 };
 
 class FloorModel : public BaseModel {
@@ -187,8 +187,7 @@ public:
             0, 1, 3,
             1, 2, 3
         };
-        
-        
+                
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
@@ -229,25 +228,469 @@ private:
 
 };
 
+inline std::vector<TerrainImage> LoadTerrainImagesFromFolder(const std::string& folderPath) {
+    std::vector<TerrainImage> textures;
+    for (const auto& entry : fs::directory_iterator(folderPath)) {
+        if (entry.is_regular_file()) {
+            std::string ext = entry.path().extension().string();
+            if (ext == ".png" || ext == ".jpg" || ext == ".bmp") {
+                GLuint id = loadSaveTerrainTexture(entry.path().string());
+                textures.push_back({ id, entry.path().string() });
+            }
+        }
+    }
+    return textures;
+}
+
 class WaterTerrain : public BaseModel
 {
     WaterTerrain(std::vector<std::unique_ptr<BaseModel>>& selectedData)
-    {
-        
+    { 
 
     }
 
 };
-
-// OK this is the terrain Editor ImGui window which will allow us to edit the terrain, water & floor / ceiling
-// Change size / update the map / change the texture and so on 
 
 class TerrainEditor : public BaseModel
 {
-    TerrainEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData)
-    {
-        ImGui::GetStyle().WindowRounding = 12.0f;
+public:
+    std::vector<TerrainImage> terrainTextures;
+    bool texturesLoaded = false;
+    unsigned char* heightmapData = nullptr;
+    unsigned int heightmapTex = 0;
+    int selectedBrush = 0;
+    float brushSize = 10.0f;
+    float brushStrength = 0.5f;
 
+    int imgSize = 256;
+
+
+    bool showBrushCursor = true;
+
+    void Render(std::vector<std::unique_ptr<BaseModel>>& selectedData) {
+        
+            if (!showTerrainEditor) return;
+
+            ImGui::GetStyle().WindowRounding = 12.0f;
+            ImGui::Begin("Terrain Object Editor", &showTerrainEditor);
+
+            ImGui::InputText("Terrain Name", nameBuffer, IM_ARRAYSIZE(nameBuffer));
+            ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " Terrain Mesh Editor");
+            ImGui::SeparatorText("Terrain Editor");
+
+            ImGui::BeginTable("Edit Table", 1, ImGuiTableFlags_Borders | ImGuiTableFlags_Reorderable);
+            ImGui::TableNextColumn();
+            ImGui::DragFloat3("##pos", terrain_Pos, 0.0f);
+            ImGui::SameLine();
+            if (ImGui::Button("Reset Position")) {
+                terrain_Pos[0] = terrain_Pos[1] = terrain_Pos[2] = 0.0f;
+            }
+
+            ImGui::TableNextRow(); ImGui::TableNextColumn();
+            ImGui::DragFloat3("##Scale", terrain_Scale, 0.0f);
+            ImGui::SameLine();
+            if (ImGui::Button("Reset Scale")) {
+                terrain_Scale[0] = terrain_Scale[1] = terrain_Scale[2] = 1.0f;
+            }
+            ImGui::EndTable();
+
+            // Load heightmap data (editable)
+            static int heightmapW = 0, heightmapH = 0;
+            if (!heightmapData) {
+                int channels;
+                heightmapData = stbi_load("Textures/Terrain/Data/test_all_black_s.png", &heightmapW, &heightmapH, &channels, 1);
+                if (!heightmapData) {
+                    std::cout << "Failed to load heightmap data for editing!\n";
+                }
+            }
+
+            // Load OpenGL texture (for display)
+            if (heightmapTex == 0) {
+                heightmapTex = loadSaveTerrainTexture("Textures/Terrain/Data/test_all_black_s.png");
+            }
+
+            if (heightmapTex != 0) {
+                ImGui::BeginTable("HeightmapTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+                ImGui::TableNextColumn();
+                ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Current Heightmap:");
+
+                ImVec2 imageSize(imgSize, imgSize);
+                ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos(); // Top-left of image
+                ImGui::Image((void*)(intptr_t)heightmapTex, imageSize);
+
+                // Convert mouse to local coordinates
+                ImVec2 mousePos = ImGui::GetMousePos();
+                ImVec2 localMousePos = ImVec2(mousePos.x - cursorScreenPos.x, mousePos.y - cursorScreenPos.y);
+
+                // If hovered and inside bounds
+                if (ImGui::IsItemHovered() &&
+                    localMousePos.x >= 0 && localMousePos.x < imgSize &&
+                    localMousePos.y >= 0 && localMousePos.y < imgSize) {
+
+                    ImDrawList* drawList = ImGui::GetWindowDrawList();
+                    ImVec2 circleCenter = ImVec2(cursorScreenPos.x + localMousePos.x, cursorScreenPos.y + localMousePos.y);
+                    drawList->AddCircle(circleCenter, brushSize, IM_COL32(255, 255, 0, 200), 32, 2.0f);
+
+                    // Scale to real heightmap resolution
+                    int centerX = static_cast<int>((localMousePos.x / imgSize) * heightmapW);
+                    int centerY = static_cast<int>((localMousePos.y / imgSize) * heightmapH);
+
+                    if (ImGui::IsMouseDown(ImGuiMouseButton_Right) || ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+                        bool raise = ImGui::IsMouseDown(ImGuiMouseButton_Right);
+                        int radius = static_cast<int>(brushSize);
+
+                        for (int y = -radius; y <= radius; ++y) {
+                            for (int x = -radius; x <= radius; ++x) {
+                                int px = centerX + x;
+                                int py = centerY + y;
+
+                                if (px < 0 || px >= heightmapW || py < 0 || py >= heightmapH) continue;
+
+                                float dist = std::sqrt(x * x + y * y);
+                                if (dist > radius) continue;
+
+                                float factor = 1.0f - (dist / radius);
+                                int index = py * heightmapW + px;
+
+                                int value = heightmapData[index];
+                                int delta = static_cast<int>(brushStrength * factor);
+                                value += raise ? delta : -delta;
+                                value = std::clamp(value, 0, 255);
+                                heightmapData[index] = static_cast<unsigned char>(value);
+                            }
+                        }
+
+                        // Upload modified texture
+                        glBindTexture(GL_TEXTURE_2D, heightmapTex);
+                        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, heightmapW, heightmapH, GL_RED, GL_UNSIGNED_BYTE, heightmapData);
+                        glGenerateMipmap(GL_TEXTURE_2D);
+                    }
+                }
+
+                ImGui::TableNextColumn();
+                ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_TOOLS " Edit Tools");
+                ImGui::DragFloat("Brush Size", &brushSize, 1.0f, 1.0f, 128.0f);
+                ImGui::DragFloat("Brush Strength", &brushStrength, 0.1f, 0.1f, 50.0f);
+
+                if (ImGui::Button("Save Heightmap to File")) {
+                    const char* savePath = "Textures/Terrain/Data/test_all_black_s.png";
+
+                    if (heightmapData) {
+
+                        /*if (stbi_write_png(savePath, heightmapW, heightmapH, 1, heightmapData, heightmapW)) {
+                            std::cout << "Saved heightmap to: " << savePath << "\n";
+                        }
+                        else {
+                            std::cerr << "Failed to save heightmap!\n";
+                        }*/
+                    }
+                }
+
+                ImGui::EndTable();
+            }
+
+            // Texture picker
+            if (dialogType) {
+                ImGui::SeparatorText(" Texture Picker");
+                ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Available Terrain Textures");
+
+                if (!texturesLoaded) {
+                    terrainTextures = LoadTerrainImagesFromFolder("Textures/Terrain/");
+                    texturesLoaded = true;
+                }
+
+                int columns = 4;
+                int count = 0;
+                ImGui::BeginChild("TextureGrid", ImVec2(0, 300), true); // scrollable
+
+                for (const auto& tex : terrainTextures) {
+                    ImGui::PushID(tex.textureID);
+                    if (ImGui::ImageButton((void*)(intptr_t)tex.textureID, ImVec2(64, 64))) {
+                        objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+                        if (objectUpdateIndex != -1) {
+                            ObjectVector[objectUpdateIndex]->textureID = tex.textureID;
+                            creatTerrainTex = tex.textureID;
+                        }
+                    }
+                    ImGui::PopID();
+
+                    if (++count % columns != 0) ImGui::SameLine();
+                }
+
+                ImGui::EndChild();
+            }
+
+            ImGui::SeparatorText("Update Terrain");
+
+            if (ImGui::Button("Update")) {
+                if (strlen(nameBuffer) > 0) {
+                    auto* selected = SelectedDataManager::Instance().GetSelectedData();
+                    if (selected) {
+                        selected->objectName = std::string(nameBuffer);
+                        switch (selected->objectTypeID) {
+                        case 25: ShouldUpdateFloor = true; break;
+                        case 26: ShouldUpdateTerrain = true; break;
+                        case 27: ShouldUpdateWater = true; break;
+                        }
+                        objectUpdateIndex = selected->objectIndex;
+                        std::cout << "Updated: " << selected->objectName << " at index " << objectUpdateIndex << std::endl;
+                    }
+                }
+
+                showTerrainEditor = false;
+                creatTerrainTex = 0;
+                dialogType = false;
+                texturesLoaded = false;
+            }
+
+            ImGui::End();
     }
 
+    //    if (!showTerrainEditor) return;
+
+    //    ImGui::GetStyle().WindowRounding = 12.0f;
+    //    ImGui::Begin("Terrain Object Editor", &showTerrainEditor);
+
+    //    ImGui::InputText("Terrain Name", nameBuffer, IM_ARRAYSIZE(nameBuffer));
+    //    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " Terrain Mesh Editor");
+    //    ImGui::SeparatorText("Terrain Editor");
+
+    //    ImGui::BeginTable("Edit Table", 1, ImGuiTableFlags_Borders | ImGuiTableFlags_Reorderable);
+    //    ImGui::TableNextColumn();
+    //    ImGui::DragFloat3("##pos", terrain_Pos, 0.0f);
+    //    ImGui::SameLine();
+    //    if (ImGui::Button("Reset Position")) {
+    //        terrain_Pos[0] = terrain_Pos[1] = terrain_Pos[2] = 0.0f;
+    //    }
+
+    //    ImGui::TableNextRow(); ImGui::TableNextColumn();
+    //    ImGui::DragFloat3("##Scale", terrain_Scale, 0.0f);
+    //    ImGui::SameLine();
+    //    if (ImGui::Button("Reset Scale")) {
+    //        terrain_Scale[0] = terrain_Scale[1] = terrain_Scale[2] = 1.0f;
+    //    }
+    //    ImGui::EndTable();
+
+    //    if (!heightmapData) {
+    //        int width, height, channels;
+    //        heightmapData = stbi_load("Textures/Terrain/Data/test_all_black_s.png", &width, &height, &channels, 1); // 1 = force grayscale
+    //        if (!heightmapData) {
+    //            std::cout << "Failed to load heightmap data for editing!\n";
+    //        }
+    //    }
+
+    //    // #### height map load and edit then save
+    //    if (heightmapTex == 0) {
+    //        heightmapTex = loadSaveTerrainTexture("Textures/Terrain/Data/test_all_black_s.png");
+    //    }
+
+    //    if (heightmapTex != 0) {
+    //        ImGui::BeginTable("HeightmapTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+    //        ImGui::TableNextColumn();
+    //        ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Current Heightmap:");
+
+    //        ImVec2 imageSize(imgSize, imgSize);
+    //        ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos(); // Top-left of image in screen coords
+    //        ImGui::Image((void*)(intptr_t)heightmapTex, imageSize);
+
+    //        ImVec2 mousePos = ImGui::GetMousePos();
+    //        ImVec2 localMousePos = ImVec2(mousePos.x - cursorScreenPos.x, mousePos.y - cursorScreenPos.y);
+
+    //        // Only proceed if mouse is within image bounds
+    //        if (localMousePos.x >= 0 && localMousePos.x < imgSize && localMousePos.y >= 0 && localMousePos.y < imgSize) {
+    //            // Draw a circle overlay for the brush
+    //            ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    //            ImVec2 circleCenter = ImVec2(cursorScreenPos.x + localMousePos.x, cursorScreenPos.y + localMousePos.y);
+    //            drawList->AddCircle(circleCenter, brushSize, IM_COL32(255, 255, 0, 200), 32, 2.0f);
+
+    //            int centerX = static_cast<int>(localMousePos.x);
+    //            int centerY = static_cast<int>(localMousePos.y);
+
+    //            // If mouse button held, modify the heightmap
+    //            if (ImGui::IsMouseDown(ImGuiMouseButton_Right) || ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+    //                bool raise = ImGui::IsMouseDown(ImGuiMouseButton_Right);
+    //                int radius = brushSize;
+
+    //                for (int y = -radius; y <= radius; ++y) {
+    //                    for (int x = -radius; x <= radius; ++x) {
+    //                        int px = centerX + x;
+    //                        int py = centerY + y;
+
+    //                        if (px < 0 || px >= imgSize || py < 0 || py >= imgSize) continue;
+
+    //                        float dist = std::sqrt(x * x + y * y);
+    //                        if (dist > radius) continue;
+
+    //                        float factor = 1.0f - (dist / radius); // linear falloff
+    //                        int index = py * imgSize + px;
+
+    //                        // Modify heightmap (stored as unsigned char 0–255)
+    //                        int value = heightmapData[index];
+    //                        int delta = static_cast<int>(brushStrength * factor);
+    //                        value += raise ? delta : -delta;
+    //                        value = std::clamp(value, 0, 255);
+    //                        heightmapData[index] = static_cast<unsigned char>(value);
+    //                    }
+    //                }
+
+    //                // Update OpenGL texture on GPU
+    //                glBindTexture(GL_TEXTURE_2D, heightmapTex);
+    //                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imgSize, imgSize, GL_RED, GL_UNSIGNED_BYTE, heightmapData);
+    //                
+    //            }
+    //        }
+
+    //        ImGui::TableNextColumn();
+    //        ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_TOOLS " Edit Tools");
+    //        ImGui::DragFloat("Brush Size", &brushSize, 1.0f, 1, 100);
+    //        ImGui::DragFloat("Brush Strength", &brushStrength, 0.1f, 0.1f, 20.0f);
+
+    //        ImGui::EndTable();
+    //    }
+    //    // ###################   End Height Map ##########
+    //            
+    //    if (dialogType) {
+    //        ImGui::SeparatorText(" Texture Picker");
+    //        ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Available Terrain Textures");
+
+    //        if (!texturesLoaded) {
+    //            terrainTextures = LoadTerrainImagesFromFolder("Textures/Terrain/");
+    //            texturesLoaded = true;
+    //        }
+
+    //        int columns = 4;
+    //        int count = 0;
+    //        ImGui::BeginChild("TextureGrid", ImVec2(0, 300), true); // scrollable region
+
+    //        for (const auto& tex : terrainTextures) {
+    //            ImGui::PushID(tex.textureID);
+    //            if (ImGui::ImageButton((void*)(intptr_t)tex.textureID, ImVec2(64, 64))) {
+    //                objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+    //                if (objectUpdateIndex != -1) {
+    //                    ObjectVector[objectUpdateIndex]->textureID = tex.textureID;
+    //                    creatTerrainTex = tex.textureID;
+    //                }
+    //            }
+    //            ImGui::PopID();
+
+    //            if (++count % columns != 0) ImGui::SameLine();
+    //        }
+
+    //        ImGui::EndChild();
+    //    }
+
+    //    ImGui::SeparatorText("Update Terrain");
+
+    //    if (ImGui::Button("Update")) {
+    //        if (strlen(nameBuffer) > 0) {
+    //            auto* selected = SelectedDataManager::Instance().GetSelectedData();
+    //            if (selected) {
+    //                selected->objectName = std::string(nameBuffer);
+    //                switch (selected->objectTypeID) {
+    //                case 25: ShouldUpdateFloor = true; break;
+    //                case 26: ShouldUpdateTerrain = true; break;
+    //                case 27: ShouldUpdateWater = true; break;
+    //                }
+
+    //                objectUpdateIndex = selected->objectIndex;
+    //                std::cout << "Updated: " << selected->objectName << " at index " << objectUpdateIndex << std::endl;
+    //            }
+    //        }
+
+    //        showTerrainEditor = false;
+    //        creatTerrainTex = 0;
+    //        dialogType = false;
+    //        texturesLoaded = false; // reset picker
+    //    }
+
+    //    ImGui::End();
+    //}
+
+    //~TerrainEditor() {
+    //    if (heightmapData) {
+    //        stbi_image_free(heightmapData);
+    //        heightmapData = nullptr;
+    //    }
+    //}
 };
+
+inline unsigned int loadSaveTerrainTexture(const std::string& terrainPath) {
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char* data = stbi_load(terrainPath.c_str(), &width, &height, &nrComponents, 0);
+    if (data) {
+        GLenum format = (nrComponents == 1) ? GL_RED :
+            (nrComponents == 3) ? GL_RGB :
+            (nrComponents == 4) ? GL_RGBA : GL_RGB;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        stbi_image_free(data);
+    }
+    else {
+        std::cout << "Texture failed to load: " << terrainPath << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
+}
+
+
+
+
+//if (heightmapTex != 0) {
+        //    ImGui::SeparatorText("Heightmap Editor");
+
+        //    ImGui::BeginTable("HeightmapTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+        //    ImGui::TableNextColumn();
+
+        //    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Current Heightmap:");
+
+        //    // Get the cursor position
+        //    ImVec2 imageSize = ImVec2(256, 256);
+        //    ImVec2 imagePos = ImGui::GetCursorScreenPos();
+
+        //    // Draw the image
+        //    ImGui::Image((void*)(intptr_t)heightmapTex, imageSize);
+
+        //    // Check if hovering and draw brush circle
+        //    if (ImGui::IsItemHovered()) {
+        //        ImVec2 mousePos = ImGui::GetMousePos();
+        //        ImVec2 localMouse = ImVec2(mousePos.x - imagePos.x, mousePos.y - imagePos.y);
+
+        //        float radius = brushSize * 0.5f; // visual radius
+        //        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        //        drawList->AddCircle(mousePos, radius, IM_COL32(0, 255, 0, 200), 32, 2.0f);
+        //    }
+
+        //    ImGui::TableNextColumn();
+
+        //    //ImGui::DragInt("Brush Size", &brushSize, 1.0f, 1, 100);
+        //    ImGui::DragFloat("Brush Size", &brushSize, 1.0f, 1, 100);
+        //    ImGui::DragFloat("Brush Strength", &brushStrength, 0.1f, 0.1f, 20.0f);
+        //    
+        //    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_TOOLS " Edit Tools");
+        //    ImGui::SliderFloat("Brush Size", &brushSize, 1.0f, 64.0f);
+        //    ImGui::Checkbox("Show Cursor", &showBrushCursor);
+        //    ImGui::EndTable();
+        //}
+
+
+
+
+        /*if (heightmapTex != 0) {
+            ImGui::SeparatorText("Current Heightmap");
+            ImGui::Image((void*)(intptr_t)heightmapTex, ImVec2(256, 256));
+        }*/

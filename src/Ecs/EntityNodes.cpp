@@ -553,13 +553,16 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                  case 24: // Not in use
                                     break;
                                  case 25: // Floor / celing
-                                     showObjectEditor = true;
+                                     showTerrainEditor = true;
+                                     dialogType = true;
                                     break;
                                  case 26:   // Terrain  
-                                     showObjectEditor = true;
+                                     showTerrainEditor = true;
+                                     dialogType = true;
                                     break;
                                  case 27: // Water
-                                     showObjectEditor = true;
+                                     showTerrainEditor = true;
+                                     dialogType = true;
                                     break;
 
 
@@ -1572,9 +1575,9 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
     if (ShouldAddTerrain) {
         TerrainIdx = ObjectVector.size();
 
-        std::unique_ptr<MainTerrain> Terrain = std::make_unique<MainTerrain>(currentIndex, "Terrain", TerrainIdx);
-        Terrain->position = glm::vec3(0.0f, 3.0f, 0.0f);
-        Terrain->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+        std::unique_ptr<MainTerrain> Terrain = std::make_unique<MainTerrain>(currentIndex, "Main Terrain", TerrainIdx);
+        Terrain->position = glm::vec3(0.0f, 15.0f, 0.0f);
+        Terrain->scale = glm::vec3(1.0f, 1.0f, 1.0f); // do not go over 1.0f
 
         Terrain->modelMatrix = glm::translate(glm::mat4(1.0f), Terrain->position);
         Terrain->modelMatrix = glm::scale(Terrain->modelMatrix, Terrain->scale);
@@ -1586,10 +1589,9 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
 
         ShouldAddTerrain = false; // Reset the flag after adding the plane
 
-        
     }
     // ##########
-    if (ShouldUpdateTerrain) { // then we update the cube position and scale
+    if (ShouldUpdateTerrain) { // then we update the terrain position and scale
 
         int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
 
@@ -1613,31 +1615,21 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
     ShaderManager::TerrainShader->setMat4("view", view);
     ShaderManager::TerrainShader->setMat4("projection", projection);
 
-    /*ShaderManager::TestShader->Use();
-    ShaderManager::TestShader->setMat4("view", view);
-    ShaderManager::TestShader->setMat4("projection", projection);*/
-
-
     ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
     ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
     ApplyAreaLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-
-
-        
-    for (const auto& model : ObjectVector) {
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // using indices
-        
+   
+    for (const auto& model : ObjectVector) {     
 
         if (auto* t_terrain = dynamic_cast<MainTerrain*>(model.get())) {
 
             ShaderManager::TerrainShader->setMat4("model", t_terrain->modelMatrix);
-            //ShaderManager::TestShader->setMat4("model", t_terrain->modelMatrix);
-
+           
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, t_terrain->textureID);
             t_terrain->DrawMainTerrain();
            
-            //glBindTexture(GL_TEXTURE_2D, 0);
+            glBindTexture(GL_TEXTURE_2D, 0);
             
         }
 
@@ -1673,10 +1665,10 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
 
         if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
 
-            glm::vec3 newTerrainPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]); // New position
+            glm::vec3 newTerrainPosition = glm::vec3(terrain_Pos[0], terrain_Pos[1], terrain_Pos[2]); // New position
             ObjectVector[selectedIndex]->position = newTerrainPosition;
 
-            glm::vec3 newTerrainScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
+            glm::vec3 newTerrainScale = glm::vec3(terrain_Scale[0], terrain_Scale[1], terrain_Scale[2]); // New scale
             ObjectVector[selectedIndex]->scale = newTerrainScale;
 
             ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
@@ -1690,19 +1682,15 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
     ShaderManager::TerrainShader->Use();
     ShaderManager::TerrainShader->setMat4("view", view);
     ShaderManager::TerrainShader->setMat4("projection", projection);
-
-    
-         /*ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+        
+         ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
          ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-         ApplyAreaLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);*/
+         ApplyAreaLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
         
     for (const auto& model : ObjectVector) {
-        
-     
+             
         if (auto* f_terrain = dynamic_cast<FloorModel*>(model.get())) {          
 
-            // 5. Pass the direction to the shader
-            //ShaderManager::TerrainShader->setVec3("SunLight.direction", sunDirection);
             ShaderManager::TerrainShader->setMat4("model", f_terrain->modelMatrix);
                                
             glActiveTexture(GL_TEXTURE0);
@@ -1714,8 +1702,6 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
     }
 
 }
-
-
 
 // ###########################################    END TERRAIN SECTION       ###############################################
 

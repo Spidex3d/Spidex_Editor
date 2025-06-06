@@ -72,6 +72,13 @@ bool ShouldAddWater = false;
 bool ShouldUpdateTerrain = false;
 bool ShouldUpdateWater = false;
 bool ShouldUpdateFloor = false;
+bool showTerrainEditor = false;
+
+float terrain_Pos[3] = { 0.0f, 15.0f, 0.0f };
+float terrain_Scale[3] = { 1.0f, 1.0f, 1.0f };
+
+unsigned int creatTerrainTex = 0;
+
 // ##### End Terrain #########
 
 bool ShouldAddCube = false;     // add a new cube

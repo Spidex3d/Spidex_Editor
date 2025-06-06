@@ -104,6 +104,9 @@ void App::RunApp()
 			EntityNodes::Instance()->ObjectEditor(entityComponents.GetModels());
 			// Lighting
 			EntityNodes::Instance()->LightingEditor(entityComponents.GetModels());
+			// Terrain Editor Window
+			static TerrainEditor terrainEditor;
+			terrainEditor.Render(entityComponents.GetModels());
 					
 						
 			// Darw all objects on screen

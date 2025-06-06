@@ -77,6 +77,16 @@ extern bool ShouldAddWater;
 extern bool ShouldUpdateTerrain;
 extern bool ShouldUpdateWater;
 extern bool ShouldUpdateFloor;
+extern bool showTerrainEditor;
+
+extern float terrain_Pos[3];
+extern float terrain_Scale[3];
+
+extern unsigned int creatTerrainTex;	// this only for the image that shows on the terrain editor window for editing
+
+
+
+
 // ##### End Terrain #########
 //
 // adding Objects
@@ -98,7 +108,6 @@ extern bool SelectedObject;
 
 //############# objects maps
 extern unsigned int creatMap;	// this only for the image that shows on the edit window
-
 
 //#############
 
