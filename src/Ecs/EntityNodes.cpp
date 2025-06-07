@@ -1581,9 +1581,8 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
 
         Terrain->modelMatrix = glm::translate(glm::mat4(1.0f), Terrain->position);
         Terrain->modelMatrix = glm::scale(Terrain->modelMatrix, Terrain->scale);
-
-        //Terrain->textureID = loadTexture("Textures/Terrain/dead-leaves-sparse-on-grass.jpg");
-        Terrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg");
+       
+        Terrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg"); // default texture
 
         ObjectVector.push_back(std::move(Terrain));
 
@@ -1595,19 +1594,25 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
 
         int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
 
-        if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
-
-            glm::vec3 TerrainPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]); // New position
-            ObjectVector[selectedIndex]->position = TerrainPosition;
-
-            glm::vec3 TerrainScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
-            ObjectVector[selectedIndex]->scale = TerrainScale;
-
-            ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
-            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, TerrainPosition);
-            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, TerrainScale);
-
+        auto* terrain = dynamic_cast<MainTerrain*>(ObjectVector[selectedIndex].get());
+        if (terrain) {
+            terrain->ReloadTerrainMeshFromFile("Textures/Terrain/Data/test_all_black_T.png");
         }
+
+        //if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
+
+        //    glm::vec3 TerrainPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]); // New position
+        //    ObjectVector[selectedIndex]->position = TerrainPosition;
+
+        //    glm::vec3 TerrainScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
+        //    ObjectVector[selectedIndex]->scale = TerrainScale;
+
+        //    ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
+        //    ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, TerrainPosition);
+        //    ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, TerrainScale);
+
+        //}
+        std::cout << " terrain updated" << std::endl;
 
         ShouldUpdateTerrain = false;
     }

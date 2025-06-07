@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Headers/Config.h"
 #include <vector>
 #include <memory>

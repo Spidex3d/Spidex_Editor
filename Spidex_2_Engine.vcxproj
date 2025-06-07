@@ -145,6 +145,7 @@
     <ClCompile Include="src\Object_loader\objLoader.cpp" />
     <ClCompile Include="src\Ecs\Picking.cpp" />
     <ClCompile Include="src\GlobalVars.cpp" />
+    <ClCompile Include="src\stb_image_write.cpp" />
     <ClCompile Include="src\Windows\spx_FileDialog.cpp" />
     <ClCompile Include="src\Ecs\EntityNodes.cpp" />
     <ClCompile Include="src\Camera\Camera.cpp" />
