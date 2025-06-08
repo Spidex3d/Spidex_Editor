@@ -24,12 +24,16 @@ class MainTerrain : public BaseModel {
 public:
     GLuint t_VAO, t_VBO, t_EBO;
     //int width, height, nrChannels;
-    
+    // heightmap
     int heightmapWidth = 0;
     int heightmapHeight = 0;
     int heightmapChannels = 0;
     std::vector<float> t_vertice;
     std::vector<unsigned> t_indice;
+    // texturemap
+    int textureMapWidth = 0;
+    int textureMapHeight = 0;
+    int textureMapChannels = 0;
 
     int rez = 1;
     int numStrips = 0;
@@ -336,6 +340,10 @@ public:
     float brushSize = 10.0f;
     float brushStrength = 0.5f;
 
+    unsigned char* blendMapData = nullptr;
+    unsigned int blendMapTex = 0;
+    
+
     int imgSize = 256;
 
 
@@ -385,156 +393,285 @@ public:
                 heightmapTex = loadSaveTerrainTexture("Textures/Terrain/Data/test_all_black_T.png");
             }
 
-            if (heightmapTex != 0) {
-                ImGui::BeginTable("HeightmapTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
-                ImGui::TableNextColumn();
-                ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Current Heightmap:");
+            if (ImGui::CollapsingHeader(ICON_FA_EDIT" Terrain Settings", ImGuiTreeNodeFlags_DefaultOpen))
+            {
 
-                ImVec2 imageSize(imgSize, imgSize);
-                ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos(); // Top-left of image
-                ImGui::Image((void*)(intptr_t)heightmapTex, imageSize);
+                if (heightmapTex != 0) {
+                    ImGui::BeginTable("HeightmapTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+                    ImGui::TableNextColumn();
+                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Current Heightmap:");
 
-                // Convert mouse to local coordinates
-                ImVec2 mousePos = ImGui::GetMousePos();
-                ImVec2 localMousePos = ImVec2(mousePos.x - cursorScreenPos.x, mousePos.y - cursorScreenPos.y);
 
-                // If hovered and inside bounds
-                if (ImGui::IsItemHovered() &&
-                    localMousePos.x >= 0 && localMousePos.x < imgSize &&
-                    localMousePos.y >= 0 && localMousePos.y < imgSize) {
-                    // draw the brush circle
-                    ImDrawList* drawList = ImGui::GetWindowDrawList();
-                    ImVec2 circleCenter = ImVec2(cursorScreenPos.x + localMousePos.x, cursorScreenPos.y + localMousePos.y);
-                    drawList->AddCircle(circleCenter, brushSize, IM_COL32(255, 255, 0, 200), 32, 2.0f);
-                    // ################# new bit #############################
-                    // Visualize gradient inside brush area
-                    if (showBrushCursor) {
-                        int steps = 32; // Higher = smoother gradient
-                        for (int y = -radius; y <= radius; y++) {
-                            for (int x = -radius; x <= radius; x++) {
-                                float dist = std::sqrt(x * x + y * y);
-                                if (dist > radius) continue;
+                    ImVec2 imageSize(imgSize, imgSize);
+                    ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos(); // Top-left of image
+                    ImGui::Image((void*)(intptr_t)heightmapTex, imageSize);
 
-                                float f = 1.0f - (dist / radius);
-                                float falloff = f * f * (3.0f - 2.0f * f); // Smoothstep falloff
+                    // Convert mouse to local coordinates
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    ImVec2 localMousePos = ImVec2(mousePos.x - cursorScreenPos.x, mousePos.y - cursorScreenPos.y);
 
-                                // Map to a grayscale alpha
-                                ImU32 color = IM_COL32(255, 255, 0, static_cast<int>(falloff * 255));
-                                ImVec2 pixel = ImVec2(circleCenter.x + x, circleCenter.y + y);
+                    // If hovered and inside bounds
+                    if (ImGui::IsItemHovered() &&
+                        localMousePos.x >= 0 && localMousePos.x < imgSize &&
+                        localMousePos.y >= 0 && localMousePos.y < imgSize) {
+                        // draw the brush circle
+                        ImDrawList* drawList = ImGui::GetWindowDrawList();
+                        ImVec2 circleCenter = ImVec2(cursorScreenPos.x + localMousePos.x, cursorScreenPos.y + localMousePos.y);
+                        drawList->AddCircle(circleCenter, brushSize, IM_COL32(255, 255, 0, 200), 32, 2.0f);
+                        // ################# new bit #############################
+                        // Visualize gradient inside brush area
+                        if (showBrushCursor) {
+                            int steps = 32; // Higher = smoother gradient
+                            for (int y = -radius; y <= radius; y++) {
+                                for (int x = -radius; x <= radius; x++) {
+                                    float dist = std::sqrt(x * x + y * y);
+                                    if (dist > radius) continue;
 
-                                drawList->AddRectFilled(pixel, ImVec2(pixel.x + 1, pixel.y + 1), color);
+                                    float f = 1.0f - (dist / radius);
+                                    float falloff = f * f * (3.0f - 2.0f * f); // Smoothstep falloff
+
+                                    // Map to a grayscale alpha
+                                    ImU32 color = IM_COL32(255, 255, 0, static_cast<int>(falloff * 255));
+                                    ImVec2 pixel = ImVec2(circleCenter.x + x, circleCenter.y + y);
+
+                                    drawList->AddRectFilled(pixel, ImVec2(pixel.x + 1, pixel.y + 1), color);
+                                }
+                            }
+                        }                   // ################# new bit #############################
+
+
+                        // Scale to real heightmap resolution
+                        int centerX = static_cast<int>((localMousePos.x / imgSize) * heightmapW);
+                        int centerY = static_cast<int>((localMousePos.y / imgSize) * heightmapH);
+
+                        if (ImGui::IsMouseDown(ImGuiMouseButton_Right) || ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+                            bool raise = ImGui::IsMouseDown(ImGuiMouseButton_Right);
+                            int radius = static_cast<int>(brushSize);
+
+                            for (int y = -radius; y <= radius; ++y) {
+                                for (int x = -radius; x <= radius; ++x) {
+                                    int px = centerX + x;
+                                    int py = centerY + y;
+
+                                    if (px < 0 || px >= heightmapW || py < 0 || py >= heightmapH) continue;
+
+                                    float dist = std::sqrt(x * x + y * y);
+                                    if (dist > radius) continue;
+
+                                    //float factor = 1.0f - (dist / radius);
+                                    float f = 1.0f - (dist / radius);
+                                    float factor = f * f * (3.0f - 2.0f * f); // Smoothstep falloff
+
+                                    int index = py * heightmapW + px;
+                                    // new bit #################
+                                    // "Spray" toward white (raise) or black (lower) using blend
+                                    unsigned char& pixel = heightmapData[index];
+                                    float target = raise ? 255.0f : 0.0f;
+
+                                    // Blend toward the target based on brush strength and falloff
+                                    pixel = static_cast<unsigned char>(
+                                        std::clamp(pixel + (target - pixel) * (brushStrength * factor), 0.0f, 255.0f));
+                                    
+                                }
+                            }
+
+                            // Upload modified texture
+                            glBindTexture(GL_TEXTURE_2D, heightmapTex);
+                            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, heightmapW, heightmapH, GL_RED, GL_UNSIGNED_BYTE, heightmapData);
+                            glGenerateMipmap(GL_TEXTURE_2D);
+                        }
+                    }
+
+                    ImGui::TableNextColumn();
+                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_TOOLS " Edit Tools");
+                    ImGui::DragFloat("Brush Size", &brushSize, 1.0f, 1.0f, 128.0f);
+                    ImGui::DragFloat("Brush Strength", &brushStrength, 0.1f, 0.1f, 50.0f);
+                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Texture Scale:");
+                    ImGui::DragFloat("Tiling Size", &tilingFactor, 1.0f, 1.0f, 64.0f);
+
+                    if (ImGui::Button("Update Scene")) { // update scene and save file
+                        const char* savePath = "Textures/Terrain/Data/test_all_black_T.png";
+
+                        if (heightmapData) {
+
+                            if (stbi_write_png(savePath, heightmapW, heightmapH, 1, heightmapData, heightmapW)) {
+                                std::cout << "Saved heightmap to: " << savePath << "\n";
+                                ShouldUpdateTerrain = true;
+                            }
+                            else {
+                                std::cerr << "Failed to save heightmap!\n";
                             }
                         }
-                    }                   // ################# new bit #############################
+                    }
 
+                    ImGui::EndTable();
+                }
+            } // end terrain collaps 
+            // ###################################################################################
+            // ###########################  Texture BlendMap #####################################
+            // ###################################################################################
+            // Load heightmap data (editable)
+            static int blendheightmapW = 0, blendheightmapH = 0;
+            if (!blendMapData) {
+                int blendchannels;
+                blendMapData = stbi_load("Textures/Terrain/Data/blendMap.png", &blendheightmapW, &blendheightmapH, &blendchannels, 1);
+                if (!blendMapData) {
+                    std::cout << "Failed to load heightmap data for editing!\n";
+                }
+            }
+            // Load OpenGL texture (for display)
+            if (blendMapTex == 0) {
+                blendMapTex = loadSaveTerrainTexture("Textures/Terrain/Data/blendMap.png");
+            }
+                         
+              // ################## Start of Textures blendMap & Texture picker ########################
+            if (ImGui::CollapsingHeader(ICON_FA_EDIT" Texture Settings", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                if (heightmapTex != 0) {
+                    ImGui::BeginTable("TextureTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg);
+                    ImGui::TableNextColumn();
+                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Current Texture BlendMap:");
 
-                    // Scale to real heightmap resolution
-                    int centerX = static_cast<int>((localMousePos.x / imgSize) * heightmapW);
-                    int centerY = static_cast<int>((localMousePos.y / imgSize) * heightmapH);
+                    ImVec2 imageSize(imgSize, imgSize);
+                    ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos(); // Top-left of image
+                    ImGui::Image((void*)(intptr_t)blendMapTex, imageSize);
 
-                    if (ImGui::IsMouseDown(ImGuiMouseButton_Right) || ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-                        bool raise = ImGui::IsMouseDown(ImGuiMouseButton_Right);
-                        int radius = static_cast<int>(brushSize);
+                    // Convert mouse to local coordinates
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    ImVec2 localMousePos = ImVec2(mousePos.x - cursorScreenPos.x, mousePos.y - cursorScreenPos.y);
 
-                        for (int y = -radius; y <= radius; ++y) {
-                            for (int x = -radius; x <= radius; ++x) {
-                                int px = centerX + x;
-                                int py = centerY + y;
+                    // If hovered and inside bounds
+                    if (ImGui::IsItemHovered() &&
+                        localMousePos.x >= 0 && localMousePos.x < imgSize &&
+                        localMousePos.y >= 0 && localMousePos.y < imgSize) {
+                        // draw the brush circle
+                        ImDrawList* drawList = ImGui::GetWindowDrawList();
+                        ImVec2 circleCenter = ImVec2(cursorScreenPos.x + localMousePos.x, cursorScreenPos.y + localMousePos.y);
+                        drawList->AddCircle(circleCenter, brushSize, IM_COL32(255, 255, 0, 200), 32, 2.0f);
+                        
+                        // Visualize gradient inside brush area
+                        if (showBrushCursor) {
+                            int steps = 32; // Higher = smoother gradient
+                            for (int y = -radius; y <= radius; y++) {
+                                for (int x = -radius; x <= radius; x++) {
+                                    float dist = std::sqrt(x * x + y * y);
+                                    if (dist > radius) continue;
 
-                                if (px < 0 || px >= heightmapW || py < 0 || py >= heightmapH) continue;
+                                    float f = 1.0f - (dist / radius);
+                                    float falloff = f * f * (3.0f - 2.0f * f); // Smoothstep falloff
 
-                                float dist = std::sqrt(x * x + y * y);
-                                if (dist > radius) continue;
+                                    // Map to a grayscale alpha
+                                    ImU32 color = IM_COL32(255, 255, 0, static_cast<int>(falloff * 255));
+                                    ImVec2 pixel = ImVec2(circleCenter.x + x, circleCenter.y + y);
 
-                                //float factor = 1.0f - (dist / radius);
-                                float f = 1.0f - (dist / radius);
-                                float factor = f * f * (3.0f - 2.0f * f); // Smoothstep falloff
+                                    drawList->AddRectFilled(pixel, ImVec2(pixel.x + 1, pixel.y + 1), color);
+                                }
+                            }
+                        }                   
 
-                                int index = py * heightmapW + px;
-                                // new bit #################
-                                // "Spray" toward white (raise) or black (lower) using blend
-                                unsigned char& pixel = heightmapData[index];
-                                float target = raise ? 255.0f : 0.0f;
+                        // Scale to real heightmap resolution
+                        int centerX = static_cast<int>((localMousePos.x / imgSize) * blendheightmapW);
+                        int centerY = static_cast<int>((localMousePos.y / imgSize) * blendheightmapH);
 
-                                // Blend toward the target based on brush strength and falloff
-                                pixel = static_cast<unsigned char>(
-                                    std::clamp(pixel + (target - pixel) * (brushStrength * factor), 0.0f, 255.0f));
-                                // new bit #################
-                               /* int value = heightmapData[index];
-                                int delta = static_cast<int>(brushStrength * factor);
-                                value += raise ? delta : -delta;
-                                value = std::clamp(value, 0, 255);
-                                heightmapData[index] = static_cast<unsigned char>(value);*/
+                        if (ImGui::IsMouseDown(ImGuiMouseButton_Right) || ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+                            bool raise = ImGui::IsMouseDown(ImGuiMouseButton_Right);
+                            int radius = static_cast<int>(brushSize);
+
+                            for (int y = -radius; y <= radius; ++y) {
+                                for (int x = -radius; x <= radius; ++x) {
+                                    int px = centerX + x;
+                                    int py = centerY + y;
+
+                                    if (px < 0 || px >= blendheightmapW || py < 0 || py >= blendheightmapH) continue;
+
+                                    float dist = std::sqrt(x * x + y * y);
+                                    if (dist > radius) continue;
+
+                                    //float factor = 1.0f - (dist / radius);
+                                    float f = 1.0f - (dist / radius);
+                                    float factor = f * f * (3.0f - 2.0f * f); // Smoothstep falloff
+
+                                    int index = py * heightmapW + px;
+                                    // new bit #################
+                                    // "Spray" toward white (raise) or black (lower) using blend
+                                    unsigned char& pixel = blendMapData[index];
+                                    float target = raise ? 255.0f : 0.0f;
+
+                                    // Blend toward the target based on brush strength and falloff
+                                    pixel = static_cast<unsigned char>(
+                                        std::clamp(pixel + (target - pixel) * (brushStrength * factor), 0.0f, 255.0f));
+
+                                }
+                            }
+
+                            // Upload modified texture
+                            glBindTexture(GL_TEXTURE_2D, blendMapTex);
+                            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, blendheightmapW, blendheightmapH, GL_RED, GL_UNSIGNED_BYTE, blendMapData);
+                            glGenerateMipmap(GL_TEXTURE_2D);
+                        }
+                    }
+
+                    ImGui::TableNextColumn();
+                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_TOOLS " Edit Tools");
+                    ImGui::DragFloat("Brush Size", &brushSize, 1.0f, 1.0f, 128.0f);
+                    ImGui::DragFloat("Brush Strength", &brushStrength, 0.1f, 0.1f, 50.0f);
+                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Texture Scale:");
+                    ImGui::DragFloat("Tiling Size", &tilingFactor, 1.0f, 1.0f, 64.0f);
+
+                    if (ImGui::Button("Update Scene")) { // update scene and save file
+                        const char* savePath = "Textures/Terrain/Data/blendMap.png";
+
+                        if (heightmapData) {
+
+                            if (stbi_write_png(savePath, blendheightmapW, blendheightmapH, 1, blendMapData, blendheightmapW)) {
+                                std::cout << "Saved BlendMap to: " << savePath << "\n";
+                                ShouldUpdateTerrain = true;
+                            }
+                            else {
+                                std::cerr << "Failed to save BlendMap!\n";
                             }
                         }
-
-                        // Upload modified texture
-                        glBindTexture(GL_TEXTURE_2D, heightmapTex);
-                        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, heightmapW, heightmapH, GL_RED, GL_UNSIGNED_BYTE, heightmapData);
-                        glGenerateMipmap(GL_TEXTURE_2D);
                     }
+
+                    ImGui::EndTable();
                 }
+                // #########################################################################################
+                // ################## End Texture painting Blend map #######################################
+                // #########################################################################################
 
-                
+                if (dialogType) {
+                    ImGui::SeparatorText(" Texture Picker");
+                    ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Available Terrain Textures");
 
-                ImGui::TableNextColumn();
-                ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_TOOLS " Edit Tools");
-                ImGui::DragFloat("Brush Size", &brushSize, 1.0f, 1.0f, 128.0f);
-                ImGui::DragFloat("Brush Strength", &brushStrength, 0.1f, 0.1f, 50.0f);
-                ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Texture Scale:");
-                ImGui::DragFloat("Tiling Size", &tilingFactor, 1.0f, 1.0f, 64.0f);
 
-                if (ImGui::Button("Update Scene")) { // update scene and save file
-                    const char* savePath = "Textures/Terrain/Data/test_all_black_T.png";
-
-                    if (heightmapData) {
-                       
-                        if (stbi_write_png(savePath, heightmapW, heightmapH, 1, heightmapData, heightmapW)) {
-                            std::cout << "Saved heightmap to: " << savePath << "\n";
-                            ShouldUpdateTerrain = true;
-                        }
-                        else {
-                            std::cerr << "Failed to save heightmap!\n";
-                        }
+                    if (!texturesLoaded) {
+                        terrainTextures = LoadTerrainImagesFromFolder("Textures/Terrain/");
+                        texturesLoaded = true;
                     }
-                }
 
-                ImGui::EndTable();
-            }
+                    int columns = 4;
+                    int count = 0;
+                    ImGui::BeginChild("TextureGrid", ImVec2(0, 300), true); // scrollable
 
-            // Texture picker
-            if (dialogType) {
-                ImGui::SeparatorText(" Texture Picker");
-                ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Available Terrain Textures");
-               
 
-                if (!texturesLoaded) {
-                    terrainTextures = LoadTerrainImagesFromFolder("Textures/Terrain/");
-                    texturesLoaded = true;
-                }
+                    for (const auto& tex : terrainTextures) {
+                        ImGui::PushID(tex.textureID);
+                        if (ImGui::ImageButton((void*)(intptr_t)tex.textureID, ImVec2(64, 64))) {
+                            objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
+                            if (objectUpdateIndex != -1) {
 
-                int columns = 4;
-                int count = 0;
-                ImGui::BeginChild("TextureGrid", ImVec2(0, 300), true); // scrollable
-
-            
-                for (const auto& tex : terrainTextures) {
-                    ImGui::PushID(tex.textureID);
-                    if (ImGui::ImageButton((void*)(intptr_t)tex.textureID, ImVec2(64, 64))) {
-                        objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
-                        if (objectUpdateIndex != -1) {
-                           
-                            ObjectVector[objectUpdateIndex]->textureID = tex.textureID;
-                            creatTerrainTex = tex.textureID;
+                                ObjectVector[objectUpdateIndex]->textureID = tex.textureID;
+                                creatTerrainTex = tex.textureID;
+                            }
                         }
+                        ImGui::PopID();
+
+                        if (++count % columns != 0) ImGui::SameLine();
                     }
-                    ImGui::PopID();
 
-                    if (++count % columns != 0) ImGui::SameLine();
+                    ImGui::EndChild();
                 }
-
-                ImGui::EndChild();
-            }
+            } // End of texture collaps Header
 
             ImGui::SeparatorText("Update Terrain");
 

@@ -47,13 +47,15 @@ void main()
 
     // -------- Multi-texture blending --------
     vec4 blend = texture(blendMap, TexCoords);
-    vec2 tiledUV = TexCoords * tiling;
+    float total = blend.r + blend.g + blend.b;
+    float remaining = clamp(1.0 - total, 0.0, 1.0);  // unused weight goes to base (e.g., grass)
 
-    vec3 grass = texture(texture_grass, tiledUV).rgb;
-    vec3 rock  = texture(texture_rock, tiledUV).rgb;
-    vec3 dirt  = texture(texture_dirt, tiledUV).rgb;
+    // Sample textures
+    vec3 grass = texture(texture_grass, TexCoords * tiling).rgb;
+    vec3 rock  = texture(texture_rock,  TexCoords * tiling).rgb;
+    vec3 dirt  = texture(texture_dirt,  TexCoords * tiling).rgb;
 
-    vec3 albedo = blend.r * grass + blend.g * rock + blend.b * dirt;
+    vec3 albedo = remaining * grass + blend.r * rock + blend.g * dirt + blend.b * grass;
     // -------- End blending --------
 
     vec3 result = 0.1 * albedo;

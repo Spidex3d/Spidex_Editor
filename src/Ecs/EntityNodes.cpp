@@ -1571,8 +1571,12 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& TerrainIdx, Camera camera)
 {
     stbi_set_flip_vertically_on_load(true);
-   // GLuint grassTextureID;
-    
+    // Load all 4 textures once
+    static GLuint grassTextureID;
+    static GLuint rockTextureID;
+    static GLuint dirtTextureID;
+    static GLuint blendMapID;
+        
     if (ShouldAddTerrain) {
         TerrainIdx = ObjectVector.size();
 
@@ -1583,10 +1587,13 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
         Terrain->modelMatrix = glm::translate(glm::mat4(1.0f), Terrain->position);
         Terrain->modelMatrix = glm::scale(Terrain->modelMatrix, Terrain->scale);
        
-        Terrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg"); // default texture
-
-        //grassTextureID = loadTexture("Textures/Terrain/grass.jpg");
-
+       // Terrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg"); // default texture
+       // Terrain->textureID = loadTexture("Textures/Terrain/grass.jpg"); // default texture
+        grassTextureID = loadTexture("Textures/Terrain/grass.jpg");
+        rockTextureID = loadTexture("Textures/Terrain/rock.jpg");
+        dirtTextureID = loadTexture("Textures/Terrain/dirt.jpg");
+        blendMapID = loadTexture("Textures/Terrain/blendMap.png");
+        
         ObjectVector.push_back(std::move(Terrain));
 
         ShouldAddTerrain = false; // Reset the flag after adding the plane
@@ -1620,30 +1627,29 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
 
             ShaderManager::TerrainShader->setMat4("model", t_terrain->modelMatrix);
            // ##################
+            ShaderManager::TerrainShader->setFloat("tiling", tilingFactor); // <- control from ImGui
 
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, grassTextureID);
-            //ShaderManager::TerrainShader->setInt("texture_grass", 0);
-            /*
+            // Activate and bind all terrain textures
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, grassTextureID);
+            ShaderManager::TerrainShader->setInt("texture_grass", 0);
+
             glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, rockID);
+            glBindTexture(GL_TEXTURE_2D, rockTextureID);
             ShaderManager::TerrainShader->setInt("texture_rock", 1);
 
             glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, dirtID);
+            glBindTexture(GL_TEXTURE_2D, dirtTextureID);
             ShaderManager::TerrainShader->setInt("texture_dirt", 2);
 
             glActiveTexture(GL_TEXTURE3);
             glBindTexture(GL_TEXTURE_2D, blendMapID);
             ShaderManager::TerrainShader->setInt("blendMap", 3);
 
-            ShaderManager::TerrainShader->setFloat("tiling", terrainTilingFactor);*/
-
            // ##################
 
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, t_terrain->textureID);
+            //glActiveTexture(GL_TEXTURE0);
+            //glBindTexture(GL_TEXTURE_2D, t_terrain->textureID);
             t_terrain->DrawMainTerrain();
            
             glBindTexture(GL_TEXTURE_2D, 0);
