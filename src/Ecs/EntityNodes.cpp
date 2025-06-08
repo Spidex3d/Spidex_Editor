@@ -1571,6 +1571,7 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& TerrainIdx, Camera camera)
 {
     stbi_set_flip_vertically_on_load(true);
+   // GLuint grassTextureID;
     
     if (ShouldAddTerrain) {
         TerrainIdx = ObjectVector.size();
@@ -1583,6 +1584,8 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
         Terrain->modelMatrix = glm::scale(Terrain->modelMatrix, Terrain->scale);
        
         Terrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg"); // default texture
+
+        //grassTextureID = loadTexture("Textures/Terrain/grass.jpg");
 
         ObjectVector.push_back(std::move(Terrain));
 
@@ -1598,21 +1601,8 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
         if (terrain) {
             terrain->ReloadTerrainMeshFromFile("Textures/Terrain/Data/test_all_black_T.png");
         }
-
-        //if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
-
-        //    glm::vec3 TerrainPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]); // New position
-        //    ObjectVector[selectedIndex]->position = TerrainPosition;
-
-        //    glm::vec3 TerrainScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]); // New scale
-        //    ObjectVector[selectedIndex]->scale = TerrainScale;
-
-        //    ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
-        //    ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, TerrainPosition);
-        //    ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, TerrainScale);
-
-        //}
-        std::cout << " terrain updated" << std::endl;
+                
+        std::cout << " Terrain updated" << std::endl;
 
         ShouldUpdateTerrain = false;
     }
@@ -1629,7 +1619,29 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
         if (auto* t_terrain = dynamic_cast<MainTerrain*>(model.get())) {
 
             ShaderManager::TerrainShader->setMat4("model", t_terrain->modelMatrix);
-           
+           // ##################
+
+            //glActiveTexture(GL_TEXTURE0);
+            //glBindTexture(GL_TEXTURE_2D, grassTextureID);
+            //ShaderManager::TerrainShader->setInt("texture_grass", 0);
+            /*
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, rockID);
+            ShaderManager::TerrainShader->setInt("texture_rock", 1);
+
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, dirtID);
+            ShaderManager::TerrainShader->setInt("texture_dirt", 2);
+
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, blendMapID);
+            ShaderManager::TerrainShader->setInt("blendMap", 3);
+
+            ShaderManager::TerrainShader->setFloat("tiling", terrainTilingFactor);*/
+
+           // ##################
+
+
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, t_terrain->textureID);
             t_terrain->DrawMainTerrain();

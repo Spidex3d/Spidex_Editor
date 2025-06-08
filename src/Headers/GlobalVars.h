@@ -83,7 +83,7 @@ extern float terrain_Pos[3];
 extern float terrain_Scale[3];
 
 extern unsigned int creatTerrainTex;	// this only for the image that shows on the terrain editor window for editing
-
+extern float tilingFactor; // Try values between 4–64 depending on your terrain size
 
 
 

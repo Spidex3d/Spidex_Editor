@@ -34,6 +34,7 @@ public:
     int rez = 1;
     int numStrips = 0;
     int vertsPerStrip = 0;
+    
                 
     MainTerrain(int idx, const std::string& name, int TerrainIdx) {
         index = idx;
@@ -81,8 +82,12 @@ public:
 
                 glm::vec3 normal = glm::normalize(glm::vec3(hL - hR, 2.0f, hD - hU)); // y is up
 
-                float u = j / float(heightmapWidth - 1);
-                float v = i / float(heightmapHeight - 1);
+                /*float u = j / float(heightmapWidth - 1);
+                float v = i / float(heightmapHeight - 1);*/
+                // The texture tilling factor
+                float u = (j / float(heightmapWidth - 1)) * tilingFactor;
+                float v = (i / float(heightmapHeight - 1)) * tilingFactor;
+
 
                 // Push position
                 t_vertice.push_back(x);
@@ -180,9 +185,9 @@ public:
                 float hU = (i < heightmapHeight - 1) ? heightMap[(i + 1) * heightmapWidth + j] : y;
 
                 glm::vec3 normal = glm::normalize(glm::vec3(hL - hR, 2.0f, hD - hU));
-
-                float u = j / float(heightmapWidth - 1);
-                float v = i / float(heightmapHeight - 1);
+                // The texture tiling Factor
+                float u = (j / float(heightmapWidth - 1)) * tilingFactor;
+                float v = (i / float(heightmapHeight - 1)) * tilingFactor;
 
                 t_vertice.push_back(x);
                 t_vertice.push_back(y);
@@ -397,10 +402,31 @@ public:
                 if (ImGui::IsItemHovered() &&
                     localMousePos.x >= 0 && localMousePos.x < imgSize &&
                     localMousePos.y >= 0 && localMousePos.y < imgSize) {
-
+                    // draw the brush circle
                     ImDrawList* drawList = ImGui::GetWindowDrawList();
                     ImVec2 circleCenter = ImVec2(cursorScreenPos.x + localMousePos.x, cursorScreenPos.y + localMousePos.y);
                     drawList->AddCircle(circleCenter, brushSize, IM_COL32(255, 255, 0, 200), 32, 2.0f);
+                    // ################# new bit #############################
+                    // Visualize gradient inside brush area
+                    if (showBrushCursor) {
+                        int steps = 32; // Higher = smoother gradient
+                        for (int y = -radius; y <= radius; y++) {
+                            for (int x = -radius; x <= radius; x++) {
+                                float dist = std::sqrt(x * x + y * y);
+                                if (dist > radius) continue;
+
+                                float f = 1.0f - (dist / radius);
+                                float falloff = f * f * (3.0f - 2.0f * f); // Smoothstep falloff
+
+                                // Map to a grayscale alpha
+                                ImU32 color = IM_COL32(255, 255, 0, static_cast<int>(falloff * 255));
+                                ImVec2 pixel = ImVec2(circleCenter.x + x, circleCenter.y + y);
+
+                                drawList->AddRectFilled(pixel, ImVec2(pixel.x + 1, pixel.y + 1), color);
+                            }
+                        }
+                    }                   // ################# new bit #############################
+
 
                     // Scale to real heightmap resolution
                     int centerX = static_cast<int>((localMousePos.x / imgSize) * heightmapW);
@@ -455,8 +481,10 @@ public:
                 ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_TOOLS " Edit Tools");
                 ImGui::DragFloat("Brush Size", &brushSize, 1.0f, 1.0f, 128.0f);
                 ImGui::DragFloat("Brush Strength", &brushStrength, 0.1f, 0.1f, 50.0f);
+                ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT" Texture Scale:");
+                ImGui::DragFloat("Tiling Size", &tilingFactor, 1.0f, 1.0f, 64.0f);
 
-                if (ImGui::Button("Save Heightmap to File")) {
+                if (ImGui::Button("Update Scene")) { // update scene and save file
                     const char* savePath = "Textures/Terrain/Data/test_all_black_T.png";
 
                     if (heightmapData) {
@@ -478,6 +506,7 @@ public:
             if (dialogType) {
                 ImGui::SeparatorText(" Texture Picker");
                 ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Available Terrain Textures");
+               
 
                 if (!texturesLoaded) {
                     terrainTextures = LoadTerrainImagesFromFolder("Textures/Terrain/");
@@ -488,11 +517,13 @@ public:
                 int count = 0;
                 ImGui::BeginChild("TextureGrid", ImVec2(0, 300), true); // scrollable
 
+            
                 for (const auto& tex : terrainTextures) {
                     ImGui::PushID(tex.textureID);
                     if (ImGui::ImageButton((void*)(intptr_t)tex.textureID, ImVec2(64, 64))) {
                         objectUpdateIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
                         if (objectUpdateIndex != -1) {
+                           
                             ObjectVector[objectUpdateIndex]->textureID = tex.textureID;
                             creatTerrainTex = tex.textureID;
                         }

@@ -31,7 +31,8 @@ enum FontIndex : int {
 	TINY_FONT_INDEX,
 };
 
-const float FONT_SIZE = 28.0f; // comic
+//const float FONT_SIZE = 28.0f; // comic
+const float FONT_SIZE = 20.0f; // comic
 const float SMALL_FONT_SIZE = 13.0f;
 const float TINY_FONT_SIZE = 10.0f;
 

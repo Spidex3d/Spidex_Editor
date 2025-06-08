@@ -78,6 +78,7 @@ float terrain_Pos[3] = { 0.0f, 15.0f, 0.0f };
 float terrain_Scale[3] = { 1.0f, 1.0f, 1.0f };
 
 unsigned int creatTerrainTex = 0;
+float tilingFactor = 12.0f; // Try values between 4–64 depending on your terrain size
 
 // ##### End Terrain #########
 
