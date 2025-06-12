@@ -185,9 +185,6 @@
     <ClInclude Include="src\Object_loader\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Object_loader\gltf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Lighting\Lighting.h">
       <Filter>Header Files</Filter>
     </ClInclude>

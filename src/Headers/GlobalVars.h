@@ -75,6 +75,7 @@ extern bool ShouldAddFloor;
 extern bool ShouldAddTerrain;
 extern bool ShouldAddWater;
 extern bool ShouldUpdateTerrain;
+extern bool ShouldUpdateBlendMap;
 extern bool ShouldUpdateWater;
 extern bool ShouldUpdateFloor;
 extern bool showTerrainEditor;
@@ -84,7 +85,9 @@ extern float terrain_Scale[3];
 
 extern unsigned int creatTerrainTex;	// this only for the image that shows on the terrain editor window for editing
 extern float tilingFactor; // Try values between 4–64 depending on your terrain size
-
+extern float slopeStart; // steepness begins
+extern float slopeEnd; // fully steep
+extern float heightBlendRange; // fully steep
 
 
 // ##### End Terrain #########

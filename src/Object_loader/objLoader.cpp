@@ -1,6 +1,5 @@
 #include "objLoader.h"
 
-
 // initialize stuff if we need to
 void objLoader::Initialize()
 {

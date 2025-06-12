@@ -50,8 +50,8 @@ bool ShouldUpdatePointLight = false;
 bool ShouldUpdateSpotLight = false;
 bool ShouldUpdateAreaLight = false;
 bool ShowLightEditor = false;
-float SunLightCol[4] = { 0.7f, 1.0f, 0.3f, 1.0f };
-float SunLightIntensity = 0.5f;
+float SunLightCol[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float SunLightIntensity = 0.4f;
 float PointLightRadius = 0.0f;
 float PointLightCol[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 float PointLightIntensity = 0.5f;
@@ -70,6 +70,7 @@ bool ShouldAddFloor = false;
 bool ShouldAddTerrain = false;
 bool ShouldAddWater = false;
 bool ShouldUpdateTerrain = false;
+bool ShouldUpdateBlendMap = false;
 bool ShouldUpdateWater = false;
 bool ShouldUpdateFloor = false;
 bool showTerrainEditor = false;
@@ -78,7 +79,10 @@ float terrain_Pos[3] = { 0.0f, 15.0f, 0.0f };
 float terrain_Scale[3] = { 1.0f, 1.0f, 1.0f };
 
 unsigned int creatTerrainTex = 0;
-float tilingFactor = 12.0f; // Try values between 4–64 depending on your terrain size
+float tilingFactor = 4.0f; // Try values between 4–64 depending on your terrain size
+float slopeStart = 0.6f; // steepness begins
+float slopeEnd = 0.9f; // fully steep
+float heightBlendRange = 0.1f; // fully steep
 
 // ##### End Terrain #########
 

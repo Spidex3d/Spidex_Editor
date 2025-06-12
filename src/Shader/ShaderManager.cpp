@@ -25,9 +25,9 @@ void ShaderManager::SetupShaders() {
 
     //defaultGLTFShader = new Shader("src/Shader/ShaderFile/gltf.vert", "src/Shader/ShaderFile/gltf.frag");
     // This will be the main Shader
-    defaultShader = new Shader("src/Shader/ShaderFile/gltf.vert", "src/Shader/ShaderFile/gltf.frag");
+   // defaultShader = new Shader("src/Shader/ShaderFile/gltf.vert", "src/Shader/ShaderFile/gltf.frag");
 
-    //defaultShader = new Shader("src/Shader/ShaderFile/default.vert", "src/Shader/ShaderFile/default.frag");
+    defaultShader = new Shader("src/Shader/ShaderFile/default.vert", "src/Shader/ShaderFile/default.frag");
     // This is the shader just for the light bulb sprite
     LightShader = new Shader("src/Shader/ShaderFile/lightSprite.vert", "src/Shader/ShaderFile/lightSprite.frag");
 

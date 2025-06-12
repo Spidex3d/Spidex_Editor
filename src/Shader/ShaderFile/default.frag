@@ -1,16 +1,92 @@
 #version 460
 
-in vec2 TexCoord;
+in vec3 FragPos;
+in vec3 Normal;
+in vec2 TexCoords;
+
 out vec4 FragColor;
 
-uniform sampler2D baseColor;
-//uniform sampler2D objTexture;
+// ====== LIGHT STRUCTS ======
+struct DirectionalLight {
+    vec3 direction;
+    vec3 color;
+    float intensity;
+};
 
+struct PointLight {
+    vec3 position;
+    vec3 color;
+    float intensity;
+    float radius;
+};
+
+struct AreaLight {
+    vec3 position;
+    vec3 color;
+    float intensity;
+    float area;
+};
+
+// ====== UNIFORMS ======
+uniform DirectionalLight SunLight;
+uniform PointLight PointLights[10];
+uniform AreaLight AreaLights[10];
+uniform int numPointLights;
+uniform int numAreaLights;
+
+uniform sampler2D objectTexture; // <-- Only one texture per object
+
+// ====== MAIN ======
 void main()
 {
-	FragColor = texture(baseColor, TexCoord);
-	
+    vec3 norm = normalize(Normal);
+    vec3 albedo = texture(objectTexture, TexCoords).rgb;
+
+    // ===== Ambient + Sun light =====
+    vec3 result = 0.1 * albedo;
+
+    vec3 lightDir = normalize(-SunLight.direction);
+    float diff = max(dot(norm, lightDir), 0.0);
+    result += SunLight.color * diff * SunLight.intensity * albedo;
+
+    // ===== Point lights =====
+    for (int i = 0; i < numPointLights; ++i) {
+        vec3 toLight = PointLights[i].position - FragPos;
+        float dist = length(toLight);
+        float atten = clamp(1.0 - dist / PointLights[i].radius, 0.0, 1.0);
+        vec3 lightDir = normalize(toLight);
+        float diff = max(dot(norm, lightDir), 0.0);
+        result += PointLights[i].color * PointLights[i].intensity * diff * atten * albedo;
+    }
+
+    // ===== Area lights =====
+    for (int i = 0; i < numAreaLights; ++i) {
+        vec3 toALight = AreaLights[i].position - FragPos;
+        float dist = length(toALight);
+        float atten = pow(clamp(1.0 - dist / AreaLights[i].area, 0.0, 1.0), 2.0);
+        vec3 lightDir = normalize(toALight);
+        float diff = max(dot(norm, lightDir), 0.0);
+        result += AreaLights[i].color * AreaLights[i].intensity * diff * atten * albedo;
+    }
+
+    FragColor = vec4(result, 1.0);
 }
+
+
+
+//#version 460
+//
+//in vec2 TexCoord;
+//out vec4 FragColor;
+//
+//uniform sampler2D baseColor;
+////uniform sampler2D objTexture;
+//
+//void main()
+//{
+//	FragColor = texture(baseColor, TexCoord);
+//	
+//}
 
 
 

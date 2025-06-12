@@ -320,30 +320,30 @@ public:
         objectTypeID = OBJ_PLANE;
 
         
-        //float vertices[] = {
-        //    //Positions          Normals          Text coords
-        //     0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-        //     0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        //    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        //    -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f
-        //};
-        //unsigned int indices[] = {
-        //    0, 1, 3,
-        //    1, 2, 3
-        //};
-
-        // floor
         float vertices[] = {
-            //Positions           Normals         Tex Coords
-             0.5f, 0.0f,  0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-             0.5f, 0.0f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-            -0.5f, 0.0f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-            -0.5f, 0.0f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f
+            //Positions          Normals          Text coords
+             0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+             0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
         };
         unsigned int indices[] = {
             0, 1, 3,
             1, 2, 3
         };
+
+        // floor
+        //float vertices[] = {
+        //    //Positions           Normals         Tex Coords
+        //     0.5f, 0.0f,  0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+        //     0.5f, 0.0f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+        //    -0.5f, 0.0f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+        //    -0.5f, 0.0f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f
+        //};
+        //unsigned int indices[] = {
+        //    0, 1, 3,
+        //    1, 2, 3
+        //};
 
 
         glGenVertexArrays(1, &VAO);

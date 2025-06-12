@@ -2,8 +2,6 @@
 #include "../Windows/spx_FileDialog.h"
 #include "../Object_loader\objLoader.h"
 
-#include "../Object_loader/gltf.h"
-
 unsigned int loadTexture(const std::string& filePath);
 
 
@@ -756,7 +754,7 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
     // ############################### Models #####################################
     EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
-    EntityNodes::RendergltfFiles(view, projection, ObjectVector, currentIndex, glTFModelIndex, shader, camera);
+    
     // ############################### Lighting #####################################
     EntityNodes::RenderSunLightSprite(view, projection, ObjectVector, currentIndex, LightIdx);
     EntityNodes::RenderPointLightSprite(view, projection, ObjectVector, currentIndex, LightIdx);
@@ -765,89 +763,7 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderTerrain(view, projection, ObjectVector, currentIndex, TerrainIdx, camera);
     EntityNodes::RenderTerrainFloor(view, projection, ObjectVector, currentIndex, TerrainIdx, camera);
 }
-void EntityNodes::RendergltfFiles(const glm::mat4& view, const glm::mat4& projection,
-    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& glTFModelIndex, Shader& shader, Camera& camera)
-{
-    if (ShouldAddglTFModel) {
-        glTFModelIndex = ObjectVector.size();
 
-        std::unique_ptr<Gltf> newGLTFModel = std::make_unique<Gltf>(currentIndex++,
-            "New gltf File", glTFModelIndex);
-
-        spx_FileDialog openModelDialog;
-        std::string modelPath = openModelDialog.openFileDialog();
-        // Add some error handeling here
-        if (modelPath.empty()) {
-            std::cerr << "No file selected or invalid file path." << std::endl;
-            ShouldAddglTFModel = false;
-            return;
-        }
-        // Load the glTF model
-        std::string binPath = modelPath;
-        binPath.replace(binPath.find(".gltf"), 5, ".bin");
-
-        std::cout << "Loading Gltf Model from: " << modelPath << std::endl;
-
-        if (!newGLTFModel->Load(modelPath, binPath)) {
-            std::cerr << "Failed to load gltf model: " << std::endl;
-            ShouldAddglTFModel = false;
-            return;
-        }
-
-        switch (glTFModelIndex) {
-        case 1:
-            newGLTFModel->position = glm::vec3(0.0f, 0.0f, 0.0f);
-            newGLTFModel->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-            break;
-
-        default:
-            newGLTFModel->position = glm::vec3(1.0f, 0.0f, 0.0f);
-            newGLTFModel->scale = glm::vec3(0.5f, 0.5f, 0.5f);
-            break;
-        }
-              
-       newGLTFModel->modelMatrix = glm::translate(glm::mat4(1.0f), newGLTFModel->position);
-       newGLTFModel->modelMatrix = glm::scale(newGLTFModel->modelMatrix, newGLTFModel->scale);
-       
-
-        ObjectVector.push_back(std::move(newGLTFModel));
-
-        ShouldAddglTFModel = false;
-
-    }
-
-    if (ShouldUpdateglTFModel) { // Edit and move obj model
-        int selectedIndex = SelectedDataManager::Instance().GetSelectedData()->objectIndex;
-
-        if (selectedIndex >= 0 && selectedIndex < ObjectVector.size()) {
-            glm::vec3 newglTFModelPosition = glm::vec3(object_Pos[0], object_Pos[1], object_Pos[2]);
-            ObjectVector[selectedIndex]->position = newglTFModelPosition;
-
-            glm::vec3 newglTFModelScale = glm::vec3(object_Scale[0], object_Scale[1], object_Scale[2]);
-            ObjectVector[selectedIndex]->scale = newglTFModelScale;
-
-            ObjectVector[selectedIndex]->modelMatrix = glm::mat4(1.0f);
-            ObjectVector[selectedIndex]->modelMatrix = glm::translate(ObjectVector[selectedIndex]->modelMatrix, newglTFModelPosition);
-            ObjectVector[selectedIndex]->modelMatrix = glm::scale(ObjectVector[selectedIndex]->modelMatrix, newglTFModelScale);
-        }
-
-        ShouldUpdateglTFModel = false; // Reset the flag after Editing the gltf Model
-    }
-
-    for (const auto& model : ObjectVector) {
-        // GLTFShader
-        ShaderManager::defaultShader->setMat4("projection", projection);
-        ShaderManager::defaultShader->setMat4("view", view);
-
-        for (const auto& model : ObjectVector) {
-
-            if (auto* gltfModel = dynamic_cast<Gltf*>(model.get())) {
-
-                gltfModel->Draw(shader, camera);
-            }
-        }        
-    }
-}
 void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx)
 {
@@ -903,18 +819,19 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
     }
     // defaultShader
     for (const auto& model : ObjectVector) {
-        ShaderManager::TerrainShader->Use();
-        ShaderManager::TerrainShader->setMat4("view", view);
-        ShaderManager::TerrainShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("projection", projection);
 
 
-        ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-        ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+        ApplySunLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyPointLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyAreaLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
 
         //if (auto* objModel = dynamic_cast<objectModel*>(model.get())) {
         if (auto* objModel = dynamic_cast<objLoader*>(model.get())) {
             modelMatrix = glm::mat4(1.0f);
-            ShaderManager::TerrainShader->setMat4("model", objModel->modelMatrix);
+            ShaderManager::defaultShader->setMat4("model", objModel->modelMatrix);
             
             objModel->objDrawModels();
         }
@@ -995,18 +912,19 @@ void EntityNodes::RenderCube(const glm::mat4& view, const glm::mat4& projection,
     }
         
     for (const auto& model : ObjectVector) {
-        ShaderManager::TerrainShader->Use();
-        ShaderManager::TerrainShader->setMat4("view", view);
-        ShaderManager::TerrainShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("projection", projection);
 
 
-        ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-        ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+        ApplySunLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyPointLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyAreaLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
 
 
         if (auto* cube = dynamic_cast<CubeModel*>(model.get())) {
             modelMatrix = glm::mat4(1.0f);
-            ShaderManager::TerrainShader->setMat4("model", cube->modelMatrix);
+            ShaderManager::defaultShader->setMat4("model", cube->modelMatrix);
         glActiveTexture(GL_TEXTURE0);
 
              glBindTexture(GL_TEXTURE_2D, cube->textureID);
@@ -1081,17 +999,18 @@ void EntityNodes::RenderSphere(const glm::mat4& view, const glm::mat4& projectio
     }
 
     for (const auto& model : ObjectVector) {
-        ShaderManager::TerrainShader->Use();
-        ShaderManager::TerrainShader->setMat4("view", view);
-        ShaderManager::TerrainShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("projection", projection);
         
 
-        ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-        ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+        ApplySunLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyPointLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyAreaLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
 
         if (auto* sphere = dynamic_cast<SphereModel*>(model.get())) {
             modelMatrix = glm::mat4(1.0f);
-            ShaderManager::TerrainShader->setMat4("model", sphere->modelMatrix);
+            ShaderManager::defaultShader->setMat4("model", sphere->modelMatrix);
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, sphere->textureID);
@@ -1104,19 +1023,20 @@ void EntityNodes::RenderSphere(const glm::mat4& view, const glm::mat4& projectio
 void EntityNodes::RenderTriangle(const glm::mat4& view, const glm::mat4& projection,
     const std::vector<std::unique_ptr<BaseModel>>& models)
 {
-    ShaderManager::TerrainShader->Use();
-    ShaderManager::TerrainShader->setMat4("view", view);
-    ShaderManager::TerrainShader->setMat4("projection", projection);
+    ShaderManager::defaultShader->Use();
+    ShaderManager::defaultShader->setMat4("view", view);
+    ShaderManager::defaultShader->setMat4("projection", projection);
 
 
-    ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-    ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+    ApplySunLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+    ApplyPointLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+    ApplyAreaLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
 
     for (const auto& model : models) {
         modelMatrix = glm::mat4(1.0f);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
-        ShaderManager::TerrainShader->setMat4("model", modelMatrix);
+        ShaderManager::defaultShader->setMat4("model", modelMatrix);
 
         if (auto* triangle = dynamic_cast<TriangleModel*>(model.get())) {
             triangle->DrawTriangle();
@@ -1189,17 +1109,18 @@ void EntityNodes::RenderPlane(const glm::mat4& view, const glm::mat4& projection
 
     for (const auto& model : ObjectVector) {
 
-        ShaderManager::TerrainShader->Use();
-        ShaderManager::TerrainShader->setMat4("view", view);
-        ShaderManager::TerrainShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("projection", projection);
 
-        ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-        ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+        ApplySunLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyPointLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyAreaLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
 
         if (auto* plane = dynamic_cast<PlaneModel*>(model.get())) {
             //
             modelMatrix = glm::mat4(1.0f);
-            ShaderManager::TerrainShader->setMat4("model", plane->modelMatrix);
+            ShaderManager::defaultShader->setMat4("model", plane->modelMatrix);
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, plane->textureID);
@@ -1296,18 +1217,19 @@ void EntityNodes::RenderPyramid(const glm::mat4& view, const glm::mat4& projecti
    
     
     for (const auto& model : ObjectVector) {
-        ShaderManager::TerrainShader->Use();
-        ShaderManager::TerrainShader->setMat4("view", view);
-        ShaderManager::TerrainShader->setMat4("projection", projection);
+        ShaderManager::defaultShader->Use();
+        ShaderManager::defaultShader->setMat4("view", view);
+        ShaderManager::defaultShader->setMat4("projection", projection);
 
 
-        ApplySunLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
-        ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
+        ApplySunLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyPointLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+        ApplyAreaLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
        
         if (auto* pyramid = dynamic_cast<PyramidModel*>(model.get())) {
 
         modelMatrix = glm::mat4(1.0f);
-        ShaderManager::TerrainShader->setMat4("model", pyramid->modelMatrix);
+        ShaderManager::defaultShader->setMat4("model", pyramid->modelMatrix);
        
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, pyramid->textureID);
@@ -1586,9 +1508,7 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
 
         Terrain->modelMatrix = glm::translate(glm::mat4(1.0f), Terrain->position);
         Terrain->modelMatrix = glm::scale(Terrain->modelMatrix, Terrain->scale);
-       
-       // Terrain->textureID = loadTexture("Textures/Terrain/black-limestone_s.jpg"); // default texture
-       // Terrain->textureID = loadTexture("Textures/Terrain/grass.jpg"); // default texture
+      
         grassTextureID = loadTexture("Textures/Terrain/grass.jpg");
         rockTextureID = loadTexture("Textures/Terrain/rock.jpg");
         dirtTextureID = loadTexture("Textures/Terrain/dirt.jpg");
@@ -1597,6 +1517,7 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
         ObjectVector.push_back(std::move(Terrain));
 
         ShouldAddTerrain = false; // Reset the flag after adding the plane
+        ShouldUpdateBlendMap = true;
 
     }
     // ##########
@@ -1613,6 +1534,15 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
 
         ShouldUpdateTerrain = false;
     }
+
+    if (ShouldUpdateBlendMap) { // then we update the terrain position and scale
+
+        blendMapID = loadTexture("Textures/Terrain/Data/blendMap.png");
+        std::cout << "Blend map updated and reloaded.\n";
+
+        ShouldUpdateBlendMap = false;
+    }
+
     ShaderManager::TerrainShader->Use();
     ShaderManager::TerrainShader->setMat4("view", view);
     ShaderManager::TerrainShader->setMat4("projection", projection);
@@ -1621,13 +1551,23 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
     ApplyPointLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
     ApplyAreaLights(*ShaderManager::TerrainShader, view, projection, ObjectVector);
    
+    //TerrainEditor terraineditor;
+
     for (const auto& model : ObjectVector) {     
 
         if (auto* t_terrain = dynamic_cast<MainTerrain*>(model.get())) {
 
             ShaderManager::TerrainShader->setMat4("model", t_terrain->modelMatrix);
-           // ##################
+           // ################## Texture Blending ####################
             ShaderManager::TerrainShader->setFloat("tiling", tilingFactor); // <- control from ImGui
+            ShaderManager::TerrainShader->setFloat("slopeStart", slopeStart); // <- control from ImGui
+            ShaderManager::TerrainShader->setFloat("slopeEnd", slopeEnd); // <- control from ImGui
+
+
+            // new bit
+            ShaderManager::TerrainShader->setFloat("minHeight", 10.0f);
+            ShaderManager::TerrainShader->setFloat("maxHeight", 100.0f);
+            ShaderManager::TerrainShader->setFloat("heightBlendRange", heightBlendRange); // controls smoothness
 
             // Activate and bind all terrain textures
             glActiveTexture(GL_TEXTURE0);
@@ -1644,10 +1584,13 @@ void EntityNodes::RenderTerrain(const glm::mat4& view, const glm::mat4& projecti
 
             glActiveTexture(GL_TEXTURE3);
             glBindTexture(GL_TEXTURE_2D, blendMapID);
+            //glBindTexture(GL_TEXTURE_2D, terraineditor.blendMapTex);
             ShaderManager::TerrainShader->setInt("blendMap", 3);
 
            // ##################
-
+            /*GLint boundTexture;
+            glGetIntegerv(GL_TEXTURE_BINDING_2D, &boundTexture);
+            std::cout << "Currently bound blendMap texture: " << boundTexture << std::endl;*/
             //glActiveTexture(GL_TEXTURE0);
             //glBindTexture(GL_TEXTURE_2D, t_terrain->textureID);
             t_terrain->DrawMainTerrain();
