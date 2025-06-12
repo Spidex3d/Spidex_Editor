@@ -21,17 +21,35 @@ class objLoader : public BaseModel
 {
 public:
 
-	struct Material {  // NEW MTL
+	struct Material {
 		std::string name;
-		glm::vec3 ambient;
-		glm::vec3 diffuse;
-		glm::vec3 specular;
-		float shininess;
-		std::string diffuseMap;
-		GLuint textureID;
-		Material() : ambient(0.2f, 0.2f, 0.2f), diffuse(0.8f, 0.8f, 0.8f), specular(1.0f, 1.0f, 1.0f),
-			shininess(32.0f), textureID(0) { }
+
+		glm::vec3 ambient;      // Ka
+		glm::vec3 diffuse;      // Kd
+		glm::vec3 specular;     // Ks
+		float shininess;        // Ns
+
+		float transparency;     // d or Tr
+		float opticalDensity;   // Ni
+		int illumModel;         // illum
+
+		// Texture maps
+		std::string diffuseMap;     // map_Kd
+		std::string specularMap;    // map_Ks
+		std::string normalMap;      // map_bump or bump
+		std::string alphaMap;       // map_d or map_opacity
+
+		GLuint diffuseTexID = 0;
+		GLuint specularTexID = 0;
+		GLuint normalTexID = 0;
+		GLuint alphaTexID = 0;
+
+		Material()
+			: ambient(0.2f), diffuse(0.8f), specular(1.0f),
+			shininess(32.0f), transparency(1.0f), opticalDensity(1.0f), illumModel(2) {
+		}
 	};
+
 		
 	
 	
@@ -42,10 +60,11 @@ public:
 	std::vector<std::string> split(const std::string& s, const std::string& delimiter);
 	bool Loadobj(const std::string& filename); // get the obj file name & path
 	bool LoadMTL(const std::string& filename); // NEW MTL
-	bool LoadObjTexture(const std::string& filename, GLuint& textureID);  // NEW MTL
+	//bool LoadObjTexture(const std::string& filename);  // NEW MTL    GLuint& textureID
+	GLuint LoadObjTexture(const std::string& filename);  // NEW MTL    GLuint& textureID
 	void objModels();
 	void objDrawModels();
-
+	void LoadMaterialTextures(Material& mat, const std::string& filename);
 	
 
 	~objLoader() {} // Private destructor
