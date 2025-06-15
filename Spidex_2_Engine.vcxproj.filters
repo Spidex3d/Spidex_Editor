@@ -191,6 +191,9 @@
     <ClInclude Include="src\Terrain\Terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Sky\Sky.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Icon.png">
@@ -214,6 +217,8 @@
     <None Include="src\Shader\ShaderFile\gltf.frag" />
     <None Include="src\Shader\ShaderFile\lightSprite.vert" />
     <None Include="src\Shader\ShaderFile\lightSprite.frag" />
+    <None Include="src\Shader\ShaderFile\sky.frag" />
+    <None Include="src\Shader\ShaderFile\sky.vert" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="vendors\assimp\lib\assimp-vc143-mtd.lib" />

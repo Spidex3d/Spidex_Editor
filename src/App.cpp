@@ -107,6 +107,9 @@ void App::RunApp()
 			// Terrain Editor Window
 			static TerrainEditor terrainEditor;
 			terrainEditor.Render(entityComponents.GetModels());
+			// Sky Editor Window
+			static SkyEditor skyEditor;
+			skyEditor.Render(entityComponents.GetModels());
 					
 						
 			// Darw all objects on screen

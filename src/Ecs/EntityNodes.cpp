@@ -190,7 +190,17 @@ void EntityNodes::ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selected
                         case 27: // Water
                             //ShouldAddWater = true;
                             break;
-
+                        case 28:
+                            break;
+                        case 29:
+                            break;
+                        case 30: // Sky Box
+                            ShouldUpdateSkyBox = true;
+                            break;
+                        case 31: // Sky procedural
+                            break;
+                        case 32: // Sky HDRI
+                            break;
                         }
                     }
 
@@ -562,7 +572,20 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                      showTerrainEditor = true;
                                      dialogType = true;
                                     break;
-
+                                 case 28:
+                                     break;
+                                 case 29:
+                                     break;
+                                 case 30:
+                                     ShowSkyEditor = true;
+                                     dialogType = true;
+                                     break;
+                                 case 31:
+                                     ShowSkyEditor = true;
+                                     break;
+                                 case 32:
+                                     ShowSkyEditor = true;
+                                     break;
 
                                 default:
                                     std::cout << "Data Selected Something Else " << data->objectName.c_str() << " : " << data->objectIndex << std::endl;
@@ -762,6 +785,8 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     // ############################### Terrain #####################################
     EntityNodes::RenderTerrain(view, projection, ObjectVector, currentIndex, TerrainIdx, camera);
     EntityNodes::RenderTerrainFloor(view, projection, ObjectVector, currentIndex, TerrainIdx, camera);
+    // ############################### Sky     #####################################
+    EntityNodes::RenderSkyBox(view, projection, ObjectVector, currentIndex, SkyIdx, camera);
 }
 
 void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
@@ -1668,8 +1693,77 @@ void EntityNodes::RenderTerrainFloor(const glm::mat4& view, const glm::mat4& pro
     }
 
 }
+// ###########################################    END TERRAIN SECTION   ###############################################
 
-// ###########################################    END TERRAIN SECTION       ###############################################
+// ###########################################    SKY BOX SECTION       ###############################################
+SkyEditor skyeditor;
+void EntityNodes::RenderSkyBox(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& SkyIdx, Camera camera)
+{
+    
+    if (ShouldAddSkyBox) {
+                
+        if (!skyeditor.SkyLoaded) {
+            skyeditor.skyTexture = loadSkyTextureFromFolder("Textures/Skybox/NewSky/");
+            skyeditor.SkyLoaded = true;
+        }
+
+        SkyIdx = ObjectVector.size();
+        std::unique_ptr<LoadSkybox> newSkyBox = std::make_unique<LoadSkybox>(currentIndex, "Sky Box", SkyIdx);
+
+        // Set default texture if available
+        if (!skyeditor.skyTexture.empty()) {
+            newSkyBox->skyTextureID = skyeditor.skyTexture[0].id; // first cubemap loaded
+            
+        }
+        
+
+        newSkyBox->position = glm::vec3(0.0f, 0.0f, 0.0f);
+        newSkyBox->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+        ObjectVector.push_back(std::move(newSkyBox));
+
+        ShouldAddSkyBox = false;
+    }
+    if (ShouldUpdateSkyBox) {
+
+        if (!skyeditor.skyTexture.empty() && creatSkyTex != 0) {
+            if (objectUpdateIndex >= 0 && objectUpdateIndex < ObjectVector.size()) {
+                auto* skyBox = dynamic_cast<LoadSkybox*>(ObjectVector[objectUpdateIndex].get());
+                if (skyBox) {
+                    skyBox->skyTextureID = creatSkyTex;
+                    std::cout << "Updated skybox texture to ID: " << creatSkyTex << std::endl;
+                }
+            }
+        }
+
+        ShouldUpdateSkyBox = false;
+    }
+       
+    for (const auto& model : ObjectVector) {
+
+        if (auto* sky_box = dynamic_cast<LoadSkybox*>(model.get())) {
+            glDepthFunc(GL_LEQUAL); // important for skybox depth
+            ShaderManager::skyShader->Use();
+
+            ShaderManager::skyShader->setMat4("view", glm::mat4(glm::mat3(view))); // remove translation
+            ShaderManager::skyShader->setMat4("projection", projection);
+            ShaderManager::skyShader->setInt("skybox", 0); // samplerCube location
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, sky_box->skyTextureID);
+
+            sky_box->DrawSky();
+
+            glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+            glDepthFunc(GL_LESS); // restore default depth
+        }
+        
+    }
+
+}
+
+// ###########################################    END SKY BOX SECTION       ###############################################
 
 void EntityNodes::DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector)
 {

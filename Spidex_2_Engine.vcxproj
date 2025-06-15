@@ -175,6 +175,7 @@
     <ClInclude Include="src\Ecs\BaseModel.h" />
     <ClInclude Include="src\Headers\GlobalVars.h" />
     <ClInclude Include="src\Headers\Textures.h" />
+    <ClInclude Include="src\Sky\Sky.h" />
     <ClInclude Include="src\Terrain\Terrain.h" />
     <ClInclude Include="src\Windows\spx_FileDialog.h" />
     <ClInclude Include="src\Ecs\EntityNodes.h" />
@@ -217,6 +218,8 @@
     <None Include="src\Shader\ShaderFile\gltf.vert" />
     <None Include="src\Shader\ShaderFile\lightSprite.frag" />
     <None Include="src\Shader\ShaderFile\lightSprite.vert" />
+    <None Include="src\Shader\ShaderFile\sky.frag" />
+    <None Include="src\Shader\ShaderFile\sky.vert" />
     <None Include="src\Shader\ShaderFile\test.frag" />
     <None Include="src\Shader\ShaderFile\test.vert" />
   </ItemGroup>

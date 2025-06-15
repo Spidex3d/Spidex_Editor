@@ -17,6 +17,7 @@
 #include "ObjectManager.h"
 #include "../Lighting/Lighting.h"
 #include "../Terrain/Terrain.h"
+#include "../Sky/Sky.h"
 #include "SelectedDataManager.h"
 
 #include "../Headers/GlobalVars.h"
@@ -87,8 +88,13 @@ public:
 	
 	void RenderTerrainFloor(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& TerrainIdx, Camera camera);
-	
 	// ############################   END TERRAIN #######################################
+	
+	// ############################   SKY BOX     #######################################
+	void RenderSkyBox(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& SkyIdx, Camera camera);
+
+	// ############################   END SKY BOX #######################################
 
 	void DrawSelectionBox(std::vector<std::unique_ptr<BaseModel>>& ObjectVector);
 

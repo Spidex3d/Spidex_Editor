@@ -638,7 +638,7 @@ public:
                     }
 
                     ImGui::EndTable();
-            }
+                }
                 // #########################################################################################
                 // ################## End Texture painting Blend map #######################################
                 // #########################################################################################
@@ -648,7 +648,7 @@ public:
                     ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_IMAGE " Available Terrain Textures");
 
 
-                    if (!texturesLoaded) {
+                    if (!texturesLoaded) {                            // this is the folder
                         terrainTextures = LoadTerrainImagesFromFolder("Textures/Terrain/");
                         texturesLoaded = true;
                     }

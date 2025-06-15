@@ -210,6 +210,19 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
             
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Add a Sky")) {
+            if (ImGui::MenuItem("Sky Box")) { // This is the main terrain
+                ShouldAddSkyBox = true;
+            }
+            if (ImGui::MenuItem("Hemisphere")) {
+                ShouldAddSkyHem = true;
+            }
+            if (ImGui::MenuItem("HDRI Skybox")) {  // This is the floor
+                ShouldAddSkyHDIR = true;
+            }
+
+            ImGui::EndMenu();
+        }
 
            ImGui::EndPopup();
     }

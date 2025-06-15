@@ -84,7 +84,18 @@ float slopeStart = 0.6f; // steepness begins
 float slopeEnd = 0.9f; // fully steep
 float heightBlendRange = 0.1f; // fully steep
 
-// ##### End Terrain #########
+// ########### End Terrain start Sky #########
+ const int SKY_BOX = 30;
+ const int SKY_BOX_HEM = 31;
+ const int SKY_BOX_HDRI = 32;
+ int SkyIdx = 0;
+ unsigned int creatSkyTex = 0;
+ bool ShowSkyEditor = false;
+ bool ShouldAddSkyBox = false;
+ bool ShouldAddSkyHem = false;
+ bool ShouldAddSkyHDIR = false;
+ bool ShouldUpdateSkyBox = false;
+// ################ End Sky ##################
 
 bool ShouldAddCube = false;     // add a new cube
 bool ShouldAddPlane = false;    // add a new plane

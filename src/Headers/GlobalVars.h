@@ -89,8 +89,18 @@ extern float slopeStart; // steepness begins
 extern float slopeEnd; // fully steep
 extern float heightBlendRange; // fully steep
 
-
-// ##### End Terrain #########
+// ########### End Terrain start Sky #########
+extern const int SKY_BOX;
+extern const int SKY_BOX_HEM;
+extern const int SKY_BOX_HDRI;
+extern int SkyIdx;
+extern unsigned int creatSkyTex;	// this only for the image that shows on the terrain editor window for editing
+extern bool ShowSkyEditor;
+extern bool ShouldAddSkyBox;
+extern bool ShouldAddSkyHem;
+extern bool ShouldAddSkyHDIR;
+extern bool ShouldUpdateSkyBox;
+// ################ End Sky ##################
 //
 // adding Objects
 extern bool ShouldAddCube;		// add a cube
