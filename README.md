@@ -2,6 +2,8 @@ Hi there 👋 Spidex3d/Spidex 3d Model Editor is a ✨ special ✨ repository be
 
 Hi I'm The Dyslexic Programmer. I'm not really a programmer, I'm a retired horticulturist. iv only played with C++ and found it very interesting so now I have lots of time to try and learn this stuff. my aim is to go from all but zero to making a Games Engine / 3d Model Editor using Opengl. follow along and watch me make a complete fool of myself.
 
+✨ Added Texture blending to my Terrain
+![image_alt](https://github.com/Spidex3d/Spidex_Editor/blob/bc8b341f27207589ebaf2e57a4f3614ac638de73/Readme/Texture%20blending.jpg)
 ✨ Added Basic Terrain and cleaned up lots more of code
 ![image_alt](https://github.com/Spidex3d/Spidex_Editor/blob/1d79686e1eada7fd9d7ff144bb91efa905c06e51/Readme/Basic_Terrain.jpg)
 ✨5 months in Set up loding obj and gltf files, and cleaned up lots of code
