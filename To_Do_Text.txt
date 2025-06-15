@@ -1,19 +1,16 @@
 
-To Do in the Spidex World Horizon game
-Start simlpe !!
-this is first person so no carector needed just the camera view we will simply fly around are new world
-maybe have some sort of orbit mode
-We need to remove meshes so no cubes ect, only made for the game objects obj or fbx 
-we need to start the game with a sea with a single island in the middle of the scene 
-when you add a new island it will need to be close so it can be seen
-we need to have a move or fly around our new world to see how wonderful it all is
-
-
+To Do List
 
 1 remove the control panel window
 2 change the object edit window 
 3 set up a plane blue sky box
 4 loade an 3d start object obj or fbx file, with my gltf file loader
 5 loade an obj, gltf or fbx file from a list (maybe a image of the object)
-6 What's next Lights or terrian
- save the scene
+6 What's next Lights and terrain
+7 Sky box
+8 Water !!!
+9 improve rendering quality
+10 save image from render or screen
+11 add terrain scatter rocks, trees, grass ect.
+12 improve skybox
+100 save the scene if i live this long.
