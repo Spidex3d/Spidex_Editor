@@ -110,6 +110,11 @@ void App::RunApp()
 			// Sky Editor Window
 			static SkyEditor skyEditor;
 			skyEditor.Render(entityComponents.GetModels());
+			// Mesh editor Window
+			static MeshEdit meshedit;
+			if (auto* he = dynamic_cast<LoadHalfEdgeMesh*>(SelectedDataManager::Instance().GetSelectedData())) {
+				meshedit.RenderMesh(he);
+			}
 					
 						
 			// Darw all objects on screen

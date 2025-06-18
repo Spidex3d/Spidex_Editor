@@ -18,6 +18,7 @@
 #include "../Lighting/Lighting.h"
 #include "../Terrain/Terrain.h"
 #include "../Sky/Sky.h"
+#include "../Object_Editor/objectEdit.h"
 #include "SelectedDataManager.h"
 
 #include "../Headers/GlobalVars.h"
@@ -54,6 +55,9 @@ public:
 	// Obj Model files
 	void RenderObjFiles(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& ModleObjidx);
+	// load a mesh for editing
+	void RenderEditMeshFiles(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& HalfEdgeIdx);
 
 	// Cube
 	void RenderCube(const glm::mat4& view, const glm::mat4& projection,

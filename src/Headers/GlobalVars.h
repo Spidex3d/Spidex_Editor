@@ -95,13 +95,22 @@ extern const int SKY_BOX_HEM;
 extern const int SKY_BOX_HDRI;
 extern int SkyIdx;
 extern unsigned int creatSkyTex;	// this only for the image that shows on the terrain editor window for editing
+extern bool SkyBoxSet; // this is used so we can only load 1 sky
 extern bool ShowSkyEditor;
 extern bool ShouldAddSkyBox;
 extern bool ShouldAddSkyHem;
 extern bool ShouldAddSkyHDIR;
 extern bool ShouldUpdateSkyBox;
 // ################ End Sky ##################
-//
+// ################ Edit Object ##################
+extern const int HALF_EDGE_MESH;
+extern int HalfEdgeIdx;
+extern int selectedFaceIndex;
+extern bool ShouldAddEditMesh;
+extern bool ShouldUpdateEditMesh;
+extern bool ShowHalfEdgeEditor;
+// ################ End Edit Objects ##################
+
 // adding Objects
 extern bool ShouldAddCube;		// add a cube
 extern bool ShouldAddSphere;		// add a cube

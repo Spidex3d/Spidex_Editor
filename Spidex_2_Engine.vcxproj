@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="src\Headers\Helper.h" />
     <ClInclude Include="src\Lighting\Lighting.h" />
+    <ClInclude Include="src\Object_Editor\objectEdit.h" />
     <ClInclude Include="src\Object_loader\objLoader.h" />
     <ClInclude Include="src\Ecs\Picking.h" />
     <ClInclude Include="src\Ecs\BaseModel.h" />

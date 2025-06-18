@@ -3,7 +3,6 @@
 #include "../Headers/Config.h"
 #include "../Headers/GlobalVars.h"
 
-#include "../Ecs/BaseModel.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -12,6 +11,7 @@ struct SkyTexture {
     //GLuint textureID;
     std::string path;
     GLuint frontFaceTexID;
+    
 };
 
 class LoadSkybox : public BaseModel {
@@ -167,7 +167,7 @@ inline std::vector<SkyTexture> loadSkyTextureFromFolder(const std::string& folde
                 GL_UNSIGNED_BYTE, face);
 
             // Also create preview texture from FRONT face
-            if (i == 2) { // Front face (index 2)
+            if (i == 3) { // Front face (index 2) right face (index 3)
                 glGenTextures(1, &previewTexID);
                 glBindTexture(GL_TEXTURE_2D, previewTexID);
                 glTexImage2D(GL_TEXTURE_2D, 0,
@@ -315,90 +315,3 @@ public:
     }
 
 };
-
-//inline std::vector<SkyTexture> loadSkyTextureFromFolder(const std::string& SkyPath) {
-//    std::vector<SkyTexture> sky_texture;
-//    
-//    // Load the packed skybox texture
-//    int width, height, nrChannels;
-//    unsigned char* data = stbi_load(SkyPath.c_str(), &width, &height, &nrChannels, 0);
-//    if (!data) {
-//        std::cerr << "Failed to load skybox image: " << SkyPath << std::endl;
-//        return sky_texture;
-//    }
-//
-//    const int faceSize = 512;
-//
-//    // Define face positions
-//    std::vector<std::pair<int, int>> facePositions = {
-//        {0, 1}, // Top
-//        {1, 0}, // Left
-//        {1, 1}, // Front
-//        {1, 2}, // Right
-//        {1, 3}, // Back
-//        {2, 1}  // Bottom
-//    };
-//
-//    std::vector<std::string> faceNames = {
-//        "Top", "Left", "Front", "Right", "Back", "Bottom"
-//    };
-//
-//    for (int i = 0; i < 6; ++i) {
-//        auto [row, col] = facePositions[i];
-//        unsigned char* faceData = extract_face(data, width, height, nrChannels, row, col, faceSize);
-//
-//        GLuint texID;
-//        glGenTextures(1, &texID);
-//        glBindTexture(GL_TEXTURE_2D, texID);
-//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, faceSize, faceSize, 0,
-//            nrChannels == 4 ? GL_RGBA : GL_RGB,
-//            GL_UNSIGNED_BYTE, faceData);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//
-//        sky_texture.push_back({ texID, faceNames[i] });
-//
-//        delete[] faceData;
-//    }
-//
-//    stbi_image_free(data);
-//    return sky_texture;
-//}
-
-
-
-//inline std::vector<SkyTexture> loadSkyTextureFromFolder(const std::string& SkyPath) {
-//    std::vector<SkyTexture> sky_texture;
-//    // load all sky textures from a folder so we can select which to use
-//    for (const auto& entry : fs::directory_iterator(SkyPath)) {
-//        if (entry.is_regular_file()) {
-//            std::string ext = entry.path().extension().string();
-//            if (ext == ".png" || ext == ".jpg" || ext == ".bmp") {
-//                GLuint id = loadSaveTerrainTexture(entry.path().string());
-//                sky_texture.push_back({ id, entry.path().string() });
-//            }
-//        }
-//    }
-//
-//    for (unsigned int i = 0; i < 6; i++)
-//    {
-//        int width, height, nrChannels;
-//        // I need to load the texture and "Texture/skybox/NewSky/cubemap_01.jpg
-//        unsigned char* data = stbi_load(SkyPath.c_str(), &width, &height, &nrChannels, 0);
-//        // the texture is 2048 x 1536 and each of the 6 faces are 512 x 512.
-//        // I need to get the part of the texture with the X in and set them to Top, Left, Front, Right, Back and Bottum
-//        //  512    512   512   512
-//        // -------------------------
-//        // |     |  X  |     |     | 512
-//        // -------------------------
-//        // |  X  |  X  |  X  |  X  | 512
-//        // -------------------------
-//        // |     |  X  |     |     | 512
-//        // -------------------------
-//
-//
-//
-//    }
-//    return sky_texture;
-//
-//}

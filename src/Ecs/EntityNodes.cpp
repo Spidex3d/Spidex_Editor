@@ -536,7 +536,8 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
                                     dialogType = false; // set to false and not show the add texture button
                                     LogInternals::Instance()->Debug("Data Selected  is a glTF file");
                                     break;
-                                case 15: // Not in use
+                                case 15: // Edit Object cube
+                                    ShowHalfEdgeEditor = true;
                                     break;
                                 case 16: // Not in use
                                     break;
@@ -777,6 +778,7 @@ void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection
     EntityNodes::RenderPyramid(view, projection, ObjectVector, currentIndex, Pyramidobjidx);
     // ############################### Models #####################################
     EntityNodes::RenderObjFiles(view, projection, ObjectVector, currentIndex, ModleObjidx);
+    EntityNodes::RenderEditMeshFiles(view, projection, ObjectVector, currentIndex, HalfEdgeIdx);
     
     // ############################### Lighting #####################################
     EntityNodes::RenderSunLightSprite(view, projection, ObjectVector, currentIndex, LightIdx);
@@ -862,6 +864,56 @@ void EntityNodes::RenderObjFiles(const glm::mat4& view, const glm::mat4& project
         }
         else {
            
+        }
+    }
+}
+// ------------- This is the editable Cube --------------
+void EntityNodes::RenderEditMeshFiles(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& HalfEdgeIdx)
+{
+    if (ShouldAddEditMesh) {
+        HalfEdgeIdx = ObjectVector.size();
+        std::unique_ptr<LoadHalfEdgeMesh> heMesh = std::make_unique<LoadHalfEdgeMesh>(currentIndex++, "Mesh Edit", HalfEdgeIdx);
+
+        heMesh->position = glm::vec3(0.0f, 0.5f, 0.0f);
+        heMesh->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+        heMesh->modelMatrix = glm::translate(glm::mat4(1.0f), heMesh->position);
+        heMesh->modelMatrix = glm::scale(heMesh->modelMatrix, heMesh->scale);
+
+        ObjectVector.push_back(std::move(heMesh));
+        ShouldAddEditMesh = false;
+    }
+
+    if (ShouldUpdateEditMesh) {
+
+
+    }
+
+    for (const auto& model : ObjectVector) {
+        
+
+        if (auto* he = dynamic_cast<LoadHalfEdgeMesh*>(model.get())) {
+            // Use normal shader for wireframe cube
+            ShaderManager::TestShader->Use();
+            ShaderManager::TestShader->setVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
+            ShaderManager::TestShader->setMat4("model", modelMatrix);
+            ShaderManager::TestShader->setMat4("view", view);
+            ShaderManager::TestShader->setMat4("projection", projection);
+            ShaderManager::TestShader->setMat4("model", he->modelMatrix);
+           
+            he->DrawHalfEdgeMesh();      // Draw full cube
+
+            // Use highlight shader for selected face fill
+            ShaderManager::highlightShader->Use();
+            ShaderManager::highlightShader->setVec3("color", glm::vec3(1.0f, 1.0f, 0.0f));
+            ShaderManager::highlightShader->setMat4("model", modelMatrix);
+            ShaderManager::highlightShader->setMat4("view", view);
+            ShaderManager::highlightShader->setMat4("projection", projection);
+            ShaderManager::highlightShader->setMat4("model", he->modelMatrix);
+            
+            he->DrawSelectedFace();      // Draw selected face filled
+
         }
     }
 }
@@ -1701,30 +1753,33 @@ void EntityNodes::RenderSkyBox(const glm::mat4& view, const glm::mat4& projectio
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& SkyIdx, Camera camera)
 {
     
-    if (ShouldAddSkyBox) {
-                
-        if (!skyeditor.SkyLoaded) {
-            skyeditor.skyTexture = loadSkyTextureFromFolder("Textures/Skybox/NewSky/");
-            skyeditor.SkyLoaded = true;
+     if (!SkyBoxSet) { // only load one sky
+        if (ShouldAddSkyBox) {
+
+            if (!skyeditor.SkyLoaded) {
+                skyeditor.skyTexture = loadSkyTextureFromFolder("Textures/Skybox/NewSky/");
+                skyeditor.SkyLoaded = true;
+            }
+
+            SkyIdx = ObjectVector.size();
+            std::unique_ptr<LoadSkybox> newSkyBox = std::make_unique<LoadSkybox>(currentIndex, "Sky Box", SkyIdx);
+
+            // Set default texture if available
+            if (!skyeditor.skyTexture.empty()) {
+                newSkyBox->skyTextureID = skyeditor.skyTexture[0].id; // first cubemap loaded
+
+            }
+
+            newSkyBox->position = glm::vec3(0.0f, 0.0f, 0.0f);
+            newSkyBox->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+            ObjectVector.push_back(std::move(newSkyBox));
+
+            ShouldAddSkyBox = false;
+            SkyBoxSet = true; // only load one sky
         }
+     }
 
-        SkyIdx = ObjectVector.size();
-        std::unique_ptr<LoadSkybox> newSkyBox = std::make_unique<LoadSkybox>(currentIndex, "Sky Box", SkyIdx);
-
-        // Set default texture if available
-        if (!skyeditor.skyTexture.empty()) {
-            newSkyBox->skyTextureID = skyeditor.skyTexture[0].id; // first cubemap loaded
-            
-        }
-        
-
-        newSkyBox->position = glm::vec3(0.0f, 0.0f, 0.0f);
-        newSkyBox->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-        ObjectVector.push_back(std::move(newSkyBox));
-
-        ShouldAddSkyBox = false;
-    }
     if (ShouldUpdateSkyBox) {
 
         if (!skyeditor.skyTexture.empty() && creatSkyTex != 0) {

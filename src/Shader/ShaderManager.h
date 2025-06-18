@@ -15,5 +15,5 @@ public:
     static Shader* skyShader; // Declare the shader as a static member
     static Shader* TerrainShader; // Declare the shader as a static member
     static Shader* TestShader; // Declare the shader as a static member
-    
+    static Shader* highlightShader;
 };

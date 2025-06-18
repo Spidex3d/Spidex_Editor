@@ -90,12 +90,22 @@ float heightBlendRange = 0.1f; // fully steep
  const int SKY_BOX_HDRI = 32;
  int SkyIdx = 0;
  unsigned int creatSkyTex = 0;
+ bool SkyBoxSet = false;   // this is used so we can only load 1 skyBox
  bool ShowSkyEditor = false;
  bool ShouldAddSkyBox = false;
  bool ShouldAddSkyHem = false;
  bool ShouldAddSkyHDIR = false;
  bool ShouldUpdateSkyBox = false;
 // ################ End Sky ##################
+// 
+// ################ Edit Object ##################
+ const int HALF_EDGE_MESH = 15;
+ int HalfEdgeIdx = 0;
+ int selectedFaceIndex = -1;
+ bool ShouldAddEditMesh = false;
+ bool ShouldUpdateEditMesh = false;
+ bool ShowHalfEdgeEditor = false;
+// ################ End Edit Object ##################
 
 bool ShouldAddCube = false;     // add a new cube
 bool ShouldAddPlane = false;    // add a new plane
