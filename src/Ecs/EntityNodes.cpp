@@ -875,8 +875,8 @@ void EntityNodes::RenderEditMeshFiles(const glm::mat4& view, const glm::mat4& pr
         HalfEdgeIdx = ObjectVector.size();
         std::unique_ptr<LoadHalfEdgeMesh> heMesh = std::make_unique<LoadHalfEdgeMesh>(currentIndex++, "Mesh Edit", HalfEdgeIdx);
 
-        heMesh->position = glm::vec3(0.0f, 0.5f, 0.0f);
-        heMesh->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+        heMesh->position = glm::vec3(0.0f, 0.0f, 0.0f);
+        heMesh->scale = glm::vec3(0.5f, 0.5f, 0.5f);
 
         heMesh->modelMatrix = glm::translate(glm::mat4(1.0f), heMesh->position);
         heMesh->modelMatrix = glm::scale(heMesh->modelMatrix, heMesh->scale);
@@ -894,25 +894,56 @@ void EntityNodes::RenderEditMeshFiles(const glm::mat4& view, const glm::mat4& pr
         
 
         if (auto* he = dynamic_cast<LoadHalfEdgeMesh*>(model.get())) {
+
+            // Now draw face normals
+            ShaderManager::LineShader->Use();
+            ShaderManager::LineShader->setVec3("color2", glm::vec3(1.0f, 0.0f, 0.0f)); // should be red
+            ShaderManager::LineShader->setMat4("view", view);
+            ShaderManager::LineShader->setMat4("projection", projection);
+            ShaderManager::LineShader->setMat4("model", he->modelMatrix);
+
+            he->updateFaceNormalLines();  // rebuilds VBO
+            glLineWidth(2.0f);
+
+            GLint currentProgram = 0;
+            glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+            std::cout << "Current normal shader ID: " << currentProgram << std::endl;
+
+            he->DrawNormalLines();
+
             // Use normal shader for wireframe cube
             ShaderManager::TestShader->Use();
-            ShaderManager::TestShader->setVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
+            ShaderManager::TestShader->setVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));  // Blue
             ShaderManager::TestShader->setMat4("model", modelMatrix);
             ShaderManager::TestShader->setMat4("view", view);
             ShaderManager::TestShader->setMat4("projection", projection);
             ShaderManager::TestShader->setMat4("model", he->modelMatrix);
            
-            he->DrawHalfEdgeMesh();      // Draw full cube
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+            GLint currentProgram1 = 0;
+            glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram1);
+            std::cout << "Current Cube shader ID: " << currentProgram1 << std::endl;
+
+            he->DrawHalfEdgeMesh();
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+            
             // Use highlight shader for selected face fill
             ShaderManager::highlightShader->Use();
-            ShaderManager::highlightShader->setVec3("color", glm::vec3(1.0f, 1.0f, 0.0f));
+            ShaderManager::highlightShader->setVec3("color", glm::vec3(1.0f, 1.0f, 0.0f)); // yellow
             ShaderManager::highlightShader->setMat4("model", modelMatrix);
             ShaderManager::highlightShader->setMat4("view", view);
             ShaderManager::highlightShader->setMat4("projection", projection);
             ShaderManager::highlightShader->setMat4("model", he->modelMatrix);
             
+            GLint currentProgram2 = 0;
+            glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram2);
+            std::cout << "Current Cube shader ID: " << currentProgram2 << std::endl;
+
             he->DrawSelectedFace();      // Draw selected face filled
+
+            
 
         }
     }
