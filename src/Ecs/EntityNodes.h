@@ -15,6 +15,7 @@
 #include <stb\stb_image.h>
 
 #include "ObjectManager.h"
+#include "Player.h"
 #include "../Lighting/Lighting.h"
 #include "../Terrain/Terrain.h"
 #include "../Sky/Sky.h"
@@ -58,6 +59,9 @@ public:
 	// load a mesh for editing
 	void RenderEditMeshFiles(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& HalfEdgeIdx);
+
+	void RenderPlayer(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& PlayerIdx);
 
 	// Cube
 	void RenderCube(const glm::mat4& view, const glm::mat4& projection,

@@ -3,7 +3,7 @@
 #include "Shader\Shader.h"
 //#include "Shader\ShaderManager.h"
 
-#include "Ecs\ObjectManager.h"
+//#include "Ecs\ObjectManager.h"
 #include "Camera/Camera.h"
 #include "Headers\GlobalVars.h"
 

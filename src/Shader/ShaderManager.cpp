@@ -24,6 +24,7 @@ extern float angel;
 void ShaderManager::SetupShaders() {
     // This is the grid shader
     defaultGridShader = new Shader("src/Shader/ShaderFile/default_Grid.vert", "src/Shader/ShaderFile/default_Grid.frag");
+    //defaultGridShader = new Shader("Shader/ShaderFile/default_Grid.vert", "Shader/ShaderFile/default_Grid.frag");
 
     //defaultGLTFShader = new Shader("src/Shader/ShaderFile/gltf.vert", "src/Shader/ShaderFile/gltf.frag");
     // This will be the main Shader

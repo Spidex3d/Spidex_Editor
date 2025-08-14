@@ -168,6 +168,7 @@
     <ClCompile Include="vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ecs\Player.h" />
     <ClInclude Include="src\Headers\Helper.h" />
     <ClInclude Include="src\Lighting\Lighting.h" />
     <ClInclude Include="src\Object_Editor\objectEdit.h" />

@@ -770,7 +770,8 @@ void EntityNodes::RenderGrid(const glm::mat4& view, const glm::mat4& projection,
 void EntityNodes::RenderScene(const glm::mat4& view, const glm::mat4& projection,
     std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, Shader& shader, Camera& camera)
 {
-    
+    EntityNodes::RenderPlayer(view, projection, ObjectVector, currentIndex, PlayerIdx);
+
     EntityNodes::RenderCube(view, projection, ObjectVector, currentIndex, Cubeobjidx);
     EntityNodes::RenderSphere(view, projection, ObjectVector, currentIndex, Sphereobjidx);
     EntityNodes::RenderTriangle(view, projection, ObjectVector);
@@ -947,6 +948,54 @@ void EntityNodes::RenderEditMeshFiles(const glm::mat4& view, const glm::mat4& pr
 
         }
     }
+}
+// Player
+void EntityNodes::RenderPlayer(const glm::mat4& view, const glm::mat4& projection,
+    std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& PlayerIdx)
+{
+    
+        stbi_set_flip_vertically_on_load(true);
+
+        if (ShouldAddPlayer) { // so we add the cube
+            Cubeobjidx = ObjectVector.size();
+            std::unique_ptr<PlayerModel> newPlayer = std::make_unique<PlayerModel>(currentIndex++, "Player", PlayerIdx);
+
+            
+            newPlayer->position = glm::vec3(0.0f, 0.0f, 0.0f);
+            newPlayer->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+ 
+            newPlayer->modelMatrix = glm::translate(glm::mat4(1.0f), newPlayer->position);
+            newPlayer->modelMatrix = glm::scale(newPlayer->modelMatrix, newPlayer->scale);
+       
+            newPlayer->textureID = loadTexture("Textures/Texture/default_1.jpg");
+
+            ObjectVector.push_back(std::move(newPlayer));
+
+            ShouldAddPlayer = false; // Reset the flag after adding the cube
+        }
+               
+
+        for (const auto& model : ObjectVector) {
+            ShaderManager::defaultShader->Use();
+            ShaderManager::defaultShader->setMat4("view", view);
+            ShaderManager::defaultShader->setMat4("projection", projection);
+
+
+            ApplySunLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+            ApplyPointLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+            ApplyAreaLights(*ShaderManager::defaultShader, view, projection, ObjectVector);
+
+
+            if (auto* cube = dynamic_cast<PlayerModel*>(model.get())) {
+                modelMatrix = glm::mat4(1.0f);
+                ShaderManager::defaultShader->setMat4("model", cube->modelMatrix);
+                glActiveTexture(GL_TEXTURE0);
+
+                glBindTexture(GL_TEXTURE_2D, cube->textureID);
+                cube->DrawPlayer();
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
+        }
 }
 
 float posx = 0;

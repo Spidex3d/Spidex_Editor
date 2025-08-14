@@ -153,6 +153,11 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
                 dialogType = false;   // sets is textured or obj file for the opendialog box
 
             }
+			if (ImGui::MenuItem("Player")) {
+				// set ShouldAddTexture to true then add texture file to the tree
+                ShouldAddPlayer = true;
+			}
+
             if (ImGui::MenuItem("Add Mesh File")) {
                 
                 ShouldAddEditMesh = true;
@@ -468,10 +473,10 @@ void MainScreen::Creat_FrameBuffer()
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-unsigned int MainScreen::LoadTextureFiles(const char* filename, GLuint* out_texture, int out_width, int out_height)
-{
-    return 0;
-}
+//unsigned int MainScreen::LoadTextureFiles(const char* filename, GLuint* out_texture, int out_width, int out_height)
+//{
+//    return 0;
+//}
 
 void MainScreen::Bind_Framebuffer()
 {

@@ -29,7 +29,7 @@ public:
 
 	//  ############## ImGui Main scene #######################
 	void Creat_FrameBuffer();
-	unsigned int LoadTextureFiles(const char* filename, GLuint* out_texture, int out_width, int out_height);
+	//unsigned int LoadTextureFiles(const char* filename, GLuint* out_texture, int out_width, int out_height);
 
 	void Bind_Framebuffer();
 	void Unbinde_Frambuffer();

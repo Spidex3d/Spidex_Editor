@@ -357,7 +357,7 @@ public:
             if (!showTerrainEditor) return;
 
             ImGui::GetStyle().WindowRounding = 12.0f;
-            ImGui::Begin("Terrain Object Editor", &showTerrainEditor);
+            ImGui::Begin("Terrain Object Editor", &showTerrainEditor); // sarts here
 
             ImGui::InputText("Terrain Name", nameBuffer, IM_ARRAYSIZE(nameBuffer));
             ImGui::TextColored(COLOR_LIGHTBLUE, ICON_FA_EDIT " Terrain Mesh Editor");
