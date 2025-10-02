@@ -34,7 +34,15 @@ public:
 
 	void ObjectEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
 	void LightingEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
-	//void TerrainEditor(std::vector<std::unique_ptr<BaseModel>>& selectedData);
+
+	 float expSmooth(float hz, float dt) { return 1.0f - std::exp(-hz * dt); }
+	 void CameraFollowPlayer(Camera& cam, const PlayerModel& player, float dt, const glm::vec3& localOffset,   // Right, Up, Forward  (use z = -6 for "behind")
+		float posHz = 6.0f, float rotHz = 8.0f);           // 0 => hard lock, higher => snappier
+		
+
+	 void AttachPlayerToCamera(const Camera& cam, std::vector<std::unique_ptr<BaseModel>>& objs, int playerIndex,
+		const glm::vec3& localOffset);  // e.g., {0, -0.2f, 6.0f}
+
 
 	std::vector<std::unique_ptr<BaseModel>>& GetModels();
 
@@ -59,9 +67,13 @@ public:
 	// load a mesh for editing
 	void RenderEditMeshFiles(const glm::mat4& view, const glm::mat4& projection,
 		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& HalfEdgeIdx);
+	
+
+	/*void RenderMainPlayer(const glm::mat4& view, const glm::mat4& projection,
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, Shader& shader, Camera& camera);
 
 	void RenderPlayer(const glm::mat4& view, const glm::mat4& projection,
-		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& PlayerIdx);
+		std::vector<std::unique_ptr<BaseModel>>& ObjectVector, int& currentIndex, int& PlayerIdx);*/
 
 	// Cube
 	void RenderCube(const glm::mat4& view, const glm::mat4& projection,

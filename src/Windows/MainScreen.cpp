@@ -155,7 +155,7 @@ void MainScreen::MainSceneWindow(GLFWwindow* window) // this is the window that 
             }
 			if (ImGui::MenuItem("Player")) {
 				// set ShouldAddTexture to true then add texture file to the tree
-                ShouldAddPlayer = true;
+               // ShouldAddPlayer = true;
 			}
 
             if (ImGui::MenuItem("Add Mesh File")) {

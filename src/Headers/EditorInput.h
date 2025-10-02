@@ -13,10 +13,13 @@ extern float deltaTime;
 extern float lastFrame;
 extern float fov;
 
-
+struct GLFWwindow;
+class PlayerModel;
 
 //void processInput(GLFWwindow* window, Camera& camera);
+//void processInput(GLFWwindow* window);
 void processInput(GLFWwindow* window);
+//void processInput(GLFWwindow* window, PlayerModel  &player);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 

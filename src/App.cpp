@@ -60,6 +60,9 @@ void App::RunApp()
 		Settings settings;
 		settings.LoadSettings("settings.txt"); // Loading the saved settings
 		
+		// after you’ve found the player once (e.g., when you create it)
+		//auto* player = dynamic_cast<PlayerModel*>(entityComponents.GetModels()[PlayerIdx].get());
+
 	    // 20 lines so far
 		while (AppIsRunning)
 		{
@@ -67,8 +70,10 @@ void App::RunApp()
 
 			// close it all down if you click the cross or press Esc button
 			if (glfwWindowShouldClose(windowManager.GetWindow())) { AppIsRunning = false; }
-						
+				
+
 			processInput(windowManager.GetWindow()); // Keybord and mouse control
+			//processInput(windowManager.GetWindow(), *player); // Keybord and mouse control
 
 			// ############################################ GUI from Here ####################################
 			// NewImguiFrame, MainWindowMenu, AboutWindow, MainDockSpace, MainSceanWindow
@@ -92,7 +97,23 @@ void App::RunApp()
 			MainScreen::Instance()->ClearScreen(); // glClear GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_DEPTH_TEST
 
 			// ############################################# Camera Object !!! ################################
+			//const glm::vec3 followOffset = { 0.0f, 2.0f, -6.0f }; // up 2, 6 units behind
+			//EntityNodes::Instance()->CameraFollowPlayer(camera, *player, deltaTime, followOffset, 6.0f, 8.0f);
+
 			App::MainCamera(); // ########## This is the main Camera ##########
+
+			// After App::MainCamera();
+			//static bool attachPlayer = true;             // toggle if you like
+			//const glm::vec3 playerOffset = { 0.0f, -1.0f, 6.0f }; // (Right, Up, Forward)
+
+			//// Player
+			//	EntityNodes::Instance()->AttachPlayerToCamera(
+			//		camera,
+			//		entityComponents.GetModels(),
+			//		Cubeobjidx,         // you set this when adding the player
+			//		playerOffset
+			//	);
+			
 						
 			// Render the grid and then have a coffee
 			if (!gridNogrid) {   // Show the grid or hide it
@@ -115,7 +136,11 @@ void App::RunApp()
 			if (auto* he = dynamic_cast<LoadHalfEdgeMesh*>(SelectedDataManager::Instance().GetSelectedData())) {
 				meshedit.RenderMesh(he);
 			}
-					
+			//	// Add and Draw the Player 
+			//EntityNodes::Instance()->RenderMainPlayer(camera.GetViewMatrix(),
+			//	camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT),
+			//	entityComponents.GetModels(), currentIndex, *ShaderManager::defaultShader, camera);
+
 						
 			// Darw all objects on screen
 			EntityNodes::Instance()->RenderScene(camera.GetViewMatrix(),

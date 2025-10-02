@@ -12,6 +12,10 @@ extern char nameBuffer[128];
 extern const int MAIN_PLAYER;
 
 
+// in processInput(...)
+
+
+
 extern const int MAIN_GRID;
 extern const int OBJ_CUBE;
 extern const int OBJ_PLANE;
@@ -145,8 +149,8 @@ extern bool dialogType;  // sets is textured or obj file for the opendialog box
 extern int currentIndex;
 
 // Player
-extern int PlayerIdx; // Declaration of the global variable
-extern bool ShouldAddPlayer; // add a new player
+//extern int PlayerIdx; // Declaration of the global variable
+//extern bool ShouldAddPlayer; // add a new player
 
 
 // indevidual object index's

@@ -6,7 +6,9 @@ std::vector<std::unique_ptr<BaseModel>> ObjectVector; // the vector for all Mode
 
 char nameBuffer[128] = "";
 
-const int MAIN_PLAYER = 100; // this is the player object index
+//bool attachPlayer = true;
+//const int MAIN_PLAYER = 100; // this is the player object index
+
 const int MAIN_GRID = 0; // this is for the editor grid
 const int OBJ_CUBE = 1;
 const int OBJ_PLANE = 2;
@@ -141,8 +143,8 @@ bool dialogType = false; // false = dialog Image, true = dialog model
 int currentIndex = -1;
 
 // Player
-int PlayerIdx = 0; // Player Index;
-bool ShouldAddPlayer = false; // add a new player
+//int PlayerIdx = 0; // Player Index;
+//bool ShouldAddPlayer = false; // add a new player
 
 int Gridobjidx = 0;
 int Cubeobjidx = 0;   // Definition and initialization of the global variable
