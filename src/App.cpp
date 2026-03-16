@@ -141,6 +141,7 @@ void App::RunApp()
 			//	camera.GetProjectionMatrix((float)SCR_WIDTH / (float)SCR_HEIGHT),
 			//	entityComponents.GetModels(), currentIndex, *ShaderManager::defaultShader, camera);
 
+			// Picking RayImGui::ShowDemoWindow(nullptr); // for testing
 						
 			// Darw all objects on screen
 			EntityNodes::Instance()->RenderScene(camera.GetViewMatrix(),

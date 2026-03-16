@@ -491,6 +491,7 @@ void EntityNodes::EntityManagmentSystem(std::vector<std::unique_ptr<BaseModel>>&
     {
         if (ImGui::BeginTabItem("Scene Lab"))
         {
+
             ImGui::SeparatorText("Scene Collection");
 
             auto flags = ImGuiTreeNodeFlags_DefaultOpen;

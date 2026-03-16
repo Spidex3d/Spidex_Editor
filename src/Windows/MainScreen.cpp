@@ -275,7 +275,7 @@ void MainScreen::MainWindowMenu(GLFWwindow* window)
         }
         if (ImGui::MenuItem("Open scene"))
         {
-
+			
         }
         ImGui::Separator();
         if (ImGui::MenuItem(ICON_FA_SAVE" Save scene"))
